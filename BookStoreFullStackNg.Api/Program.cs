@@ -1,3 +1,4 @@
+using BookStoreFullStackNg.Api.Middlewares;
 using BookStoreFullStackNg.Data.Data;
 using BookStoreFullStackNg.Data.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,7 @@ builder.Services.AddCors(options =>
         policy.WithOrigins("*").WithHeaders("*").WithMethods("*");
     });
 });
+builder.Services.AddTransient<ExceptionMiddleware>();
 
 var app = builder.Build();
 
@@ -38,6 +40,8 @@ app.UseHttpsRedirection();
 app.UseCors(allowedOrigins);
 
 app.UseAuthorization();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.MapControllers();
 
