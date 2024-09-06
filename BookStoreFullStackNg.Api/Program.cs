@@ -2,8 +2,15 @@ using BookStoreFullStackNg.Api.Middlewares;
 using BookStoreFullStackNg.Data.Data;
 using BookStoreFullStackNg.Data.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 var allowedOrigins = "_allowedOrigins";
+var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(configuration)
+   .CreateLogger();
+
+Log.Logger.Information("Logging is working fine");
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +32,8 @@ builder.Services.AddCors(options =>
     });
 });
 builder.Services.AddTransient<ExceptionMiddleware>();
+
+builder.Host.UseSerilog();
 
 var app = builder.Build();
 
