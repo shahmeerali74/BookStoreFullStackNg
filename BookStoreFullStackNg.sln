@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookStoreFullStackNg.Api", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookStoreFullStackNg.Data", "BookStoreFullStackNg.Data\BookStoreFullStackNg.Data.csproj", "{172E35E3-9435-4011-A252-8863596BC44C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookStoreFullStackNg.UnitTests", "BookStoreFullStackNg.UnitTests\BookStoreFullStackNg.UnitTests.csproj", "{2FCE958B-2E11-429B-B804-D80B3C30DB66}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{172E35E3-9435-4011-A252-8863596BC44C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{172E35E3-9435-4011-A252-8863596BC44C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{172E35E3-9435-4011-A252-8863596BC44C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FCE958B-2E11-429B-B804-D80B3C30DB66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FCE958B-2E11-429B-B804-D80B3C30DB66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FCE958B-2E11-429B-B804-D80B3C30DB66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FCE958B-2E11-429B-B804-D80B3C30DB66}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

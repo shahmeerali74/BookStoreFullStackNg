@@ -14,7 +14,7 @@ namespace BookStoreFullStackNg.Api.Controllers
         private readonly IMapper _mapper;
         private readonly IGenreRepository _genreRepository;
 
-        public GenreController(IMapper mapper, IGenreRepository genreRepository = null)
+        public GenreController(IMapper mapper, IGenreRepository genreRepository)
         {
             _mapper = mapper;
             _genreRepository = genreRepository;
