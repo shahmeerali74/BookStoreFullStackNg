@@ -25,7 +25,7 @@ namespace BookStoreFullStackNg.Api.Controllers
         {
             var genre = _mapper.Map<Genre>(genreToAdd);
             var createdGenre = await _genreRepository.AddGenre(genre);
-            return CreatedAtAction(nameof(GetGenreById), new { id = createdGenre.Id }, _mapper.Map<GenreReadDto>(createdGenre));
+            return CreatedAtRoute(nameof(GetGenreById), new { id = createdGenre.Id }, _mapper.Map<GenreReadDto>(createdGenre));
         }
 
         [HttpGet]
@@ -70,9 +70,9 @@ namespace BookStoreFullStackNg.Api.Controllers
             {
                 throw new NotFoundException("Genre not found");
             }
-            genre = _mapper.Map(genreToUpdate, genre);
-            var updatedGenre = await _genreRepository.UpdateGenre(genre);
-            return Ok(_mapper.Map<GenreReadDto>(updatedGenre));
+            genre = _mapper.Map<Genre>(genreToUpdate);
+            await _genreRepository.UpdateGenre(genre);
+            return NoContent();
         }
     }
 }
