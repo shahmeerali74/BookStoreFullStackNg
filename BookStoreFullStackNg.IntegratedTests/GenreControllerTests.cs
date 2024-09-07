@@ -135,4 +135,28 @@ public class GenreControllerTests : IClassFixture<CustomWebApplicationFactory<Pr
         // assert
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
+
+    [Fact]
+    public async Task DeleteGenre_ReturnsNoContent_WhenDeletionIsSuccessfull()
+    {
+        // arrange
+
+        // act
+        var response = await _client.DeleteAsync($"{baseUrl}/1");
+
+        // assert
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task DeleteGenre_ReturnsNotFound_WhenPersonDoesNotExist()
+    {
+        // arrange
+
+        // act
+        var response = await _client.DeleteAsync($"{baseUrl}/9999");
+
+        // assert
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
 }
