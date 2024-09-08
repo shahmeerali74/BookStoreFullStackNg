@@ -12,6 +12,11 @@ export const routes: Routes = [
       import("./book/book.component").then((m) => m.BookComponent),
   },
   {
+    path: "genres",
+    loadComponent: () =>
+      import("./genre/genre.component").then((c) => c.GenreComponent),
+  },
+  {
     path: "",
     redirectTo: "/home",
     pathMatch: "full",

@@ -29,6 +29,10 @@ import { MatBadgeModule } from "@angular/material/badge";
           Books
         </button>
 
+        <button mat-button routerLink="/genres" routerLinkActive="active">
+          Genres
+        </button>
+
         <button mat-icon-button color="secondary">
           <mat-icon
             [matBadge]="0"

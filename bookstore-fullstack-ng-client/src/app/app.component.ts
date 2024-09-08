@@ -28,6 +28,4 @@ import { FooterComponent } from "./footer.component";
     `,
   ],
 })
-export class AppComponent {
-  title = "bookstore-fullstack-ng-client";
-}
+export class AppComponent {}
