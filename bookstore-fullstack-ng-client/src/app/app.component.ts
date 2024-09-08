@@ -1,17 +1,27 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component } from "@angular/core";
+import { RouterOutlet } from "@angular/router";
+import { HeaderComponent } from "./header.component";
+import { FooterComponent } from "./footer.component";
 
 @Component({
-  selector: 'app-root',
+  selector: "app-root",
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, HeaderComponent, FooterComponent],
   template: `
-    <h1>Welcome to {{title}}!</h1>
-
+    <app-header />
     <router-outlet />
+    <app-footer />
   `,
-  styles: [],
+  styles: [
+    `
+      :host {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+    `,
+  ],
 })
 export class AppComponent {
-  title = 'bookstore-fullstack-ng-client';
+  title = "bookstore-fullstack-ng-client";
 }
