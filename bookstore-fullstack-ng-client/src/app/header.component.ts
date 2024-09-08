@@ -20,12 +20,14 @@ import { MatBadgeModule } from "@angular/material/badge";
   template: `
     <p>
       <mat-toolbar color="primary">
-        <span>Book App 📔</span>
+        <span routerLink="/home">Book Store 📔</span>
         <span class="example-spacer"></span>
-        <button mat-button>Home</button>
-        <button mat-button>Books</button>
-        <button mat-button>Dashboard</button>
-        <button mat-button>Manage-Books</button>
+        <button mat-button routerLink="/home" routerLinkActive="active">
+          Home
+        </button>
+        <button mat-button routerLink="/books" routerLinkActive="active">
+          Books
+        </button>
 
         <button mat-icon-button color="secondary">
           <mat-icon
@@ -39,7 +41,9 @@ import { MatBadgeModule } from "@angular/material/badge";
 
         <button mat-button>Logout</button>
         <ng-container>
-          <button mat-button>Login</button>
+          <button mat-button routerLink="/home" routerLinkActive="active">
+            Login
+          </button>
           <button mat-button>Signup</button>
         </ng-container>
 
