@@ -40,6 +40,9 @@ public class ExceptionMiddleware : IMiddleware
             case BadRequestException _:
                 statusCode = StatusCodes.Status400BadRequest;
                 break;
+            default:
+                statusCode = StatusCodes.Status500InternalServerError;
+                break;
         }
         var errorResponse = new ErrorResponse
         {

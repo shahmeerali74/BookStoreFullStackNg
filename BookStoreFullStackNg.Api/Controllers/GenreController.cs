@@ -3,11 +3,13 @@ using BookStoreFullStackNg.Api.Exceptions;
 using BookStoreFullStackNg.Data.Domain;
 using BookStoreFullStackNg.Data.DTOs;
 using BookStoreFullStackNg.Data.Reopositories.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookStoreFullStackNg.Api.Controllers
 {
     [Route("api/genres")]
+    [Authorize(Roles ="Admin")]
     [ApiController]
     public class GenreController : ControllerBase
     {
