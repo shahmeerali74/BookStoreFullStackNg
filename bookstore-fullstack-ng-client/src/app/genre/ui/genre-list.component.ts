@@ -15,10 +15,10 @@ import { GenreModel } from "../data/genre.model";
   imports: [MatTableModule, MatButtonModule, MatIconModule],
   template: `
     <table mat-table [dataSource]="genres" class="mat-elevation-z8">
-      <ng-container matColumnDef="Id">
+      <!-- <ng-container matColumnDef="Id">
         <th mat-header-cell *matHeaderCellDef>Id</th>
         <td mat-cell *matCellDef="let element">{{ element.id }}</td>
-      </ng-container>
+      </ng-container> -->
 
       <ng-container matColumnDef="GenreName">
         <th mat-header-cell *matHeaderCellDef>Genre</th>
@@ -61,5 +61,5 @@ export class GenreListComponent {
   @Output() edit = new EventEmitter<GenreModel>();
   @Output() delete = new EventEmitter<GenreModel>();
 
-  displayedColumns = ["Id", "GenreName", "Action"];
+  displayedColumns = ["GenreName", "Action"];
 }
