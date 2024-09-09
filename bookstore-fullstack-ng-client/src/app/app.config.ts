@@ -6,6 +6,15 @@ import { provideAnimationsAsync } from "@angular/platform-browser/animations/asy
 import { provideStore } from "@ngrx/store";
 import { reducers, metaReducers } from "./reducers";
 import { provideHttpClient } from "@angular/common/http";
+import { provideEffects } from "@ngrx/effects";
+import { genreFeatureKey, genreReducers } from "./genre/state/genre.reducers";
+import { GenreEffects } from "./genre/state/genre.effects";
+
+const reducers = {
+  [genreFeatureKey]: genreReducers,
+};
+
+const effects = [GenreEffects];
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -13,5 +22,6 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideStore(reducers, { metaReducers }),
     provideHttpClient(),
+    provideEffects(),
   ],
 };
