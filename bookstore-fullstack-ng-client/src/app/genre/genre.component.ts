@@ -1,31 +1,37 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  Injectable,
-} from "@angular/core";
+import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { GenreListComponent } from "./ui/genre-list.component";
 import { GenreModel } from "./data/genre.model";
 import { MatButtonModule } from "@angular/material/button";
 import { MatDialog } from "@angular/material/dialog";
-import { Subject, takeUntil } from "rxjs";
+import { Observable, Subject, takeUntil } from "rxjs";
 import { AddGenreDialogComponent } from "./ui/add-genre-dialog.component";
+import { Store } from "@ngrx/store";
+import {
+  selectGenreError,
+  selectGenreLoading,
+  selectGenres,
+} from "./state/genre.selectors";
+import { HttpErrorResponse } from "@angular/common/http";
+import { AsyncPipe, NgIf } from "@angular/common";
+import { GenreActions } from "./state/genre.actions";
 @Component({
   selector: "app-book",
   standalone: true,
-  imports: [GenreListComponent, MatButtonModule],
+  imports: [GenreListComponent, MatButtonModule, NgIf, AsyncPipe],
   template: `
-    <h1>Genre</h1>
+    <h1>Genres</h1>
     <p>
       <button mat-raised-button color="primary" (click)="onAddUpdate('Add')">
         Add Genre
       </button>
     </p>
-    <app-genre-list
-      [genres]="genres"
-      (edit)="onEdit($event)"
-      (delete)="onDelete($event)"
-    />
+    <ng-container *ngIf="genre$ | async as genres">
+      <app-genre-list
+        [genres]="genres"
+        (edit)="onEdit($event)"
+        (delete)="onDelete($event)"
+      />
+    </ng-container>
   `,
   styles: [``],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -33,21 +39,20 @@ import { AddGenreDialogComponent } from "./ui/add-genre-dialog.component";
 export class GenreComponent {
   dialog = inject(MatDialog);
   destroyed$ = new Subject<boolean>();
-  genres: GenreModel[] = [
-    { id: 1, genreName: "Horror" },
-    { id: 2, genreName: "Action" },
-    { id: 3, genreName: "Comedy" },
-    { id: 4, genreName: "Drama" },
-    { id: 5, genreName: "Romance" },
-    { id: 6, genreName: "Thriller" },
-  ];
+  store = inject(Store);
+  genre$: Observable<GenreModel[]> = this.store.select(selectGenres);
+  loading$: Observable<boolean> = this.store.select(selectGenreLoading);
+  error$: Observable<HttpErrorResponse | null> =
+    this.store.select(selectGenreError);
 
   onEdit(genre: GenreModel) {
-    console.log(genre);
+    this.onAddUpdate("Update", genre);
   }
 
   onDelete(genre: GenreModel) {
-    console.log(genre);
+    if (window.confirm("Are you sure to delete?")) {
+      this.store.dispatch(GenreActions.deleteGenre({ id: genre.id }));
+    }
   }
 
   onAddUpdate(action: string, genre: GenreModel | null = null) {
@@ -57,16 +62,21 @@ export class GenreComponent {
 
     dialogRef.componentInstance.submit
       .pipe(takeUntil(this.destroyed$))
-      .subscribe((submittedBook) => {
-        console.log(submittedBook);
-        if (!submittedBook) return;
-        if (submittedBook.id) {
-          // update book
+      .subscribe((submittedGenre) => {
+        if (!submittedGenre) return;
+        if (submittedGenre.id) {
+          this.store.dispatch(
+            GenreActions.updateGenre({ genre: submittedGenre })
+          );
         } else {
+          this.store.dispatch(GenreActions.addGenre({ genre: submittedGenre }));
         }
-        // TODO: lines below only executed, when we have added books successfully
         dialogRef.componentInstance.genreForm.reset();
         dialogRef.componentInstance.onCanceled();
       });
+  }
+
+  constructor() {
+    this.store.dispatch(GenreActions.loadGenre());
   }
 }

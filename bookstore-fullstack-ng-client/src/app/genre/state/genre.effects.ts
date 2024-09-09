@@ -7,7 +7,7 @@ import { GenreActions } from "./genre.actions";
 
 @Injectable()
 export class GenreEffects {
-  loadBooks = createEffect(() =>
+  loadGenres = createEffect(() =>
     this.actions$.pipe(
       ofType(GenreActions.loadGenre),
       switchMap(() =>
@@ -19,7 +19,7 @@ export class GenreEffects {
     )
   );
 
-  addBook = createEffect(() =>
+  addGenre = createEffect(() =>
     this.actions$.pipe(
       ofType(GenreActions.addGenre),
       switchMap((action) => {
@@ -31,19 +31,19 @@ export class GenreEffects {
     )
   );
 
-  updateBook = createEffect(() =>
+  updateGenre = createEffect(() =>
     this.actions$.pipe(
       ofType(GenreActions.updateGenre),
       switchMap((action) => {
         return this.genreService.updateGenre(action.genre).pipe(
-          map((genre) => GenreActions.updateGenreSuccess({ genre })),
+          map(() => GenreActions.updateGenreSuccess({ genre: action.genre })),
           catchError((error) => of(GenreActions.updateGenreFailure({ error })))
         );
       })
     )
   );
 
-  deleteBook = createEffect(() =>
+  deleteGenre = createEffect(() =>
     this.actions$.pipe(
       ofType(GenreActions.deleteGenre),
       switchMap((action) =>

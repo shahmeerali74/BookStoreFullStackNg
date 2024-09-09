@@ -52,11 +52,19 @@ export const genreReducers = createReducer(
     ...state,
     loading: true,
   })),
-  on(GenreActions.updateGenreSuccess, (state, { genre }) => ({
-    ...state,
-    loading: false,
-    genres: state.genres.map((a) => (a.id == genre.id ? genre : a)),
-  })),
+  on(GenreActions.updateGenreSuccess, (state, { genre }) => {
+    if (!genre) {
+      return state;
+    }
+    const updatedGenres = state.genres.map((a) =>
+      a.id == genre.id ? genre : a
+    );
+    return {
+      ...state,
+      loading: false,
+      genres: updatedGenres,
+    };
+  }),
   on(GenreActions.updateGenreFailure, (state, { error }) => ({
     ...state,
     loading: false,
