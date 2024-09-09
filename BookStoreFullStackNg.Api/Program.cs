@@ -1,7 +1,11 @@
+using System.Text;
 using BookStoreFullStackNg.Api.Middlewares;
 using BookStoreFullStackNg.Data.Data;
 using BookStoreFullStackNg.Data.Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
 
 var allowedOrigins = "_allowedOrigins";
@@ -22,6 +26,37 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.RegisterDataServices();
 builder.Services.AddDbContext<BookStoreContext>(options => options.UseSqlite("Data source= BookStore.db"));
+
+builder.Services.AddDbContext<AuthContext>(options => options.UseSqlite("Data source= Auth.db"));
+
+// For Identity
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<AuthContext>()
+                .AddDefaultTokenProviders();
+
+// Adding Authentication  
+builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+
+// Adding Jwt Bearer  
+            .AddJwtBearer(options =>
+            {
+                options.SaveToken = true;
+                options.RequireHttpsMetadata = false;
+                options.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidAudience = builder.Configuration["JWT:ValidAudience"],
+                    ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
+                    ClockSkew = TimeSpan.Zero,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
+                };
+            });
 
 builder.Services.AddCors(options =>
 {
@@ -47,6 +82,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors(allowedOrigins);
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
