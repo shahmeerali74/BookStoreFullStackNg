@@ -24,6 +24,7 @@ public class GenreControllerTests : IClassFixture<CustomWebApplicationFactory<Pr
     public async Task GetGenres_Returns_OkResponse()
     {
         // Arrange
+        _client.DefaultRequestHeaders.Add(TestAuthHandler.TestUserRolesHeader, "Admin");
 
         // Act
         var response = await _client.GetAsync(baseUrl);
@@ -43,6 +44,7 @@ public class GenreControllerTests : IClassFixture<CustomWebApplicationFactory<Pr
     public async Task GetGenreById_ReturnsOk_WhenGenreExists()
     {
         // Arrange
+        _client.DefaultRequestHeaders.Add(TestAuthHandler.TestUserRolesHeader, "Admin");
         var genreId = 1;
 
         // Act
@@ -62,6 +64,7 @@ public class GenreControllerTests : IClassFixture<CustomWebApplicationFactory<Pr
     [Fact]
     public async Task GenGenreById_ReturnNotFound_WhenPersonDoesNotExist()
     {
+        _client.DefaultRequestHeaders.Add(TestAuthHandler.TestUserRolesHeader, "Admin");
         // Arrange
         int id = 999;
 
@@ -75,6 +78,7 @@ public class GenreControllerTests : IClassFixture<CustomWebApplicationFactory<Pr
     [Fact]
     public async Task AddGenre_ReturnsCreatedAtRoute()
     {
+        _client.DefaultRequestHeaders.Add(TestAuthHandler.TestUserRolesHeader, "Admin");
         // arrange
         var newGenre = new GenreCreateDto { GenreName = "G1" };
         var content = new StringContent(JsonSerializer.Serialize(newGenre), Encoding.UTF8, "application/json");
@@ -96,6 +100,7 @@ public class GenreControllerTests : IClassFixture<CustomWebApplicationFactory<Pr
     [Fact]
     public async Task UpdateGenre_ReturnsNotContent_WhenSuccessfull()
     {
+        _client.DefaultRequestHeaders.Add(TestAuthHandler.TestUserRolesHeader, "Admin");
         // arrange
         var genreToUpdate = new GenreUpdateDto { Id = 1, GenreName = "G1" };
         var content = new StringContent(JsonSerializer.Serialize(genreToUpdate), Encoding.UTF8, "application/json");
@@ -111,6 +116,7 @@ public class GenreControllerTests : IClassFixture<CustomWebApplicationFactory<Pr
     [Fact]
     public async Task UpdateGenre_ReturnsBadRequest_WhenIdMismatch()
     {
+        _client.DefaultRequestHeaders.Add(TestAuthHandler.TestUserRolesHeader, "Admin");
         // arrange
         var genre = new GenreUpdateDto { Id = 1, GenreName = "G1" };
         var content = new StringContent(JsonSerializer.Serialize(genre), Encoding.UTF8, "application/json");
@@ -125,6 +131,7 @@ public class GenreControllerTests : IClassFixture<CustomWebApplicationFactory<Pr
     [Fact]
     public async Task UpdateGenre_ReturnsNotFound_WhenGenreDoesNotExists()
     {
+        _client.DefaultRequestHeaders.Add(TestAuthHandler.TestUserRolesHeader, "Admin");
         // arrange
         var genre = new GenreUpdateDto { Id = 999, GenreName = "G1" };
         var content = new StringContent(JsonSerializer.Serialize(genre), Encoding.UTF8, "application/json");
@@ -140,6 +147,7 @@ public class GenreControllerTests : IClassFixture<CustomWebApplicationFactory<Pr
     public async Task DeleteGenre_ReturnsNoContent_WhenDeletionIsSuccessfull()
     {
         // arrange
+        _client.DefaultRequestHeaders.Add(TestAuthHandler.TestUserRolesHeader, "Admin");
 
         // act
         var response = await _client.DeleteAsync($"{baseUrl}/1");
@@ -152,6 +160,7 @@ public class GenreControllerTests : IClassFixture<CustomWebApplicationFactory<Pr
     public async Task DeleteGenre_ReturnsNotFound_WhenPersonDoesNotExist()
     {
         // arrange
+        _client.DefaultRequestHeaders.Add(TestAuthHandler.TestUserRolesHeader, "Admin");
 
         // act
         var response = await _client.DeleteAsync($"{baseUrl}/9999");

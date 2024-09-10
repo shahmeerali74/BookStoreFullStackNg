@@ -1,6 +1,7 @@
 using System;
 using BookStoreFullStackNg.Data.Data;
 using BookStoreFullStackNg.Data.Domain;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +25,16 @@ public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<Pr
             }
 
             services.AddDbContext<BookStoreContext>(options => options.UseInMemoryDatabase("InMem"));
+
+            // Add a test authentication scheme
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = "TestScheme";
+                options.DefaultChallengeScheme = "TestScheme";
+            })
+            .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("TestScheme", options => { });
+
+
 
             var sp = services.BuildServiceProvider();
             using var scope = sp.CreateScope();
