@@ -12,6 +12,7 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatInputModule } from "@angular/material/input";
 import { NgIf } from "@angular/common";
 import { MustMatch } from "../../helpers/must-match.validator";
+import { validPattern } from "../../helpers/pattern.validator";
 
 @Component({
   selector: "app-registration-form",
@@ -65,6 +66,10 @@ import { MustMatch } from "../../helpers/must-match.validator";
           >
             <span *ngIf="f['password'].errors?.['required']">
               Password is required
+            </span>
+            <span *ngIf="f['password'].errors?.['invalidPattern']">
+              Password should be atleast 6 character long, contains atleas 1
+              uppercase,1 lowercase,1 number,1 speacial character
             </span>
           </mat-error>
         </mat-form-field>
@@ -129,11 +134,14 @@ export class RegistrationFormComponet {
   @Output() submitData = new EventEmitter<RegistrationModel>();
   fb = inject(FormBuilder);
 
+  patternRegex = new RegExp(
+    "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*[#$^+=!*()@%&]).{6,}$"
+  ); // must contain 6 letters, 1 uppercase, 1 lowercase, 1 number and 1 special character
   registrationForm = this.fb.group(
     {
       name: ["", Validators.required],
       email: ["", [Validators.required, Validators.email]],
-      password: ["", Validators.required],
+      password: ["", [Validators.required, validPattern(this.patternRegex)]],
       passwordConfirm: ["", Validators.required],
     },
     {
