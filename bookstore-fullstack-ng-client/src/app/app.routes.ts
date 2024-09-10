@@ -17,6 +17,13 @@ export const routes: Routes = [
       import("./genre/genre.component").then((c) => c.GenreComponent),
   },
   {
+    path: "signup",
+    loadComponent: () =>
+      import("./account/registration.component").then(
+        (c) => c.RegistrationComponent
+      ),
+  },
+  {
     path: "",
     redirectTo: "/home",
     pathMatch: "full",
