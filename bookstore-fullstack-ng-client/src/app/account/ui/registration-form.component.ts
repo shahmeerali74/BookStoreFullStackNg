@@ -3,6 +3,7 @@ import {
   Component,
   EventEmitter,
   inject,
+  Input,
   Output,
 } from "@angular/core";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
@@ -26,7 +27,6 @@ import { validPattern } from "../../helpers/pattern.validator";
   ],
   template: `
     <div class="registration-form-container">
-      <h2>Signup</h2>
       <form [formGroup]="registrationForm" (ngSubmit)="submit()">
         <mat-form-field appearance="fill">
           <mat-label>Name</mat-label>
@@ -91,7 +91,6 @@ import { validPattern } from "../../helpers/pattern.validator";
             Password and password confirm must match
           </span>
         </mat-error>
-        <div class="message-container"></div>
 
         <div class="btn-container">
           <button
@@ -116,15 +115,6 @@ import { validPattern } from "../../helpers/pattern.validator";
       .registration-form-container {
         width: 100%;
         height: 100%;
-      }
-
-      :host {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 50%;
-        height: 60%;
-        margin: 0 auto;
       }
     `,
   ],

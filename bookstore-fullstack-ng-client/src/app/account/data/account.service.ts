@@ -16,6 +16,6 @@ export class AccountService {
    * @returns The registered user.
    */
   registration(data: RegistrationModel) {
-    return this.http.post<RegistrationModel>(this.baseUrl + "/register", data);
+    return this.http.post<RegistrationModel>(this.baseUrl + "/signup", data);
   }
 }
