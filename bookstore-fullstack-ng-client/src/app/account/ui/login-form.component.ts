@@ -5,7 +5,12 @@ import {
   inject,
   Output,
 } from "@angular/core";
-import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
@@ -23,7 +28,11 @@ import { NgIf } from "@angular/common";
     ReactiveFormsModule,
   ],
   template: `
-    <form class="login-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <form
+      class="login-form"
+      [formGroup]="loginForm"
+      (ngSubmit)="onSubmit($event)"
+    >
       <mat-form-field appearance="fill">
         <mat-label>Username</mat-label>
         <input matInput formControlName="username" />
@@ -81,7 +90,7 @@ export class LoginFormComponet {
   @Output() submit = new EventEmitter<LoginModel>();
   fb = inject(FormBuilder);
 
-  loginForm = this.fb.group({
+  loginForm: FormGroup = this.fb.group({
     username: ["", Validators.required],
     password: ["", Validators.required],
   });
@@ -90,8 +99,13 @@ export class LoginFormComponet {
     return this.loginForm.controls;
   }
 
-  onSubmit() {
-    this.submit.emit(Object.assign(this.loginForm.value));
+  onSubmit(event: Event) {
+    event.stopPropagation();
+    this.submit.emit(this.loginForm.value);
+    this.loginForm.reset();
+  }
+
+  resetLoginForm() {
     this.loginForm.reset();
   }
 }

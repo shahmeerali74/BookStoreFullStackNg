@@ -23,6 +23,8 @@ export class AccountService {
 
   // this method returns token
   login(data: LoginModel): Observable<string> {
-    return this.http.post<string>(this.baseUrl + "/login", data);
+    return this.http.post(this.baseUrl + "/login", data, {
+      responseType: "text",
+    });
   }
 }

@@ -8,8 +8,8 @@ const getToken = () => localStorage.getItem(tokenKey);
 const getUserFromToken = (token: string): User | null => {
   try {
     const decodedToken: any = jwtDecode(token);
-    const { roles, username } = decodedToken;
-    const user: User = { roles, username };
+    const { role, unique_name } = decodedToken;
+    const user: User = { roles: role, username: unique_name };
     return user;
   } catch (ex) {
     console.log(ex);

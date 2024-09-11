@@ -25,6 +25,9 @@ import { MatBadgeModule } from "@angular/material/badge";
         <button mat-button routerLink="/home" routerLinkActive="active">
           Home
         </button>
+        <button mat-button routerLink="/dashboard" routerLinkActive="active">
+          Dashboard
+        </button>
         <button mat-button routerLink="/books" routerLinkActive="active">
           Books
         </button>

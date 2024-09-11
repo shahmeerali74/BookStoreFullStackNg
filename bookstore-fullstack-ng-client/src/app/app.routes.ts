@@ -29,6 +29,11 @@ export const routes: Routes = [
       import("./account/login.component").then((c) => c.LoginComponent),
   },
   {
+    path: "dashboard",
+    loadComponent: () =>
+      import("./dashboard.component").then((c) => c.DashboardComponent),
+  },
+  {
     path: "",
     redirectTo: "/home",
     pathMatch: "full",

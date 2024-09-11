@@ -29,7 +29,7 @@ export const selectUserInfo = createSelector(
   }
 );
 
-export const selectLoginLoaingState = createSelector(
+export const selectLoginLoadingState = createSelector(
   selectAccountState,
   (state) => state.loading
 );
