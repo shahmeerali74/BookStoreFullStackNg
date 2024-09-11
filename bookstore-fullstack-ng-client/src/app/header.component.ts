@@ -45,7 +45,7 @@ import { MatBadgeModule } from "@angular/material/badge";
 
         <button mat-button>Logout</button>
         <ng-container>
-          <button mat-button routerLink="/home" routerLinkActive="active">
+          <button mat-button routerLink="/login" routerLinkActive="active">
             Login
           </button>
           <button mat-button routerLink="/signup">Signup</button>
