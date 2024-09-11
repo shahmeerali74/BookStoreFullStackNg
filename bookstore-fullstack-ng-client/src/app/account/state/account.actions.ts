@@ -14,6 +14,11 @@ const loginFailure = createAction(
   props<{ error: HttpErrorResponse | null }>()
 );
 
+const loadAccountInfo = createAction(
+  "[Auth] Load Account Info",
+  props<{ accessToken: string }>()
+);
+
 const logout = createAction("[Account] Logout");
 
 const logoutSuccess = createAction("[Account] Logout Success");
@@ -27,6 +32,7 @@ const accountActions = {
   login,
   loginSuccess,
   loginFailure,
+  loadAccountInfo,
   logout,
   logoutSuccess,
   logoutFailure,

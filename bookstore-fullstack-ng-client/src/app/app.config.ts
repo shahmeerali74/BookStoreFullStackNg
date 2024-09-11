@@ -8,12 +8,18 @@ import { provideHttpClient } from "@angular/common/http";
 import { provideEffects } from "@ngrx/effects";
 import { genreFeatureKey, genreReducers } from "./genre/state/genre.reducers";
 import { GenreEffects } from "./genre/state/genre.effects";
+import {
+  accountFeatureKey,
+  accountReducers,
+} from "./account/state/account.reducers";
+import { AccountEffects } from "./account/state/account.effects";
 
 const reducers = {
   [genreFeatureKey]: genreReducers,
+  [accountFeatureKey]: accountReducers,
 };
 
-const effects = [GenreEffects];
+const effects = [GenreEffects, AccountEffects];
 
 export const appConfig: ApplicationConfig = {
   providers: [

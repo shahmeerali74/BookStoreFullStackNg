@@ -32,6 +32,10 @@ export const accountReducers = createReducer(
     error,
     loading: false,
   })),
+  on(accountActions.loadAccountInfo, (state, { accessToken }) => ({
+    ...state,
+    token: accessToken,
+  })),
   on(accountActions.logout, (state) => ({
     ...state,
     loading: true,
