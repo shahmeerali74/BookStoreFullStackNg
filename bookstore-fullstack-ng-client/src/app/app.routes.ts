@@ -9,7 +9,7 @@ export const routes: Routes = [
     component: HomeComponent,
   },
   {
-    path: "books",
+    path: "manage-books",
     canActivate: [roleGuard],
     data: { roles: ["Admin"] },
     loadComponent: () =>

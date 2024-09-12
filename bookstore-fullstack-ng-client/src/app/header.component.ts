@@ -1,10 +1,17 @@
-import { Component, ChangeDetectionStrategy } from "@angular/core";
+import {
+  Component,
+  ChangeDetectionStrategy,
+  EventEmitter,
+  Input,
+  Output,
+} from "@angular/core";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { MatIconModule } from "@angular/material/icon";
 import { MatButtonModule } from "@angular/material/button";
 import { RouterModule } from "@angular/router";
 import { NgIf } from "@angular/common";
 import { MatBadgeModule } from "@angular/material/badge";
+import { User } from "./account/data/user.model";
 
 @Component({
   selector: "app-header",
@@ -25,34 +32,46 @@ import { MatBadgeModule } from "@angular/material/badge";
         <button mat-button routerLink="/home" routerLinkActive="active">
           Home
         </button>
-        <button mat-button routerLink="/dashboard" routerLinkActive="active">
-          Dashboard
-        </button>
-        <button mat-button routerLink="/books" routerLinkActive="active">
-          Books
-        </button>
+        <ng-container *ngIf="isLoggedIn; else notLoggedIn">
+          <button mat-button routerLink="/dashboard" routerLinkActive="active">
+            Dashboard
+          </button>
 
-        <button mat-button routerLink="/genres" routerLinkActive="active">
-          Genres
-        </button>
+          <!-- admin routes start -->
+          <ng-container *ngIf="isInRole(['Admin'])">
+            <button
+              mat-button
+              routerLink="/manage-books"
+              routerLinkActive="active"
+            >
+              Manage-Books
+            </button>
 
-        <button mat-icon-button color="secondary">
-          <mat-icon
-            [matBadge]="0"
-            matBadgePosition="above after"
-            matBadgeColor="accent"
-          >
-            shopping_cart
-          </mat-icon>
-        </button>
+            <button mat-button routerLink="/genres" routerLinkActive="active">
+              Manage-Genres
+            </button>
+          </ng-container>
+          <!-- admin routes ends -->
 
-        <button mat-button>Logout</button>
-        <ng-container>
+          <button mat-icon-button color="secondary">
+            <mat-icon
+              [matBadge]="cartCount"
+              matBadgePosition="above after"
+              matBadgeColor="accent"
+            >
+              shopping_cart
+            </mat-icon>
+          </button>
+
+          <button mat-button (click)="logout.emit()">Logout</button>
+        </ng-container>
+
+        <ng-template #notLoggedIn>
           <button mat-button routerLink="/login" routerLinkActive="active">
             Login
           </button>
           <button mat-button routerLink="/signup">Signup</button>
-        </ng-container>
+        </ng-template>
 
         <a
           href="https://github.com/rd003/BookStoreFullStackNg"
@@ -88,4 +107,16 @@ import { MatBadgeModule } from "@angular/material/badge";
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HeaderComponent {}
+export class HeaderComponent {
+  @Output() logout = new EventEmitter();
+  @Input({ required: true }) isLoggedIn: boolean = false;
+  @Input({ required: true }) user!: User | null;
+  @Input({ required: true }) cartCount = 0;
+
+  isInRole(requiredRoles: string[]) {
+    const roles = this.user?.roles;
+    if (!roles) return false;
+    const isAllowed = requiredRoles.some((role) => roles?.includes(role));
+    return isAllowed;
+  }
+}
