@@ -5,6 +5,7 @@ using BookStoreFullStackNg.Data.DTOs.Author;
 using BookStoreFullStackNg.Data.DTOs.Common;
 using BookStoreFullStackNg.Data.Reopositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace BookStoreFullStackNg.Data.Reopositories.Implementations;
 
@@ -75,10 +76,7 @@ public class AuthorRepository : IAuthorRepository
                     break;
             }
         }
-
         return await PagedList<Author>.ToPagedListAsync(authorsQuery, queryParameters.PageNumber, queryParameters.PageSize);
-
-
     }
 
 

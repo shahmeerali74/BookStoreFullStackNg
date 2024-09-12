@@ -2,6 +2,7 @@ using AutoMapper;
 using BookStoreFullStackNg.Api.Exceptions;
 using BookStoreFullStackNg.Data.Domain;
 using BookStoreFullStackNg.Data.DTOs.Author;
+using BookStoreFullStackNg.Data.DTOs.Common;
 using BookStoreFullStackNg.Data.Reopositories.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -24,8 +25,10 @@ namespace BookStoreFullStackNg.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAuthors([FromQuery] AuthorQueryParameters queryParameters)
         {
-            var authors = await _authorRepository.GetAuthors(queryParameters);
-            return Ok(authors);
+            PagedList<Author>? authorPagedData = await _authorRepository.GetAuthors(queryParameters);
+            var authors = _mapper.Map<IEnumerable<AuthorReadDTO>>(authorPagedData.Items).ToList();
+            var newList = new PagedList<AuthorReadDTO>(authors, authorPagedData.TotalCount, authorPagedData.PageNumber, authorPagedData.PageSize);
+            return Ok(newList);
         }
 
         [HttpGet("{id}", Name = "GetAuthor")]
