@@ -1,5 +1,7 @@
 import { Routes } from "@angular/router";
 import { HomeComponent } from "./home/home.component";
+import { roleGuard } from "./helpers/role.guard";
+import { routeGuard } from "./helpers/route.guard";
 
 export const routes: Routes = [
   {
@@ -8,11 +10,15 @@ export const routes: Routes = [
   },
   {
     path: "books",
+    canActivate: [roleGuard],
+    data: { roles: ["Admin"] },
     loadComponent: () =>
       import("./book/book.component").then((m) => m.BookComponent),
   },
   {
     path: "genres",
+    canActivate: [roleGuard],
+    data: { roles: ["Admin"] },
     loadComponent: () =>
       import("./genre/genre.component").then((c) => c.GenreComponent),
   },
@@ -30,8 +36,14 @@ export const routes: Routes = [
   },
   {
     path: "dashboard",
+    canActivate: [routeGuard],
     loadComponent: () =>
       import("./dashboard.component").then((c) => c.DashboardComponent),
+  },
+  {
+    path: "unauthorized",
+    loadComponent: () =>
+      import("./unauthorized.component").then((c) => c.UnauthorizedComponent),
   },
   {
     path: "",

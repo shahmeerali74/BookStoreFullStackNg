@@ -4,7 +4,7 @@ import { provideRouter } from "@angular/router";
 import { routes } from "./app.routes";
 import { provideAnimationsAsync } from "@angular/platform-browser/animations/async";
 import { provideStore } from "@ngrx/store";
-import { provideHttpClient } from "@angular/common/http";
+import { provideHttpClient, withInterceptors } from "@angular/common/http";
 import { provideEffects } from "@ngrx/effects";
 import { genreFeatureKey, genreReducers } from "./genre/state/genre.reducers";
 import { GenreEffects } from "./genre/state/genre.effects";
@@ -13,6 +13,7 @@ import {
   accountReducers,
 } from "./account/state/account.reducers";
 import { AccountEffects } from "./account/state/account.effects";
+import { authInterceptor } from "./helpers/auth.interceptor";
 
 const reducers = {
   [genreFeatureKey]: genreReducers,
@@ -26,7 +27,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideAnimationsAsync(),
     provideStore(reducers),
-    provideHttpClient(),
+    provideHttpClient(withInterceptors([authInterceptor])),
     provideEffects(effects),
   ],
 };
