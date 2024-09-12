@@ -43,7 +43,8 @@ public class QueryParameters
         get => _sortOrder;
         set
         {
-            if (!string.IsNullOrWhiteSpace(value) && (value != "asc" || value != "desc"))
+            string[] allowedOrders = ["asc", "desc"];
+            if (!string.IsNullOrEmpty(value) && !allowedOrders.Contains(value.ToLower()))
             {
                 throw new ArgumentException("SortOrder must be `asc` or `desc`");
             }

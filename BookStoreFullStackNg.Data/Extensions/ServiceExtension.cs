@@ -11,5 +11,6 @@ public static class ServiceExtension
     {
         services.AddTransient<IGenreRepository, GenreRepository>();
         services.AddTransient<IAuthService, AuthService>();
+        services.AddTransient<IAuthorRepository, AuthorRepository>();
     }
 }
