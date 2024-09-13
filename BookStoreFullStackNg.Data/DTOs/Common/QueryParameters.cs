@@ -6,7 +6,6 @@ public class QueryParameters
     private int _pageNumber = 1;
 
     private string? _sortBy;
-    private string? _sortOrder;
     private const int MaxPageSize = 50;
 
     private string? _searchTerm;
@@ -36,19 +35,6 @@ public class QueryParameters
             {
                 _sortBy = value.ToLower();
             }
-        }
-    }
-    public string? SortOrder
-    {
-        get => _sortOrder;
-        set
-        {
-            string[] allowedOrders = ["asc", "desc"];
-            if (!string.IsNullOrEmpty(value) && !allowedOrders.Contains(value.ToLower()))
-            {
-                throw new ArgumentException("SortOrder must be `asc` or `desc`");
-            }
-            _sortOrder = value;
         }
     }
 

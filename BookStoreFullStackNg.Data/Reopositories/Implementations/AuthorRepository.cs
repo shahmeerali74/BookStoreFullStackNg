@@ -3,6 +3,7 @@ using BookStoreFullStackNg.Data.Data;
 using BookStoreFullStackNg.Data.Domain;
 using BookStoreFullStackNg.Data.DTOs.Author;
 using BookStoreFullStackNg.Data.DTOs.Common;
+using BookStoreFullStackNg.Data.Helpers;
 using BookStoreFullStackNg.Data.Reopositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -12,10 +13,12 @@ namespace BookStoreFullStackNg.Data.Reopositories.Implementations;
 public class AuthorRepository : IAuthorRepository
 {
     private readonly BookStoreContext _bookStoreContext;
+    private readonly ISortHelper<Author> _sortHelper;
 
-    public AuthorRepository(BookStoreContext bookStoreContext)
+    public AuthorRepository(BookStoreContext bookStoreContext, ISortHelper<Author> sortHelper)
     {
         _bookStoreContext = bookStoreContext;
+        _sortHelper = sortHelper;
     }
     public async Task<Author> CreateAuthor(Author author)
     {
@@ -62,20 +65,11 @@ public class AuthorRepository : IAuthorRepository
         {
             authorsQuery = authorsQuery.Where(a => a.AuthorName.ToLower().Contains(queryParameters.SearchTerm));
         }
-
         if (!string.IsNullOrEmpty(queryParameters.SortBy))
         {
-            bool isDescending = queryParameters.SortOrder == "desc";
-            switch (queryParameters.SortBy)
-            {
-                case "authorname":
-                    authorsQuery = isDescending ? authorsQuery.OrderByDescending(a => a.AuthorName) : authorsQuery.OrderBy(a => a.AuthorName);
-                    break;
-                default:
-                    authorsQuery = authorsQuery.OrderBy(a => a.AuthorName);
-                    break;
-            }
+            authorsQuery = _sortHelper.ApplySort(authorsQuery, queryParameters.SortBy);
         }
+
         return await PagedList<Author>.ToPagedListAsync(authorsQuery, queryParameters.PageNumber, queryParameters.PageSize);
     }
 
