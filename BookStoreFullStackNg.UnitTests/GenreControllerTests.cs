@@ -9,7 +9,7 @@ using NSubstitute;
 
 namespace BookStoreFullStackNg.UnitTests;
 
-public class GenreRepositoryTests
+public class GenreControllerTests
 {
 
     private readonly IGenreRepository _genreRepository;
@@ -22,7 +22,7 @@ public class GenreRepositoryTests
        new Genre{Id=2, GenreName="Action"},
     };
 
-    public GenreRepositoryTests()
+    public GenreControllerTests()
     {
         _genreRepository = Substitute.For<IGenreRepository>();
         _mapper = Substitute.For<IMapper>();
