@@ -5,6 +5,7 @@ using BookStoreFullStackNg.Api.Exceptions;
 using BookStoreFullStackNg.Data.Domain;
 using BookStoreFullStackNg.Data.DTOs;
 using BookStoreFullStackNg.Data.DTOs.Author;
+using BookStoreFullStackNg.Data.DTOs.Common;
 using BookStoreFullStackNg.Data.Reopositories.Implementations;
 using BookStoreFullStackNg.Data.Reopositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -30,12 +31,24 @@ public class AuthorControllerTests
         _authorController = new AuthorController(_authorRepository, _mapper);
     }
 
-    // Face
-    // public async Task GetAuthors_ReturnsOk_WithAuthorsList()
-    // {
-    //     // Arrange
-    //     _authorRepository.GetAuthors(new AuthorQueryParameters()).;
-    // }
+    [Fact]
+    public async Task GetAuthors_ReturnsOk_WithAuthorsList()
+    {
+        // Arrange
+        var queryParameters = new AuthorQueryParameters();
+        var pagedList = new PagedList<Author>(authors, authors.Count, 1, 10);
+        _authorRepository.GetAuthors(queryParameters).Returns(pagedList);
+        var authorReadDto = authors.Select(a => new AuthorReadDTO { Id = a.Id, AuthorName = a.AuthorName });
+        _mapper.Map<IEnumerable<AuthorReadDTO>>(pagedList.Items).Returns(authorReadDto);
+
+        // Act
+        var result = await _authorController.GetAuthors(queryParameters);
+
+        // Assert
+        var okObjectResult = Assert.IsType<OkObjectResult>(result);
+        var newList = Assert.IsType<PagedList<AuthorReadDTO>>(okObjectResult.Value);
+        Assert.Equal(authors.Count, newList.Items.Count);
+    }
 
     [Fact]
     public async Task CreateAuthor_ReturnsCreatedAtActionResult_With_AuthorReadDto()
@@ -107,4 +120,51 @@ public class AuthorControllerTests
         // Assert
         Assert.IsType<NoContentResult>(result);
     }
+
+    [Fact]
+    public async Task DeleteAuthor_ThrowsNotFoundFoundException_WhenAuthorDoesNotExist()
+    {
+        // Act and Assert
+        await Assert.ThrowsAsync<NotFoundException>(() => _authorController.DeleteAuthor(999));
+    }
+
+    [Fact]
+    public async Task UpdateAuthor_ReturnsNoContent_OnSuccess()
+    {
+        // arrange
+        var authorToUpdate = authors.First();
+        var authorUpdateDto = new AuthorUpdateDTO { Id = authorToUpdate.Id, AuthorName = authorToUpdate.AuthorName };
+        _mapper.Map<Author>(Arg.Any<AuthorUpdateDTO>()).Returns(authorToUpdate);
+        _authorRepository.GetAuthor(authorToUpdate.Id).Returns(authorToUpdate);
+        //_authorRepository.UpdateAuthor(authorToUpdate).Returns();
+
+        // act
+        var result = await _authorController.UpdateAuthor(authorToUpdate.Id, authorUpdateDto);
+
+        // assert
+        Assert.IsType<NoContentResult>(result);
+    }
+
+    [Fact]
+    public async Task UpdateGenre_ThrowsBadRequest_WhenIdMismatch()
+    {
+        // arrange
+        var id = 1;
+        var authorToUpdate = new AuthorUpdateDTO { Id = 2, AuthorName = "test" };
+
+        // act and assert
+        await Assert.ThrowsAsync<BadRequestException>(() => _authorController.UpdateAuthor(id, authorToUpdate));
+    }
+
+    [Fact]
+    public async Task UpdateGenre_ThrowsNotFound_WhenPersonNotFound()
+    {
+        // arrange
+        var id = 999;
+        var authorToUpdate = new AuthorUpdateDTO { Id = id, AuthorName = "test" };
+
+        // act and assert
+        await Assert.ThrowsAsync<NotFoundException>(() => _authorController.UpdateAuthor(id, authorToUpdate));
+    }
+
 }
