@@ -4,7 +4,6 @@ using BookStoreFullStackNg.Data.Domain;
 using BookStoreFullStackNg.Data.DTOs.Author;
 using BookStoreFullStackNg.Data.DTOs.Common;
 using BookStoreFullStackNg.Data.Reopositories.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookStoreFullStackNg.Api.Controllers
