@@ -1,4 +1,3 @@
-using System;
 using BookStoreFullStackNg.Data.Data;
 using BookStoreFullStackNg.Data.Domain;
 using BookStoreFullStackNg.Data.DTOs.Author;
@@ -6,7 +5,6 @@ using BookStoreFullStackNg.Data.DTOs.Common;
 using BookStoreFullStackNg.Data.Helpers;
 using BookStoreFullStackNg.Data.Reopositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace BookStoreFullStackNg.Data.Reopositories.Implementations;
 

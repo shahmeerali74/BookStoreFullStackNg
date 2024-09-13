@@ -1,6 +1,6 @@
 namespace BookStoreFullStackNg.Data.DTOs.Common;
 
-public class QueryParameters
+public abstract class QueryParameters
 {
     private int _pageSize = 10;
     private int _pageNumber = 1;
