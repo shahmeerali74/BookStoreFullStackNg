@@ -1,6 +1,7 @@
 
 using AutoMapper;
 using BookStoreFullStackNg.Api.Controllers;
+using BookStoreFullStackNg.Api.Exceptions;
 using BookStoreFullStackNg.Data.Domain;
 using BookStoreFullStackNg.Data.DTOs;
 using BookStoreFullStackNg.Data.DTOs.Author;
@@ -37,7 +38,7 @@ public class AuthorControllerTests
     // }
 
     [Fact]
-    public async Task CreateGenre_ReturnsCreatedAtActionResult_With_GenreReadDto()
+    public async Task CreateAuthor_ReturnsCreatedAtActionResult_With_AuthorReadDto()
     {
         // Arrange
         AuthorCreateDTO authorToAdd = new() { AuthorName = "test" };
@@ -61,5 +62,49 @@ public class AuthorControllerTests
         Assert.NotNull(createdAuthor);
         Assert.Equal(authorReadDTO.Id, createdAuthor.Id);
 
+    }
+
+    [Fact]
+    public async Task GetAuthor_ReturnsOk_With_AuthorReadDto()
+    {
+        // Arrange
+        var expectedAuthor = authors.First();
+        _authorRepository.GetAuthor(Arg.Any<int>()).Returns(expectedAuthor);
+        var authorReadDto = new AuthorReadDTO { Id = expectedAuthor.Id, AuthorName = expectedAuthor.AuthorName };
+        _mapper.Map<AuthorReadDTO>(Arg.Any<Author>()).Returns(authorReadDto);
+
+        // Act
+        var result = await _authorController.GetAuthor(expectedAuthor.Id);
+
+        // Assert
+        var okObjectResult = Assert.IsType<OkObjectResult>(result);
+        var author = Assert.IsType<AuthorReadDTO>(okObjectResult.Value);
+        Assert.NotNull(author);
+        Assert.Equal(expectedAuthor.Id, author.Id);
+        Assert.Equal(expectedAuthor.AuthorName, author.AuthorName);
+    }
+
+    [Fact]
+    public async Task GetAuthor_ThrowsNotFoundFoundException_WhenAuthorDoesNotExist()
+    {
+        // Arrange
+        int id = 9999;
+
+        // Act and  Assert
+        await Assert.ThrowsAsync<NotFoundException>(() => _authorController.GetAuthor(id));
+    }
+
+    [Fact]
+    public async Task DeleteAuthor_ReturnsNoContent_OnDeletion()
+    {
+        // Arrange
+        var authorToDelete = authors.First();
+        _authorRepository.GetAuthor(authorToDelete.Id).Returns(authorToDelete);
+
+        // Act
+        var result = await _authorController.DeleteAuthor(authorToDelete.Id);
+
+        // Assert
+        Assert.IsType<NoContentResult>(result);
     }
 }
