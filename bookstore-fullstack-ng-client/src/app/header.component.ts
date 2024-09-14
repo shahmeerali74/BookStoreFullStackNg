@@ -50,6 +50,10 @@ import { User } from "./account/data/user.model";
             <button mat-button routerLink="/genres" routerLinkActive="active">
               Manage-Genres
             </button>
+
+            <button mat-button routerLink="/authors" routerLinkActive="active">
+              Manage-Authors
+            </button>
           </ng-container>
           <!-- admin routes ends -->
 

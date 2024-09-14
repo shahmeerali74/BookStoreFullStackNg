@@ -98,7 +98,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    //this.loadAuthInfo();
+    this.loadAuthInfo();
     //this.loadCart();
   }
 

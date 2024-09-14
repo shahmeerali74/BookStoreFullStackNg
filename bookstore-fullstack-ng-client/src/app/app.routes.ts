@@ -23,6 +23,13 @@ export const routes: Routes = [
       import("./genre/genre.component").then((c) => c.GenreComponent),
   },
   {
+    path: "authors",
+    canActivate: [roleGuard],
+    data: { roles: ["Admin"] },
+    loadComponent: () =>
+      import("./authors/author.component").then((c) => c.AuthorComponent),
+  },
+  {
     path: "signup",
     loadComponent: () =>
       import("./account/registration.component").then(
