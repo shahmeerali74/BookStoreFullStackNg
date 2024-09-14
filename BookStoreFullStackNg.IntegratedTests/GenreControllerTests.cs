@@ -64,8 +64,8 @@ public class GenreControllerTests : IClassFixture<CustomWebApplicationFactory<Pr
     [Fact]
     public async Task GenGenreById_ReturnNotFound_WhenPersonDoesNotExist()
     {
-        _client.DefaultRequestHeaders.Add(TestAuthHandler.TestUserRolesHeader, "Admin");
         // Arrange
+        _client.DefaultRequestHeaders.Add(TestAuthHandler.TestUserRolesHeader, "Admin");
         int id = 999;
 
         // Act
@@ -98,15 +98,15 @@ public class GenreControllerTests : IClassFixture<CustomWebApplicationFactory<Pr
     }
 
     [Fact]
-    public async Task UpdateGenre_ReturnsNotContent_WhenSuccessfull()
+    public async Task UpdateGenre_ReturnsNoContent_WhenSuccessfull()
     {
         _client.DefaultRequestHeaders.Add(TestAuthHandler.TestUserRolesHeader, "Admin");
         // arrange
-        var genreToUpdate = new GenreUpdateDto { Id = 1, GenreName = "G1" };
+        var genreToUpdate = new GenreUpdateDto { Id = 2, GenreName = "G1" };
         var content = new StringContent(JsonSerializer.Serialize(genreToUpdate), Encoding.UTF8, "application/json");
 
         // act
-        var response = await _client.PutAsync($"{baseUrl}/1", content);
+        var response = await _client.PutAsync($"{baseUrl}/2", content);
         response.EnsureSuccessStatusCode();
 
         // assert
@@ -133,11 +133,11 @@ public class GenreControllerTests : IClassFixture<CustomWebApplicationFactory<Pr
     {
         _client.DefaultRequestHeaders.Add(TestAuthHandler.TestUserRolesHeader, "Admin");
         // arrange
-        var genre = new GenreUpdateDto { Id = 999, GenreName = "G1" };
+        var genre = new GenreUpdateDto { Id = 9999, GenreName = "G1" };
         var content = new StringContent(JsonSerializer.Serialize(genre), Encoding.UTF8, "application/json");
 
         // act
-        var response = await _client.PutAsync($"{baseUrl}/999", content);
+        var response = await _client.PutAsync($"{baseUrl}/9999", content);
 
         // assert
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);

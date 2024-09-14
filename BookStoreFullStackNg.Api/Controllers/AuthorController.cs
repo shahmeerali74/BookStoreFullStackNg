@@ -4,12 +4,14 @@ using BookStoreFullStackNg.Data.Domain;
 using BookStoreFullStackNg.Data.DTOs.Author;
 using BookStoreFullStackNg.Data.DTOs.Common;
 using BookStoreFullStackNg.Data.Reopositories.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookStoreFullStackNg.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/authors")]
     [ApiController]
+    [Authorize(Roles = "Admin")]
     public class AuthorController : ControllerBase
     {
         private readonly IAuthorRepository _authorRepository;

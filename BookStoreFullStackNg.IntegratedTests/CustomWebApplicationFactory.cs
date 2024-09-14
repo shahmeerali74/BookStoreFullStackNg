@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
 
 namespace BookStoreFullStackNg.IntegratedTests;
 
@@ -62,7 +61,17 @@ public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<Pr
             };
 
             context.Genres.AddRange(genres);
-            context.SaveChanges();
         }
+        if (!context.Authors.Any())
+        {
+            var authors = new List<Author> { 
+              new Author {Id=1, AuthorName="A1"},
+              new Author {Id=2, AuthorName="A2"},
+              new Author {Id=3, AuthorName="A3"},
+            };
+            context.Authors.AddRange(authors);
+        }
+        context.SaveChanges();
+
     }
 }
