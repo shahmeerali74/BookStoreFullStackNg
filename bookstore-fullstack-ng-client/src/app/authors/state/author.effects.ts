@@ -1,0 +1,67 @@
+import { inject, Injectable } from "@angular/core";
+import { Actions, createEffect, ofType } from "@ngrx/effects";
+import { AuthorService } from "../data/author.service";
+import { authorActions } from "./author.actions";
+import { catchError, map, of, switchMap } from "rxjs";
+
+@Injectable()
+export class GenreEffects {
+  actions$ = inject(Actions);
+  authorService = inject(AuthorService);
+
+  loadAuthors = createEffect(() =>
+    this.actions$.pipe(
+      ofType(authorActions.loadAuthors),
+      switchMap(() =>
+        this.authorService.getAuthors().pipe(
+          map((data) =>
+            authorActions.loadAuthorsSucess({ authors: data.items })
+          ),
+          catchError((error) => of(authorActions.loadAuthorsFailure({ error })))
+        )
+      )
+    )
+  );
+
+  addAuthor = createEffect(() =>
+    this.actions$.pipe(
+      ofType(authorActions.addAuthor),
+      switchMap((action) =>
+        this.authorService.addAuthor(action.author).pipe(
+          map((author) => authorActions.addAuthorSuccess({ author })),
+          catchError((error) => of(authorActions.addAuthorFailure({ error })))
+        )
+      )
+    )
+  );
+
+  updateAuthor = createEffect(() =>
+    this.actions$.pipe(
+      ofType(authorActions.updateAuthor),
+      switchMap((action) =>
+        this.authorService.updateAuthor(action.author).pipe(
+          map((_) =>
+            authorActions.updateAuthorSuccess({ author: action.author })
+          ),
+          catchError((error) =>
+            of(authorActions.updateAuthorFailure({ error }))
+          )
+        )
+      )
+    )
+  );
+
+  deleteAuthor = createEffect(() =>
+    this.actions$.pipe(
+      ofType(authorActions.deleteAuthor),
+      switchMap((action) =>
+        this.authorService.deleteAuthor(action.id).pipe(
+          map((_) => authorActions.deleteAuthorSuccess({ id: action.id })),
+          catchError((error) =>
+            of(authorActions.deleteAuthorFailure({ error }))
+          )
+        )
+      )
+    )
+  );
+}
