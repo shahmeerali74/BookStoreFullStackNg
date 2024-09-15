@@ -29,7 +29,7 @@ export const initialState: AuthorState = {
   error: null,
 };
 
-export const genreReducers = createReducer(
+export const authorReducers = createReducer(
   initialState,
   on(authorActions.loadAuthors, (state) => ({
     ...state,

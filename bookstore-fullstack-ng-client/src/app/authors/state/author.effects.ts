@@ -5,7 +5,7 @@ import { authorActions } from "./author.actions";
 import { catchError, map, of, switchMap } from "rxjs";
 
 @Injectable()
-export class GenreEffects {
+export class AuthorEffects {
   actions$ = inject(Actions);
   authorService = inject(AuthorService);
 

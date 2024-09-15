@@ -14,13 +14,19 @@ import {
 } from "./account/state/account.reducers";
 import { AccountEffects } from "./account/state/account.effects";
 import { authInterceptor } from "./helpers/auth.interceptor";
+import {
+  authorFeaturKey,
+  authorReducers,
+} from "./authors/state/author.reducers";
+import { AuthorEffects } from "./authors/state/author.effects";
 
 const reducers = {
   [genreFeatureKey]: genreReducers,
   [accountFeatureKey]: accountReducers,
+  [authorFeaturKey]: authorReducers,
 };
 
-const effects = [GenreEffects, AccountEffects];
+const effects = [GenreEffects, AccountEffects, AuthorEffects];
 
 export const appConfig: ApplicationConfig = {
   providers: [
