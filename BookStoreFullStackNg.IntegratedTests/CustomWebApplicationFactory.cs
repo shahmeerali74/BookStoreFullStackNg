@@ -56,22 +56,23 @@ public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<Pr
         if (!context.Genres.Any())
         {
             var genres = new List<Genre>{
-                new Genre{Id=1,GenreName="G1"},
-                new Genre{Id=2,GenreName="G2"},
+                new Genre{GenreName="G1"},
+                new Genre{GenreName="G2"},
             };
 
             context.Genres.AddRange(genres);
         }
         if (!context.Authors.Any())
         {
-            var authors = new List<Author> { 
-              new Author {Id=1, AuthorName="A1"},
-              new Author {Id=2, AuthorName="A2"},
-              new Author {Id=3, AuthorName="A3"},
+            var authors = new List<Author> {
+              new Author {AuthorName="A1"},
+              new Author {AuthorName="A2"},
+              new Author {AuthorName="A3"},
             };
             context.Authors.AddRange(authors);
         }
         context.SaveChanges();
+
 
     }
 }

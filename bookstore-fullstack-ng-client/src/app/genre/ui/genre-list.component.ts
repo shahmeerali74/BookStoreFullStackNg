@@ -15,11 +15,6 @@ import { GenreModel } from "../data/genre.model";
   imports: [MatTableModule, MatButtonModule, MatIconModule],
   template: `
     <table mat-table [dataSource]="genres" class="mat-elevation-z8">
-      <!-- <ng-container matColumnDef="Id">
-        <th mat-header-cell *matHeaderCellDef>Id</th>
-        <td mat-cell *matCellDef="let element">{{ element.id }}</td>
-      </ng-container> -->
-
       <ng-container matColumnDef="GenreName">
         <th mat-header-cell *matHeaderCellDef>Genre</th>
         <td mat-cell *matCellDef="let element">{{ element.genreName }}</td>
