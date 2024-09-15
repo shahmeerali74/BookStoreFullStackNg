@@ -58,5 +58,41 @@ export const genreReducers = createReducer(
     ...state,
     loading: false,
     error,
+  })),
+  on(authorActions.updateAuthor, (state, { author }) => ({
+    ...state,
+    loading: true,
+  })),
+  on(authorActions.updateAuthorSuccess, (state, { author }) => ({
+    ...state,
+    loading: false,
+    authors: state.authors.map((au) => (au.id === author.id ? author : au)),
+  })),
+  on(authorActions.updateAuthorFailure, (state, { error }) => ({
+    ...state,
+    loading: false,
+    error,
+  })),
+  on(authorActions.deleteAuthor, (state, { id }) => ({
+    ...state,
+    loading: true,
+  })),
+  on(authorActions.deleteAuthorSuccess, (state, { id }) => ({
+    ...state,
+    loading: false,
+    authors: state.authors.filter((au) => au.id !== id),
+  })),
+  on(authorActions.deleteAuthorFailure, (state, { error }) => ({
+    ...state,
+    loading: false,
+    error,
+  })),
+  on(authorActions.setCurrentPage, (state, { page }) => ({
+    ...state,
+    pageNumber: page,
+  })),
+  on(authorActions.setPageSize, (state, { pageSize }) => ({
+    ...state,
+    pageSize,
   }))
 );

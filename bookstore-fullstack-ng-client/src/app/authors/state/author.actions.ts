@@ -13,7 +13,7 @@ export const authorActions = createActionGroup({
     "Add author failure": props<{ error: HttpErrorResponse }>(),
     "Update author": props<{ author: Author }>(),
     "Update author success": props<{ author: Author }>(),
-    "Update author failure": props<{ author: Author }>(),
+    "Update author failure": props<{ error: HttpErrorResponse }>(),
     "delete author": props<{ id: number }>(),
     "delete author success": props<{ id: number }>(),
     "delete author failure": props<{ error: HttpErrorResponse }>(),
