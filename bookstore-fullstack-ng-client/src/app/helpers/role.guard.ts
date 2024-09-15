@@ -8,7 +8,6 @@ import {
 import { of, tap } from "rxjs";
 
 export const roleGuard: CanActivateFn = (route, state) => {
-  console.log("on role guard");
   const store = inject(Store);
   const router = inject(Router);
   const { roles } = route.data;

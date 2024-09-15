@@ -9,7 +9,7 @@ import { PagedList } from "../../common/paged-list.model";
 @Injectable({ providedIn: "root" })
 export class AuthorService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = environment.baseUrl + "/authors";
+  private readonly baseUrl = environment.baseUrl + "/api/authors";
 
   addAuthor(author: AuthorCreate): Observable<Author> {
     return this.http.post<Author>(this.baseUrl, author);
@@ -23,8 +23,8 @@ export class AuthorService {
     return this.http.delete<any>(this.baseUrl + "/" + id);
   }
 
-  getAuthors(): Observable<any> {
-    return this.http.get<any>(this.baseUrl);
+  getAuthors(): Observable<PagedList<Author>> {
+    return this.http.get<PagedList<Author>>(this.baseUrl);
   }
 
   getAuthor(id: number) {

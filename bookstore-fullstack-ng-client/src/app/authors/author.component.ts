@@ -1,20 +1,16 @@
-import { AsyncPipe, JsonPipe, NgIf } from "@angular/common";
+import { AsyncPipe, NgIf } from "@angular/common";
 import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { AuthorService } from "./data/author.service";
+import { catchError, Observable, of, shareReplay, tap } from "rxjs";
+import { PagedList } from "../common/paged-list.model";
+import { Author } from "./data/author.model";
 
 @Component({
   selector: "app-author",
   standalone: true,
-  imports: [NgIf, AsyncPipe, JsonPipe],
-  template: `
-    <ng-container *ngIf="authors$ as authors">
-      {{ authors | json }}
-    </ng-container>
-  `,
+  imports: [NgIf, AsyncPipe],
+  template: ``,
   styles: [``],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AuthorComponent {
-  service = inject(AuthorService);
-  authors$ = this.service.getAuthors();
-}
+export class AuthorComponent {}
