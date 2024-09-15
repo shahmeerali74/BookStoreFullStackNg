@@ -6,7 +6,7 @@ export const authorActions = createActionGroup({
   source: "Author",
   events: {
     "Load authors": emptyProps(),
-    "Load authors sucess": props<{ author: Author[] }>,
+    "Load authors sucess": props<{ authors: Author[] }>,
     "Load authors failure": props<{ error: HttpErrorResponse }>(),
     "Add author": props<{ author: Author }>(),
     "Add author success": props<{ author: Author }>(),
