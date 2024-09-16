@@ -2,6 +2,14 @@ import { AsyncPipe, NgIf } from "@angular/common";
 import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { Author } from "./data/author.model";
 import { AuthorListComponent } from "./ui/author-list.component";
+import { Store } from "@ngrx/store";
+import {
+  selectAuthorError,
+  selectAuthorLoading,
+  selectAuthors,
+} from "./state/author.selectors";
+import { Observable, tap } from "rxjs";
+import { authorActions } from "./state/author.actions";
 
 @Component({
   selector: "app-author",
@@ -9,21 +17,23 @@ import { AuthorListComponent } from "./ui/author-list.component";
   imports: [NgIf, AsyncPipe, AuthorListComponent],
   template: `
     <h1>Authors</h1>
-    <app-author-list
-      [authors]="authors"
-      (edit)="onEdit($event)"
-      (delete)="onDelete($event)"
-    />
+    <ng-container *ngIf="authors$ | async as authors">
+      <app-author-list
+        [authors]="authors"
+        (edit)="onEdit($event)"
+        (delete)="onDelete($event)"
+      />
+    </ng-container>
   `,
   styles: [``],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AuthorComponent {
-  authors: Array<Author> = [
-    { id: 1, authorName: "A1" },
-    { id: 2, authorName: "A2" },
-    { id: 3, authorName: "A3" },
-  ];
+  store = inject(Store);
+  authors$: Observable<readonly Author[]> = this.store.select(selectAuthors);
+
+  loading$ = this.store.select(selectAuthorLoading);
+  error$ = this.store.select(selectAuthorError);
 
   onEdit(author: Author) {
     console.log(author);
@@ -37,5 +47,8 @@ export class AuthorComponent {
     ) {
       console.log(author);
     }
+  }
+  constructor() {
+    this.store.dispatch(authorActions.loadAuthors());
   }
 }

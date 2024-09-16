@@ -54,7 +54,7 @@ import { MatIconModule } from "@angular/material/icon";
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AuthorListComponent {
-  @Input({ required: true }) authors!: Author[];
+  @Input({ required: true }) authors!: readonly Author[];
   @Output() edit = new EventEmitter<Author>();
   @Output() delete = new EventEmitter<Author>();
 
