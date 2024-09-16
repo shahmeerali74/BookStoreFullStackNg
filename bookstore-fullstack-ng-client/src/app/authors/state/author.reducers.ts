@@ -35,7 +35,7 @@ export const authorReducers = createReducer(
     ...state,
     loading: true,
   })),
-  on(authorActions.loadAuthorsSucess, (state, { authors }) => ({
+  on(authorActions.loadAuthorsSuccess, (state, { authors }) => ({
     ...state,
     loading: false,
     authors,

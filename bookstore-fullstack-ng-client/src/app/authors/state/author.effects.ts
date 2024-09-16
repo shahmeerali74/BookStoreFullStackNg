@@ -15,7 +15,7 @@ export class AuthorEffects {
       switchMap(() =>
         this.authorService.getAuthors().pipe(
           map((data) =>
-            authorActions.loadAuthorsSucess({ authors: data.items })
+            authorActions.loadAuthorsSuccess({ authors: data.items })
           ),
           catchError((error) => of(authorActions.loadAuthorsFailure({ error })))
         )

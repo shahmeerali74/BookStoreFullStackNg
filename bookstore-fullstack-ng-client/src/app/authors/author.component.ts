@@ -1,8 +1,5 @@
 import { AsyncPipe, NgIf } from "@angular/common";
 import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
-import { AuthorService } from "./data/author.service";
-import { catchError, Observable, of, shareReplay, tap } from "rxjs";
-import { PagedList } from "../common/paged-list.model";
 import { Author } from "./data/author.model";
 import { AuthorListComponent } from "./ui/author-list.component";
 
@@ -11,6 +8,7 @@ import { AuthorListComponent } from "./ui/author-list.component";
   standalone: true,
   imports: [NgIf, AsyncPipe, AuthorListComponent],
   template: `
+    <h1>Authors</h1>
     <app-author-list
       [authors]="authors"
       (edit)="onEdit($event)"

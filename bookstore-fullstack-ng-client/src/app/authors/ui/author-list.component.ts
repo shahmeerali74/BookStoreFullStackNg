@@ -16,12 +16,12 @@ import { MatIconModule } from "@angular/material/icon";
   imports: [MatTableModule, MatButtonModule, MatIconModule],
   template: `
     <table mat-table [dataSource]="authors" class="mat-elevation-z8">
-      <ng-container matColumnDef="authorName">
+      <ng-container matColumnDef="AuthorName">
         <th mat-header-cell *matHeaderCellDef>Author</th>
         <td mat-cell *matCellDef="let element">{{ element.authorName }}</td>
       </ng-container>
 
-      <ng-container matColumnDef="action">
+      <ng-container matColumnDef="Action">
         <th mat-header-cell *matHeaderCellDef>Action</th>
         <td
           mat-cell
@@ -58,5 +58,5 @@ export class AuthorListComponent {
   @Output() edit = new EventEmitter<Author>();
   @Output() delete = new EventEmitter<Author>();
 
-  displayedColumns = ["AuthorName,Action"];
+  displayedColumns = ["AuthorName", "Action"];
 }
