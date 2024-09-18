@@ -19,6 +19,11 @@ export const selectAuthorError = createSelector(
   (state) => state.error
 );
 
+export const selectAuthorTotalCount = createSelector(
+  selectAuthorState,
+  (state) => state.totalCount
+);
+
 export const selectAuthorCurrentPage = createSelector(
   selectAuthorState,
   (state) => state.pageNumber
