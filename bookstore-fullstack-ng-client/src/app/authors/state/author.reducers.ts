@@ -13,6 +13,8 @@ export interface AuthorState {
   totalPages: number;
   hasPrevious: boolean;
   hasNext: boolean;
+  searchTerm: string;
+  sortBy: string;
   loading: boolean;
   error: HttpErrorResponse | null;
 }
@@ -25,6 +27,8 @@ export const initialState: AuthorState = {
   totalPages: 0,
   hasPrevious: false,
   hasNext: false,
+  searchTerm: "",
+  sortBy: "",
   loading: false,
   error: null,
 };
@@ -94,5 +98,13 @@ export const authorReducers = createReducer(
   on(authorActions.setPageSize, (state, { pageSize }) => ({
     ...state,
     pageSize,
+  })),
+  on(authorActions.setSearchTerm, (state, { searchTerm }) => ({
+    ...state,
+    searchTerm,
+  })),
+  on(authorActions.setSortBy, (state, { sortBy }) => ({
+    ...state,
+    sortBy,
   }))
 );

@@ -1,24 +1,38 @@
 import { inject, Injectable } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
+import { concatLatestFrom } from "@ngrx/operators";
 import { AuthorService } from "../data/author.service";
 import { authorActions } from "./author.actions";
 import { catchError, map, of, switchMap } from "rxjs";
+import { Store } from "@ngrx/store";
+import { selectAuthorState } from "./author.selectors";
 
 @Injectable()
 export class AuthorEffects {
   actions$ = inject(Actions);
   authorService = inject(AuthorService);
+  store = inject(Store);
 
   loadAuthors = createEffect(() =>
     this.actions$.pipe(
       ofType(authorActions.loadAuthors),
-      switchMap(() =>
-        this.authorService.getAuthors().pipe(
-          map((data) =>
-            authorActions.loadAuthorsSuccess({ authors: data.items })
-          ),
-          catchError((error) => of(authorActions.loadAuthorsFailure({ error })))
-        )
+      concatLatestFrom(() => [this.store.select(selectAuthorState)]),
+      switchMap(([action, state]) =>
+        this.authorService
+          .getAuthors({
+            pageSize: state.pageSize,
+            pageNumber: state.pageNumber,
+            searchTerm: state.searchTerm,
+            sortBy: state.sortBy,
+          })
+          .pipe(
+            map((data) =>
+              authorActions.loadAuthorsSuccess({ authors: data.items })
+            ),
+            catchError((error) =>
+              of(authorActions.loadAuthorsFailure({ error }))
+            )
+          )
       )
     )
   );

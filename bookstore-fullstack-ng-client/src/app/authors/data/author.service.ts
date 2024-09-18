@@ -1,4 +1,4 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { environment } from "../../../environments/environment.development";
 import { Author } from "./author.model";
@@ -23,8 +23,19 @@ export class AuthorService {
     return this.http.delete<any>(this.baseUrl + "/" + id);
   }
 
-  getAuthors(): Observable<PagedList<Author>> {
-    return this.http.get<PagedList<Author>>(this.baseUrl);
+  getAuthors({
+    pageSize = 10,
+    pageNumber = 1,
+    searchTerm = "",
+    sortBy = "",
+  }): Observable<PagedList<Author>> {
+    let params = new HttpParams();
+    params = params.set("pageSize", pageSize.toString());
+    params = params.set("pageNumber", pageNumber.toString());
+    params = params.set("searchTerm", searchTerm);
+    params = params.set("sortBy", sortBy);
+
+    return this.http.get<PagedList<Author>>(this.baseUrl, { params });
   }
 
   getAuthor(id: number) {

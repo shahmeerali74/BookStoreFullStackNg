@@ -19,5 +19,7 @@ export const authorActions = createActionGroup({
     "delete author failure": props<{ error: HttpErrorResponse }>(),
     "set current page": props<{ page: number }>(),
     "set page size": props<{ pageSize: number }>(),
+    "set search term": props<{ searchTerm: string }>(),
+    "set sort by": props<{ sortBy: string }>(),
   },
 });

@@ -7,16 +7,16 @@ import {
   _VIEW_REPEATER_STRATEGY,
   _ViewRepeaterOperation,
   isDataSource
-} from "./chunk-6ZDQPGW5.js";
+} from "./chunk-6W47UW52.js";
 import {
   Directionality,
   MatCommonModule,
   Platform,
   _isNumberValue
-} from "./chunk-YHIGJX4S.js";
+} from "./chunk-E3W5SV5U.js";
 import {
   DOCUMENT
-} from "./chunk-C42PCG6B.js";
+} from "./chunk-OJAMRAFI.js";
 import {
   Attribute,
   ChangeDetectionStrategy,
@@ -79,7 +79,8 @@ import {
   ɵɵtext,
   ɵɵtextInterpolate1,
   ɵɵviewQuery
-} from "./chunk-QHR5VV25.js";
+} from "./chunk-RHIJUD3Z.js";
+import "./chunk-LZU6IAWD.js";
 import {
   BehaviorSubject,
   Subject,

@@ -6,7 +6,7 @@ import {
   StoreFeatureModule,
   StoreRootModule,
   createAction
-} from "./chunk-AKQRHZBC.js";
+} from "./chunk-C2TMZHSZ.js";
 import {
   ENVIRONMENT_INITIALIZER,
   ErrorHandler,
@@ -22,7 +22,8 @@ import {
   ɵɵdefineInjector,
   ɵɵdefineNgModule,
   ɵɵinject
-} from "./chunk-QHR5VV25.js";
+} from "./chunk-RHIJUD3Z.js";
+import "./chunk-LZU6IAWD.js";
 import {
   Observable,
   Subject,
