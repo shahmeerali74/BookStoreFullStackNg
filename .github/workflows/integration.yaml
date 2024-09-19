@@ -12,6 +12,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      DB_CONNECTION_STRING: "Data Source=:memory:"
 
     steps:
       - uses: actions/checkout@v4
