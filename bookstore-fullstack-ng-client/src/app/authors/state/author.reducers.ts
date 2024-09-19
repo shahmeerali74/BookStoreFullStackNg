@@ -91,14 +91,21 @@ export const authorReducers = createReducer(
     loading: false,
     error,
   })),
-  on(authorActions.setCurrentPage, (state, { page }) => ({
-    ...state,
-    pageNumber: page,
-  })),
-  on(authorActions.setPageSize, (state, { pageSize }) => ({
-    ...state,
-    pageSize,
-  })),
+  on(authorActions.setCurrentPage, (state, { page }) => {
+    //console.log("page number from dispatch: " + page); // working and able to log value
+    return {
+      ...state,
+      pageNumber: page,
+    };
+  }),
+  on(authorActions.setPageSize, (state, { pageSize }) => {
+    //console.log("page size(limit) from dispatch: " + pageSize); //working and able to log value
+
+    return {
+      ...state,
+      pageSize,
+    };
+  }),
   on(authorActions.setSearchTerm, (state, { searchTerm }) => ({
     ...state,
     searchTerm,

@@ -59,11 +59,15 @@ export class AuthorComponent {
   onPageSelect(page: PageSelectorModel) {
     this.store.dispatch(authorActions.setCurrentPage({ page: page.page }));
     this.store.dispatch(authorActions.setPageSize({ pageSize: page.limit }));
+    this.loadAuthors();
+  }
+  private loadAuthors() {
+    this.store.dispatch(authorActions.loadAuthors());
   }
 
   constructor() {
     this.store.dispatch(authorActions.setCurrentPage({ page: 1 }));
     this.store.dispatch(authorActions.setPageSize({ pageSize: 10 }));
-    this.store.dispatch(authorActions.loadAuthors());
+    this.loadAuthors();
   }
 }
