@@ -92,7 +92,10 @@ app.UseMiddleware<ExceptionMiddleware>();
 app.MapControllers();
 
 // seeding default auth data
-await AuthSeeder.SeedData(app);
+if (!app.Environment.IsEnvironment("Test"))
+{
+    await AuthSeeder.SeedData(app);
+}
 
 app.Run();
 
