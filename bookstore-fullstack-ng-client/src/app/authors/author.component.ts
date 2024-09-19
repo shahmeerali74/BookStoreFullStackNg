@@ -1,5 +1,10 @@
 import { AsyncPipe, NgIf } from "@angular/common";
-import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  OnDestroy,
+} from "@angular/core";
 import { Author } from "./data/author.model";
 import { AuthorListComponent } from "./ui/author-list.component";
 import { Store } from "@ngrx/store";
@@ -9,12 +14,15 @@ import {
   selectAuthors,
   selectAuthorTotalCount,
 } from "./state/author.selectors";
-import { Observable, tap } from "rxjs";
+import { Observable, Subject, takeUntil } from "rxjs";
 import { authorActions } from "./state/author.actions";
 import { BookPaginatorComponent } from "./ui/author-paginator.component";
 import { PageSelectorModel } from "../common/page-selector.model";
 import { SortModel } from "../common/sort.model";
 import { AuthorFilter } from "./ui/author.filter";
+import { MatDialog } from "@angular/material/dialog";
+import { AuthorDialogComponent } from "./ui/author-dialog.component";
+import { MatButtonModule } from "@angular/material/button";
 
 @Component({
   selector: "app-author",
@@ -25,9 +33,20 @@ import { AuthorFilter } from "./ui/author.filter";
     AuthorListComponent,
     BookPaginatorComponent,
     AuthorFilter,
+    MatButtonModule,
   ],
   template: `
     <h1>Authors</h1>
+    <p>
+      <button
+        type="button"
+        (click)="onAddUpdate('Add', null)"
+        mat-raised-button
+        color="accent"
+      >
+        +
+      </button>
+    </p>
     <app-author-filter (filter)="onFilter($event)" />
 
     <ng-container *ngIf="authors$ | async as authors">
@@ -49,7 +68,9 @@ import { AuthorFilter } from "./ui/author.filter";
   styles: [``],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AuthorComponent {
+export class AuthorComponent implements OnDestroy {
+  dialog = inject(MatDialog);
+  destroyed$ = new Subject<boolean>();
   store = inject(Store);
   authors$: Observable<readonly Author[]> = this.store.select(selectAuthors);
   totalCount$ = this.store.select(selectAuthorTotalCount);
@@ -57,7 +78,31 @@ export class AuthorComponent {
   error$ = this.store.select(selectAuthorError);
 
   onEdit(author: Author) {
-    console.log(author);
+    this.onAddUpdate("Update", author);
+  }
+
+  onAddUpdate(action: string, author: Author | null = null) {
+    const dialogRef = this.dialog.open(AuthorDialogComponent, {
+      data: { author, title: action + " Author" },
+    });
+
+    dialogRef.componentInstance.submit
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe((submittedAuthor) => {
+        if (!submittedAuthor) return;
+        if (submittedAuthor.id) {
+          // update book
+          this.store.dispatch(
+            authorActions.updateAuthor({ author: submittedAuthor })
+          );
+        } else {
+          this.store.dispatch(
+            authorActions.addAuthor({ author: submittedAuthor })
+          );
+        }
+        dialogRef.componentInstance.authorForm.reset();
+        dialogRef.componentInstance.onCanceled();
+      });
   }
 
   onDelete(author: Author) {
@@ -66,7 +111,8 @@ export class AuthorComponent {
         `Are you sure to delete the record (authorName: ${author.authorName})?`
       )
     ) {
-      console.log(author);
+      this.store.dispatch(authorActions.deleteAuthor({ id: author.id }));
+      this.loadAuthors();
     }
   }
 
@@ -75,6 +121,7 @@ export class AuthorComponent {
     this.store.dispatch(authorActions.setPageSize({ pageSize: page.limit }));
     this.loadAuthors();
   }
+
   private loadAuthors() {
     this.store.dispatch(authorActions.loadAuthors());
   }
@@ -91,6 +138,11 @@ export class AuthorComponent {
   onFilter(searchTerm: string | null) {
     this.store.dispatch(authorActions.setSearchTerm({ searchTerm }));
     this.loadAuthors();
+  }
+
+  ngOnDestroy(): void {
+    this.destroyed$.next(true);
+    this.destroyed$.unsubscribe();
   }
 
   constructor() {
