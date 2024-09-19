@@ -26,4 +26,6 @@ jobs:
       - name: Build
         run: dotnet build ./BookStoreFullStackNg.sln --no-restore
       - name: Test
-        run: dotnet test ./BookStoreFullStackNg.sln --no-build --verbosity normal
+        run: |
+          dotnet ef database drop --force --context BookStoreContext
+          dotnet test ./BookStoreFullStackNg.sln --no-build --verbosity normal
