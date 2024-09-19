@@ -26,9 +26,13 @@ export class AuthorEffects {
             sortBy: state.sortBy,
           })
           .pipe(
-            map((data) =>
-              authorActions.loadAuthorsSuccess({ authors: data.items })
-            ),
+            switchMap((data) => {
+              // can I dispatch an action here?
+              return [
+                authorActions.loadAuthorsSuccess({ authors: data.items }),
+                authorActions.setTotalCount({ totalCount: data.totalCount }),
+              ];
+            }),
             catchError((error) =>
               of(authorActions.loadAuthorsFailure({ error }))
             )

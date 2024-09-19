@@ -4,11 +4,12 @@ import { Author } from "./data/author.model";
 import { AuthorListComponent } from "./ui/author-list.component";
 import { Store } from "@ngrx/store";
 import {
+  selectAuthorError,
   selectAuthorLoading,
   selectAuthors,
   selectAuthorTotalCount,
 } from "./state/author.selectors";
-import { Observable } from "rxjs";
+import { Observable, tap } from "rxjs";
 import { authorActions } from "./state/author.actions";
 import { BookPaginatorComponent } from "./ui/author-paginator.component";
 import { PageSelectorModel } from "../common/page-selector.model";
@@ -38,10 +39,12 @@ import { AuthorFilter } from "./ui/author.filter";
       />
     </ng-container>
 
-    <app-author-paginator
-      (pageSelect)="onPageSelect($event)"
-      [totalRecords]="13"
-    />
+    <ng-container *ngIf="totalCount$ | async as totalCount">
+      <app-author-paginator
+        (pageSelect)="onPageSelect($event)"
+        [totalRecords]="totalCount"
+      />
+    </ng-container>
   `,
   styles: [``],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -49,9 +52,9 @@ import { AuthorFilter } from "./ui/author.filter";
 export class AuthorComponent {
   store = inject(Store);
   authors$: Observable<readonly Author[]> = this.store.select(selectAuthors);
-  totalCount$ = this.store.select;
+  totalCount$ = this.store.select(selectAuthorTotalCount);
   loading$ = this.store.select(selectAuthorLoading);
-  error$ = this.store.select(selectAuthorTotalCount);
+  error$ = this.store.select(selectAuthorError);
 
   onEdit(author: Author) {
     console.log(author);

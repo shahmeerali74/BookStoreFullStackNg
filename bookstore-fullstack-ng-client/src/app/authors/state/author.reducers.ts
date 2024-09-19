@@ -106,6 +106,14 @@ export const authorReducers = createReducer(
       pageSize,
     };
   }),
+  on(authorActions.setTotalCount, (state, { totalCount }) => {
+    //console.log("page size(limit) from dispatch: " + pageSize); //working and able to log value
+
+    return {
+      ...state,
+      totalCount,
+    };
+  }),
   on(authorActions.setSearchTerm, (state, { searchTerm }) => ({
     ...state,
     searchTerm,
