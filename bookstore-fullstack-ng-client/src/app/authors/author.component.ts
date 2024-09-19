@@ -13,13 +13,22 @@ import { authorActions } from "./state/author.actions";
 import { BookPaginatorComponent } from "./ui/author-paginator.component";
 import { PageSelectorModel } from "../common/page-selector.model";
 import { SortModel } from "../common/sort.model";
+import { AuthorFilter } from "./ui/author.filter";
 
 @Component({
   selector: "app-author",
   standalone: true,
-  imports: [NgIf, AsyncPipe, AuthorListComponent, BookPaginatorComponent],
+  imports: [
+    NgIf,
+    AsyncPipe,
+    AuthorListComponent,
+    BookPaginatorComponent,
+    AuthorFilter,
+  ],
   template: `
     <h1>Authors</h1>
+    <app-author-filter (filter)="onFilter($event)" />
+
     <ng-container *ngIf="authors$ | async as authors">
       <app-author-list
         [authors]="authors"
@@ -73,6 +82,11 @@ export class AuthorComponent {
         sortBy: `${sort.sortColumn} ${sort.sortDirection}`,
       })
     );
+    this.loadAuthors();
+  }
+
+  onFilter(searchTerm: string | null) {
+    this.store.dispatch(authorActions.setSearchTerm({ searchTerm }));
     this.loadAuthors();
   }
 

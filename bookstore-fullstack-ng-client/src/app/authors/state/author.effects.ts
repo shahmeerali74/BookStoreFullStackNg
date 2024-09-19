@@ -22,7 +22,7 @@ export class AuthorEffects {
           .getAuthors({
             pageSize: state.pageSize,
             pageNumber: state.pageNumber,
-            searchTerm: state.searchTerm,
+            searchTerm: state.searchTerm ?? "",
             sortBy: state.sortBy,
           })
           .pipe(

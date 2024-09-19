@@ -13,7 +13,7 @@ export interface AuthorState {
   totalPages: number;
   hasPrevious: boolean;
   hasNext: boolean;
-  searchTerm: string;
+  searchTerm: string | null;
   sortBy: string;
   loading: boolean;
   error: HttpErrorResponse | null;
