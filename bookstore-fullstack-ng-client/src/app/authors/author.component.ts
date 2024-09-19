@@ -68,7 +68,12 @@ export class AuthorComponent {
   }
 
   onSort(sort: SortModel) {
-    console.log(sort);
+    this.store.dispatch(
+      authorActions.setSortBy({
+        sortBy: `${sort.sortColumn} ${sort.sortDirection}`,
+      })
+    );
+    this.loadAuthors();
   }
 
   constructor() {
