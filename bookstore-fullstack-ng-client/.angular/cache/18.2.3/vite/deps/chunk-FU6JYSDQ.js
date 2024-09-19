@@ -5407,6 +5407,8 @@ export {
   A11yModule,
   Directionality,
   BidiModule,
+  AnimationCurves,
+  AnimationDurations,
   MatCommonModule,
   _ErrorStateTracker,
   ErrorStateMatcher,
@@ -5419,4 +5421,4 @@ export {
   MatOptionModule,
   MatRippleLoader
 };
-//# sourceMappingURL=chunk-E3W5SV5U.js.map
+//# sourceMappingURL=chunk-FU6JYSDQ.js.map

@@ -12,6 +12,7 @@ import { Observable } from "rxjs";
 import { authorActions } from "./state/author.actions";
 import { BookPaginatorComponent } from "./ui/author-paginator.component";
 import { PageSelectorModel } from "../common/page-selector.model";
+import { SortModel } from "../common/sort.model";
 
 @Component({
   selector: "app-author",
@@ -24,6 +25,7 @@ import { PageSelectorModel } from "../common/page-selector.model";
         [authors]="authors"
         (edit)="onEdit($event)"
         (delete)="onDelete($event)"
+        (sort)="onSort($event)"
       />
     </ng-container>
 
@@ -63,6 +65,10 @@ export class AuthorComponent {
   }
   private loadAuthors() {
     this.store.dispatch(authorActions.loadAuthors());
+  }
+
+  onSort(sort: SortModel) {
+    console.log(sort);
   }
 
   constructor() {
