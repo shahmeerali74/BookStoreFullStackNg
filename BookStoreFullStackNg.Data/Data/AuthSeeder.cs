@@ -15,12 +15,10 @@ public static class AuthSeeder
             using var scope = app.ApplicationServices.CreateScope();
             var authContext = scope.ServiceProvider.GetService<AuthContext>();
 
-            // if (authContext.Database.GetPendingMigrations().Count() > 0)
-            // {
-            //     await authContext.Database.MigrateAsync();
-            // }
-
-            authContext.Database.EnsureCreated();
+            if (authContext.Database.GetPendingMigrations().Count() > 0)
+            {
+                await authContext.Database.MigrateAsync();
+            }
             var userMgr = scope.ServiceProvider.GetService<UserManager<IdentityUser>>();
             var roleMgr = scope.ServiceProvider.GetService<RoleManager<IdentityRole>>();
             // adding some roles to db
