@@ -1,4 +1,3 @@
-using System;
 using BookStoreFullStackNg.Data.DTOs.Author;
 
 namespace BookStoreFullStackNg.Data.DTOs.Book;

@@ -10,4 +10,15 @@ public class BookGenre
 
     public int GenreId { get; set; }
     public Genre Genre { get; set; } = null!;
+
+    public BookGenre()
+    {
+        
+    }
+    public BookGenre(int id,int bookId,int genreId)
+    {
+        Id = id;
+        BookId=bookId;
+        GenreId = genreId;
+    }
 }

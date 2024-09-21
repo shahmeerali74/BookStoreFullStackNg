@@ -15,5 +15,6 @@ public static class ServiceExtension
         services.AddTransient<IAuthService, AuthService>();
         services.AddTransient<IAuthorRepository, AuthorRepository>();
         services.AddTransient<ISortHelper<Author>, SortHelper<Author>>();
+        services.AddTransient<IBookRepository, BookRepository>();
     }
 }

@@ -3,6 +3,7 @@ using AutoMapper;
 using BookStoreFullStackNg.Data.Domain;
 using BookStoreFullStackNg.Data.DTOs;
 using BookStoreFullStackNg.Data.DTOs.Author;
+using BookStoreFullStackNg.Data.DTOs.Book;
 
 namespace BookStoreFullStackNg.Api.Helpers;
 
@@ -16,5 +17,8 @@ public class MappingProfile : Profile
         CreateMap<Author, AuthorCreateDTO>().ReverseMap();
         CreateMap<Author, AuthorUpdateDTO>().ReverseMap();
         CreateMap<Author, AuthorReadDTO>().ReverseMap();
+        CreateMap<Book, BookReadDto>().ReverseMap();
+        CreateMap<Book, BookCreateDto>().ReverseMap();
+        CreateMap<Book, BookUpdateDto>().ReverseMap();
     }
 }

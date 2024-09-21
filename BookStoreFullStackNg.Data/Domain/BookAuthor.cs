@@ -10,4 +10,15 @@ public class BookAuthor
 
     public int AuthorId { get; set; }
     public Author Author { get; set; } = null!;
+
+    public BookAuthor()
+    {
+        
+    }
+    public BookAuthor(int id,int bookId,int authorId)
+    {
+        Id = id;
+        BookId=bookId;
+        AuthorId = authorId;
+    }
 }

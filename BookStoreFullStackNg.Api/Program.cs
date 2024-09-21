@@ -93,7 +93,7 @@ app.MapControllers();
 
 // seeding default auth data
 
-await AuthSeeder.SeedData(app);
+//await AuthSeeder.SeedData(app);
 
 
 app.Run();
