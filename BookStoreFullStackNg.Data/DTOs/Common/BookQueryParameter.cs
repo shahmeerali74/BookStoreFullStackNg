@@ -2,11 +2,8 @@
 
 public class BookQueryParameter:QueryParameters
 {
-    public PublishFilterParameter? PublishFilterParameter { get; set; }
+    public int? PublishedFrom=null;
+    public int? PublishedTo=null;
+
 }
 
-public class PublishFilterParameter
-{
-    public DateTime? PublishedFrom;
-    public DateTime? PublishedTo;
-}

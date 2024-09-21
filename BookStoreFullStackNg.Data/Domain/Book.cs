@@ -14,7 +14,9 @@ public class Book
     [MaxLength(200)]
     public string Description { get; set; } = string.Empty;
     public double Price { get; set; }
-    public DateTime PublishedDate { get; set; }
+
+    public string ? ImageUrl { get; set; }
+    public int PublishedYear { get; set; }
 
     public ICollection<BookAuthor> BookAuthors { get; set; } = [];
     public ICollection<BookGenre> BookGenres { get; set; } = [];

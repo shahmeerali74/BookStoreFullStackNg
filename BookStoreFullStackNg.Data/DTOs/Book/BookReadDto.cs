@@ -9,7 +9,8 @@ public class BookReadDto
 
     public string Description { get; set; } = string.Empty;
     public double Price { get; set; }
-    public DateTime PublishedDate { get; set; }
+    public string? ImageUrl { get; set; }
+    public int PublishedYear { get; set; }
 
     public List<AuthorReadDTO> Authors { get; set; } = [];
     public List<GenreReadDto> Genres { get; set; } = [];

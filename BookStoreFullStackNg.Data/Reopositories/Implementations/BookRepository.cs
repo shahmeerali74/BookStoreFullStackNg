@@ -34,7 +34,10 @@ public class BookRepository : IBookRepository
 
             BookReadDto? book = await GetBookByIdAsync(bookId);
 
-            if (book == null) { throw new InvalidOperationException($"Book with id: {bookId} does not found)"};
+            if (book == null)
+            {
+                throw new InvalidOperationException($"Book with id: {bookId} does not found");
+            }
 
             return book;
         }
@@ -77,7 +80,8 @@ public class BookRepository : IBookRepository
         {
             Title = bookToCreate.Title,
             Price = bookToCreate.Price,
-            PublishedDate = bookToCreate.PublishedDate,
+            PublishedYear = bookToCreate.PublishedYear,
+            ImageUrl= bookToCreate.ImageUrl,
             Description = bookToCreate.Description
         };
         _context.Books.Add(book);
@@ -97,7 +101,8 @@ public class BookRepository : IBookRepository
                 Id = bookToUpdate.Id,
                 Title = bookToUpdate.Title,
                 Price = bookToUpdate.Price,
-                PublishedDate = bookToUpdate.PublishedDate,
+                PublishedYear = bookToUpdate.PublishedYear,
+                ImageUrl=bookToUpdate.ImageUrl,
                 Description = bookToUpdate.Description
             };
             _context.Books.Update(book);
@@ -137,7 +142,8 @@ public class BookRepository : IBookRepository
                     Id = b.Id,
                     Title = b.Title,
                     Description = b.Description,
-                    PublishedDate = b.PublishedDate,
+                    PublishedYear = b.PublishedYear,
+                    ImageUrl=b.ImageUrl,
                     Price = b.Price,
                     Authors = b.BookAuthors.Select(ab => new AuthorReadDTO(ab.Author.Id, ab.Author.AuthorName)).ToList(),
                     Genres = b.BookGenres.Select(bg => new GenreReadDto(bg.Genre.Id, bg.Genre.GenreName)).ToList()
@@ -162,10 +168,10 @@ public class BookRepository : IBookRepository
             );
         }
 
-        // filter by publish date
-        if (queryParameters.PublishFilterParameter?.PublishedFrom != null && queryParameters.PublishFilterParameter?.PublishedTo != null)
+        // filter by publish year
+        if (queryParameters.PublishedFrom != null && queryParameters.PublishedTo != null)
         {
-            booksQuery.Where(a => a.PublishedDate >= queryParameters.PublishFilterParameter.PublishedFrom && a.PublishedDate <= queryParameters.PublishFilterParameter.PublishedTo);
+            booksQuery.Where(a => a.PublishedYear >= queryParameters.PublishedFrom && a.PublishedYear <= queryParameters.PublishedTo);
         }
 
         if (!string.IsNullOrEmpty(queryParameters.SortBy))
