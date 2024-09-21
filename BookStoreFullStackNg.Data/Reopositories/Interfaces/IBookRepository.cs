@@ -1,5 +1,6 @@
 ﻿using BookStoreFullStackNg.Data.Domain;
 using BookStoreFullStackNg.Data.DTOs.Book;
+using BookStoreFullStackNg.Data.DTOs.Common;
 
 namespace BookStoreFullStackNg.Data.Reopositories.Interfaces
 {
@@ -8,7 +9,7 @@ namespace BookStoreFullStackNg.Data.Reopositories.Interfaces
         Task<BookReadDto> AddBookAsync(BookCreateDto bookToCreate);
         Task DeleteBookAsync(Book book);
         Task<BookReadDto?> GetBookByIdAsync(int bookId);
-        Task<IEnumerable<BookReadDto>> GetBooksAsync(int bookId);
+        Task<PagedList<Book>> GetBooksAsync(BookQueryParameter queryParameters);
         Task UpdateBookAsync(BookUpdateDto bookToUpdate);
     }
 }

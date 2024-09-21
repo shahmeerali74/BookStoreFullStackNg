@@ -3,6 +3,8 @@ using BookStoreFullStackNg.Data.Domain;
 using BookStoreFullStackNg.Data.DTOs;
 using BookStoreFullStackNg.Data.DTOs.Author;
 using BookStoreFullStackNg.Data.DTOs.Book;
+using BookStoreFullStackNg.Data.DTOs.Common;
+using BookStoreFullStackNg.Data.Helpers;
 using BookStoreFullStackNg.Data.Reopositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,10 +13,12 @@ namespace BookStoreFullStackNg.Data.Reopositories.Implementations;
 public class BookRepository : IBookRepository
 {
     private readonly BookStoreContext _context;
+    private readonly ISortHelper<Book> _sortHelper;
 
-    public BookRepository(BookStoreContext context)
+    public BookRepository(BookStoreContext context, ISortHelper<Book> sortHelper)
     {
         _context = context;
+        _sortHelper = sortHelper;
     }
 
     public async Task<BookReadDto> AddBookAsync(BookCreateDto bookToCreate)
@@ -141,24 +145,35 @@ public class BookRepository : IBookRepository
         return book;
     }
 
-    public async Task<IEnumerable<BookReadDto>> GetBooksAsync(int bookId)
+    public async Task<PagedList<Book>> GetBooksAsync(BookQueryParameter queryParameters)
     {
-        var books = await _context.Books
+        var booksQuery = _context.Books
                 .Include(x => x.BookAuthors)
                 .ThenInclude(x => x.Author)
                 .Include(x => x.BookGenres)
                 .ThenInclude(x => x.Genre)
-                .Select(b => new BookReadDto
-                {
-                    Id = b.Id,
-                    Title = b.Title,
-                    Description = b.Description,
-                    PublishedDate = b.PublishedDate,
-                    Price = b.Price,
-                    Authors = b.BookAuthors.Select(ab => new AuthorReadDTO(ab.Author.Id, ab.Author.AuthorName)).ToList(),
-                    Genres = b.BookGenres.Select(bg => new GenreReadDto(bg.Genre.Id, bg.Genre.GenreName)).ToList()
-                }).ToListAsync();
-        return books;
+                .AsQueryable();
+
+        // filter by search term
+        if (!string.IsNullOrEmpty(queryParameters.SearchTerm))
+        {
+            booksQuery = booksQuery.Where(a =>
+            a.Title.ToLower().Contains(queryParameters.SearchTerm)
+            );
+        }
+
+        // filter by publish date
+        if (queryParameters.PublishFilterParameter?.PublishedFrom != null && queryParameters.PublishFilterParameter?.PublishedTo != null)
+        {
+            booksQuery.Where(a => a.PublishedDate >= queryParameters.PublishFilterParameter.PublishedFrom && a.PublishedDate <= queryParameters.PublishFilterParameter.PublishedTo);
+        }
+
+        if (!string.IsNullOrEmpty(queryParameters.SortBy))
+        {
+            booksQuery = _sortHelper.ApplySort(booksQuery, queryParameters.SortBy);
+        }
+
+        return await PagedList<Book>.ToPagedListAsync(booksQuery, queryParameters.PageNumber, queryParameters.PageSize);
     }
 
 
