@@ -56,7 +56,31 @@ public class BooksController : ControllerBase
         {
             throw new NotFoundException($"Book with id:{id} does not found");
         }
+        string? oldImage = existingBook.ImageUrl;
+        if (bookToUpdate.ImageFile != null)
+        {
+            if (bookToUpdate.ImageFile?.Length > 1 * 1024 * 1024)
+            {
+                throw new BadRequestException("File size should not exceed 1 MB");
+            }
+            string[] allowedFileExtentions = [".jpg", ".jpeg", ".png"];
+            string createdImageName = await _fileService.SaveFileAsync(bookToUpdate.ImageFile!, allowedFileExtentions);
+            bookToUpdate.ImageUrl = createdImageName;
+        }
+
         await _bookRepo.UpdateBookAsync(bookToUpdate);
+
+        // if image is updated, then we have to delete old image from directory
+        if (bookToUpdate.ImageFile !=null)
+        {
+            // however, this condition will never meet
+            if(string.IsNullOrWhiteSpace(oldImage))
+            {
+                throw new BadRequestException("Old image is null, so can't be deleted");
+            }
+            _fileService.DeleteFile(oldImage);
+        }
+
         return NoContent();
     }
 
