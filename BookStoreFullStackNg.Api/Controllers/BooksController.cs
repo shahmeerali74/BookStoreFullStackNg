@@ -36,23 +36,23 @@ public class BooksController : ControllerBase
         {
             string[] allowedFileExtentions = [".jpg", ".jpeg", ".png"];
             string createdImageName = await _fileService.SaveFileAsync(bookCreateDto.ImageFile, allowedFileExtentions);
-            bookCreateDto.ImageUrl= createdImageName;
+            bookCreateDto.ImageUrl = createdImageName;
         }
 
         BookReadDto createdBook = await _bookRepo.AddBookAsync(bookCreateDto);
-        return CreatedAtRoute(nameof(GetBookById),new { id=createdBook.Id},createdBook);
+        return CreatedAtRoute(nameof(GetBookById), new { id = createdBook.Id }, createdBook);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateBook(int id,BookUpdateDto bookToUpdate)
+    public async Task<IActionResult> UpdateBook(int id, BookUpdateDto bookToUpdate)
     {
-        if(id!=bookToUpdate.Id)
+        if (id != bookToUpdate.Id)
         {
             throw new BadRequestException($"Id mismatch");
         }
 
         var existingBook = await _bookRepo.GetBookByIdAsync(id);
-        if(existingBook==null)
+        if (existingBook == null)
         {
             throw new NotFoundException($"Book with id:{id} does not found");
         }
@@ -71,10 +71,10 @@ public class BooksController : ControllerBase
         await _bookRepo.UpdateBookAsync(bookToUpdate);
 
         // if image is updated, then we have to delete old image from directory
-        if (bookToUpdate.ImageFile !=null)
+        if (bookToUpdate.ImageFile != null)
         {
             // however, this condition will never meet
-            if(string.IsNullOrWhiteSpace(oldImage))
+            if (string.IsNullOrWhiteSpace(oldImage))
             {
                 throw new BadRequestException("Old image is null, so can't be deleted");
             }
@@ -86,7 +86,7 @@ public class BooksController : ControllerBase
 
 
     [HttpGet]
-    public async Task<IActionResult> GetBooks([FromQuery]BookQueryParameter queryParameter)
+    public async Task<IActionResult> GetBooks([FromQuery] BookQueryParameter queryParameter)
     {
         var pagedBooks = await _bookRepo.GetBooksAsync(queryParameter); // have related data
         var books = pagedBooks.Items.Select(b =>
@@ -100,16 +100,16 @@ public class BooksController : ControllerBase
                 PublishedYear = b.PublishedYear,
                 Authors = b.BookAuthors.Select(ba => new AuthorReadDTO(ba.Author.Id, ba.Author.AuthorName)).ToList(),
                 Genres = b.BookGenres.Select(bg => new GenreReadDto(bg.Genre.Id, bg.Genre.GenreName)).ToList()
-            }).ToList() ;
+            }).ToList();
         var newBookPagedList = new PagedList<BookReadDto>(books, pagedBooks.TotalCount, pagedBooks.PageNumber, pagedBooks.PageSize);
         return Ok(newBookPagedList);
     }
 
-    [HttpGet("{id}",Name =nameof(GetBookById))]
+    [HttpGet("{id}", Name = nameof(GetBookById))]
     public async Task<IActionResult> GetBookById(int id)
     {
         BookReadDto? book = await _bookRepo.GetBookByIdAsync(id);
-        if(book==null)
+        if (book == null)
         {
             throw new NotFoundException($"Book with id:{id} does not found");
         }
@@ -126,6 +126,11 @@ public class BooksController : ControllerBase
         }
         Book book = _mapper.Map<Book>(existingBook);
         await _bookRepo.DeleteBookAsync(book);
-        return NoContent() ;
+        // After deleting product from database,remove file from directory.
+        if (string.IsNullOrEmpty(existingBook.ImageUrl) == false)
+        {
+            _fileService.DeleteFile(existingBook.ImageUrl);
+        }
+        return NoContent();
     }
 }
