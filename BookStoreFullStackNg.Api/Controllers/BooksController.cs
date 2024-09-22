@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BookStoreFullStackNg.Api.Exceptions;
 using BookStoreFullStackNg.Data.Domain;
+using BookStoreFullStackNg.Data.DTOs;
 using BookStoreFullStackNg.Data.DTOs.Author;
 using BookStoreFullStackNg.Data.DTOs.Book;
 using BookStoreFullStackNg.Data.DTOs.Common;
@@ -46,12 +47,22 @@ public class BooksController : ControllerBase
     }
 
 
-    // TODO: mapping of book list not having related data
     [HttpGet]
     public async Task<IActionResult> GetBooks([FromQuery]BookQueryParameter queryParameter)
     {
         var pagedBooks = await _bookRepo.GetBooksAsync(queryParameter); // have related data
-        var books = _mapper.Map<IEnumerable<BookReadDto>>(pagedBooks.Items).ToList();
+        var books = pagedBooks.Items.Select(b =>
+            new BookReadDto
+            {
+                Id = b.Id,
+                Title = b.Title,
+                Description = b.Description,
+                Price = b.Price,
+                ImageUrl = b.ImageUrl,
+                PublishedYear = b.PublishedYear,
+                Authors = b.BookAuthors.Select(ba => new AuthorReadDTO(ba.Author.Id, ba.Author.AuthorName)).ToList(),
+                Genres = b.BookGenres.Select(bg => new GenreReadDto(bg.Genre.Id, bg.Genre.GenreName)).ToList()
+            }).ToList() ;
         var newBookPagedList = new PagedList<BookReadDto>(books, pagedBooks.TotalCount, pagedBooks.PageNumber, pagedBooks.PageSize);
         return Ok(newBookPagedList);
     }
