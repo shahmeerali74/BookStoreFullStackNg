@@ -11,11 +11,12 @@ public static class ServiceExtension
 {
     public static void RegisterDataServices(this IServiceCollection services)
     {
-        services.AddTransient<IGenreRepository, GenreRepository>();
+        services.AddScoped<IGenreRepository, GenreRepository>();
+        services.AddScoped<IAuthorRepository, AuthorRepository>();
+        services.AddScoped<IBookRepository, BookRepository>();
         services.AddTransient<IAuthService, AuthService>();
-        services.AddTransient<IAuthorRepository, AuthorRepository>();
         services.AddTransient<ISortHelper<Author>, SortHelper<Author>>();
         services.AddTransient<ISortHelper<Book>, SortHelper<Book>>();
-        services.AddTransient<IBookRepository, BookRepository>();
+        services.AddTransient<IFileService, FileService>();
     }
 }

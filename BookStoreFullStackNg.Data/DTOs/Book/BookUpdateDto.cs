@@ -1,4 +1,5 @@
 
+using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
 namespace BookStoreFullStackNg.Data.DTOs.Book;
@@ -15,6 +16,9 @@ public class BookUpdateDto
     public string Description { get; set; } = string.Empty;
     public double Price { get; set; }
     public string? ImageUrl { get; set; }
+
+    [Required]
+    public IFormFile? ImageFile { get; set; }
     public int PublishedYear { get; set; }
 
     public List<int> AuthorIds { get; set; } = [];

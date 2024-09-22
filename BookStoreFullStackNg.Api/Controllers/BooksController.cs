@@ -6,6 +6,7 @@ using BookStoreFullStackNg.Data.DTOs.Author;
 using BookStoreFullStackNg.Data.DTOs.Book;
 using BookStoreFullStackNg.Data.DTOs.Common;
 using BookStoreFullStackNg.Data.Reopositories.Interfaces;
+using BookStoreFullStackNg.Data.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookStoreFullStackNg.Api.Controllers;
@@ -16,16 +17,29 @@ public class BooksController : ControllerBase
 {
     private readonly IMapper _mapper;
     private readonly IBookRepository _bookRepo;
-    public BooksController(IMapper mapper, IBookRepository bookRepo)
+    private readonly IFileService _fileService;
+    public BooksController(IMapper mapper, IBookRepository bookRepo, IFileService fileService)
     {
         _mapper = mapper;
         _bookRepo = bookRepo;
+        _fileService = fileService;
     }
 
     [HttpPost]
     public async Task<IActionResult> AddBook(BookCreateDto bookCreateDto)
     {
-        BookReadDto createdBook= await _bookRepo.AddBookAsync(bookCreateDto);
+        if (bookCreateDto.ImageFile?.Length > 1 * 1024 * 1024)
+        {
+            throw new BadRequestException("File size should not exceed 1 MB");
+        }
+        if (bookCreateDto.ImageFile != null)
+        {
+            string[] allowedFileExtentions = [".jpg", ".jpeg", ".png"];
+            string createdImageName = await _fileService.SaveFileAsync(bookCreateDto.ImageFile, allowedFileExtentions);
+            bookCreateDto.ImageUrl= createdImageName;
+        }
+
+        BookReadDto createdBook = await _bookRepo.AddBookAsync(bookCreateDto);
         return CreatedAtRoute(nameof(GetBookById),new { id=createdBook.Id},createdBook);
     }
 

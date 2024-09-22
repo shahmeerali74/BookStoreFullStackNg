@@ -13,6 +13,7 @@ public class BookCreateDto
     [MaxLength(200)]
     public string Description { get; set; } = string.Empty;
     public double Price { get; set; }
+    public string ? ImageUrl { get; set; }
 
     [Required]
     public IFormFile? ImageFile { get; set; }
