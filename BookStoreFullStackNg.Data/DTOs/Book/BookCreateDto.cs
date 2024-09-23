@@ -15,7 +15,6 @@ public class BookCreateDto
     public double Price { get; set; }
     public string ? ImageUrl { get; set; }
 
-    [Required]
     public IFormFile? ImageFile { get; set; }
     public int PublishedYear { get; set; }
 

@@ -56,6 +56,20 @@ public class BooksController : ControllerBase
         {
             throw new NotFoundException($"Book with id:{id} does not found");
         }
+
+        // If book have image, but you forget to pass it
+        if(string.IsNullOrWhiteSpace(existingBook.ImageUrl)==false && string.IsNullOrWhiteSpace(bookToUpdate.ImageUrl))
+        {
+            throw new NotFoundException("You are not passing the imageUrl, while this book has an image");
+        }
+
+        // if someone is manually trying to change the imageUrl
+        // if book has image, you are not uploading the file but you are passing the different url than the existing one
+        if (bookToUpdate.ImageFile == null && existingBook.ImageUrl != bookToUpdate.ImageUrl)
+        {
+            throw new NotFoundException("Invalid imageUrl");
+        }
+
         string? oldImage = existingBook.ImageUrl;
         if (bookToUpdate.ImageFile != null)
         {
