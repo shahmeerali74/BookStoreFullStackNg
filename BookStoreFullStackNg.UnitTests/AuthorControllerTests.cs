@@ -1,12 +1,9 @@
-
 using AutoMapper;
 using BookStoreFullStackNg.Api.Controllers;
 using BookStoreFullStackNg.Api.Exceptions;
 using BookStoreFullStackNg.Data.Domain;
-using BookStoreFullStackNg.Data.DTOs;
 using BookStoreFullStackNg.Data.DTOs.Author;
 using BookStoreFullStackNg.Data.DTOs.Common;
-using BookStoreFullStackNg.Data.Reopositories.Implementations;
 using BookStoreFullStackNg.Data.Reopositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
@@ -47,7 +44,7 @@ public class AuthorControllerTests
         // Assert
         var okObjectResult = Assert.IsType<OkObjectResult>(result);
         var newList = Assert.IsType<PagedList<AuthorReadDTO>>(okObjectResult.Value);
-        Assert.Equal(authors.Count, newList.Items.Count);
+        Assert.Equal(pagedList.Items.Count, newList.Items.Count);
     }
 
     [Fact]
