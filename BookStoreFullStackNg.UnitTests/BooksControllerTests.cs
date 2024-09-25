@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BookStoreFullStackNg.Api.Controllers;
+using BookStoreFullStackNg.Api.Exceptions;
 using BookStoreFullStackNg.Data.Domain;
 using BookStoreFullStackNg.Data.DTOs;
 using BookStoreFullStackNg.Data.DTOs.Author;
@@ -96,4 +97,82 @@ public class BooksControllerTests
         Assert.Equal(createdBookMock.Id, createdBook.Id);
     }
 
-}
+    [Fact]
+    public async Task UpdateBook_Returns_NoContent()
+    {
+        //arrange
+        var bookToUpdate = new BookUpdateDto
+        {
+            Id= 1,
+            Title="book1",
+            Description="ddd1",
+            Price=120,
+            AuthorIds = [1],
+            GenreIds=[7],
+            ImageUrl="",
+            ImageFile=null,
+            PublishedYear=2008
+        };
+        var existingBookMock = new BookReadDto
+        {
+            Id = 1,
+            Title = "book1",
+            Description = "ddd1",
+            Price = 120,
+            ImageUrl = "",
+            PublishedYear = 2008,
+            Genres = [new GenreReadDto(7, "Programming")],
+            Authors = [new AuthorReadDTO(1,"Robert C Martin")]
+        };
+        _bookRepository.GetBookByIdAsync(bookToUpdate.Id).Returns(existingBookMock);
+
+        // act
+        var result = await _controller.UpdateBook(bookToUpdate.Id, bookToUpdate);
+
+        // assert
+        Assert.IsType<NoContentResult>(result);
+    }
+
+    [Fact]
+    public async Task UpdateBook_ThrowsNotFoundException_WhenBookDoesNotExists()
+    {
+        //arrange
+        var bookToUpdate = new BookUpdateDto
+        {
+            Id = 999,
+            Title = "book1",
+            Description = "ddd1",
+            Price = 120,
+            AuthorIds = [1],
+            GenreIds = [7],
+            ImageUrl = "",
+            ImageFile = null,
+            PublishedYear = 2008
+        };
+
+        // act and assert
+        await Assert.ThrowsAsync<NotFoundException>(()=>_controller.UpdateBook(bookToUpdate.Id,bookToUpdate));
+    }
+
+    [Fact]
+    public async Task UpdateBook_ThrowsBadRequests_WhenIdMismatch()
+    {
+        //arrange
+        var bookToUpdate = new BookUpdateDto
+        {
+            Id = 999,
+            Title = "book1",
+            Description = "ddd1",
+            Price = 120,
+            AuthorIds = [1],
+            GenreIds = [7],
+            ImageUrl = "",
+            ImageFile = null,
+            PublishedYear = 2008
+        };
+
+        // act & assert
+        await Assert.ThrowsAsync<BadRequestException>(()=>_controller.UpdateBook(2,bookToUpdate));
+    }
+
+    }
