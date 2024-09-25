@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using BookStoreFullStackNg.Api.Controllers;
 using BookStoreFullStackNg.Data.Domain;
+using BookStoreFullStackNg.Data.DTOs;
+using BookStoreFullStackNg.Data.DTOs.Author;
 using BookStoreFullStackNg.Data.DTOs.Book;
 using BookStoreFullStackNg.Data.DTOs.Common;
 using BookStoreFullStackNg.Data.Reopositories.Interfaces;
@@ -52,6 +54,46 @@ public class BooksControllerTests
         Assert.Equal(mockPagedBooks.HasNext, pagedList.HasNext);
         Assert.Equal(mockPagedBooks.HasPrevious, pagedList.HasPrevious);
         Assert.Equal(mockPagedBooks.PageSize, pagedList.PageSize);
+    }
+
+    [Fact]
+    public async Task CreateBook_Returns_CreatedAtRoute_With_BookReadDto()
+    {
+        // arrange
+        var bookToCreate = new BookCreateDto
+        {
+            Title = "book1",
+            Description = "dddd",
+            ImageFile = null,
+            Price = 300,
+            PublishedYear = 2008,
+            GenreIds = [7],
+            AuthorIds = [1]
+        };
+        var createdBookMock = new BookReadDto
+        {
+            Id = 1,
+            Title = "book1",
+            Description = "dddd",
+            ImageUrl = "",
+            Price = 300,
+            PublishedYear = 2008,
+            Genres = [new GenreReadDto(7, "Programming")],
+            Authors = [new AuthorReadDTO(1,"Robert C Martin")
+            ]
+        };
+        _bookRepository.AddBookAsync(bookToCreate).Returns(createdBookMock);
+
+        // act
+        var result = await _controller.AddBook(bookToCreate) ;
+
+        // Assert
+        var createdResult= Assert.IsType<CreatedAtRouteResult>(result);
+        Assert.Equal(nameof(_controller.GetBookById), createdResult.RouteName);
+        Assert.Equal(1, createdResult.RouteValues["id"]);
+
+        var createdBook = Assert.IsType<BookReadDto>(createdResult.Value);
+        Assert.Equal(createdBookMock.Id, createdBook.Id);
     }
 
 }
