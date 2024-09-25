@@ -30,8 +30,8 @@ public class BooksControllerTests
     {
         _bookRepository = Substitute.For<IBookRepository>();
         _mapper = Substitute.For<IMapper>();
-        _fileService= Substitute.For<IFileService>();
-        _controller = new BooksController(_mapper, _bookRepository,_fileService);
+        _fileService = Substitute.For<IFileService>();
+        _controller = new BooksController(_mapper, _bookRepository, _fileService);
     }
 
     [Fact]
@@ -39,7 +39,7 @@ public class BooksControllerTests
     {
         // arrange
         var queryParameter = new BookQueryParameter();
-        var mockPagedBooks = new PagedList<Book>(books,books.Count,1,5);
+        var mockPagedBooks = new PagedList<Book>(books, books.Count, 1, 5);
         _bookRepository.GetBooksAsync(queryParameter).Returns(mockPagedBooks);
 
         // act
@@ -47,7 +47,7 @@ public class BooksControllerTests
 
         // assert
 
-        var okResult= Assert.IsType<OkObjectResult>(result);
+        var okResult = Assert.IsType<OkObjectResult>(result);
         var pagedList = Assert.IsType<PagedList<BookReadDto>>(okResult.Value);
         Assert.Equal(mockPagedBooks.Items.Count(), pagedList.Items.Count());
         Assert.Equal(mockPagedBooks.TotalCount, pagedList.TotalCount);
@@ -86,10 +86,10 @@ public class BooksControllerTests
         _bookRepository.AddBookAsync(bookToCreate).Returns(createdBookMock);
 
         // act
-        var result = await _controller.AddBook(bookToCreate) ;
+        var result = await _controller.AddBook(bookToCreate);
 
         // Assert
-        var createdResult= Assert.IsType<CreatedAtRouteResult>(result);
+        var createdResult = Assert.IsType<CreatedAtRouteResult>(result);
         Assert.Equal(nameof(_controller.GetBookById), createdResult.RouteName);
         Assert.Equal(1, createdResult.RouteValues["id"]);
 
@@ -103,15 +103,15 @@ public class BooksControllerTests
         //arrange
         var bookToUpdate = new BookUpdateDto
         {
-            Id= 1,
-            Title="book1",
-            Description="ddd1",
-            Price=120,
+            Id = 1,
+            Title = "book1",
+            Description = "ddd1",
+            Price = 120,
             AuthorIds = [1],
-            GenreIds=[7],
-            ImageUrl="",
-            ImageFile=null,
-            PublishedYear=2008
+            GenreIds = [7],
+            ImageUrl = "",
+            ImageFile = null,
+            PublishedYear = 2008
         };
         var existingBookMock = new BookReadDto
         {
@@ -122,7 +122,7 @@ public class BooksControllerTests
             ImageUrl = "",
             PublishedYear = 2008,
             Genres = [new GenreReadDto(7, "Programming")],
-            Authors = [new AuthorReadDTO(1,"Robert C Martin")]
+            Authors = [new AuthorReadDTO(1, "Robert C Martin")]
         };
         _bookRepository.GetBookByIdAsync(bookToUpdate.Id).Returns(existingBookMock);
 
@@ -151,7 +151,7 @@ public class BooksControllerTests
         };
 
         // act and assert
-        await Assert.ThrowsAsync<NotFoundException>(()=>_controller.UpdateBook(bookToUpdate.Id,bookToUpdate));
+        await Assert.ThrowsAsync<NotFoundException>(() => _controller.UpdateBook(bookToUpdate.Id, bookToUpdate));
     }
 
     [Fact]
@@ -172,7 +172,42 @@ public class BooksControllerTests
         };
 
         // act & assert
-        await Assert.ThrowsAsync<BadRequestException>(()=>_controller.UpdateBook(2,bookToUpdate));
+        await Assert.ThrowsAsync<BadRequestException>(() => _controller.UpdateBook(2, bookToUpdate));
     }
 
+    [Fact]
+    public async Task DeleteBook_ReturnsNoContent()
+    {
+        // arrrange
+        var id= 1;
+        var existingBookMock = new BookReadDto
+        {
+            Id = 1,
+            Title = "book1",
+            Description = "ddd1",
+            Price = 120,
+            ImageUrl = "",
+            PublishedYear = 2008,
+            Genres = [new GenreReadDto(7, "Programming")],
+            Authors = [new AuthorReadDTO(1, "Robert C Martin")]
+        };
+        _bookRepository.GetBookByIdAsync(id).Returns(existingBookMock);
+
+        // act 
+        var result = await _controller.DeleteBook(id);
+
+        // assert
+        Assert.IsType<NoContentResult>(result);
     }
+
+    [Fact]
+    public async Task DeleteBook_Returns_NotFound_IfBookNotExists()
+    {
+        // arrange
+        int id = 999;
+
+        // act & assert
+        await Assert.ThrowsAsync<NotFoundException>(()=>_controller.DeleteBook(id));
+    }
+
+}
