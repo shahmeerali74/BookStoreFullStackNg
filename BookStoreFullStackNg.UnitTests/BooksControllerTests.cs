@@ -210,4 +210,37 @@ public class BooksControllerTests
         await Assert.ThrowsAsync<NotFoundException>(()=>_controller.DeleteBook(id));
     }
 
+    [Fact]
+    public async Task GetBookById_ReturnsOk_WithBookReadDto()
+    {
+        // arrange
+        var bookMock = new BookReadDto
+        {
+            Id = 1,
+            Title = "book1",
+            Description = "ddd1",
+            Price = 120,
+            ImageUrl = "",
+            PublishedYear = 2008,
+            Genres = [new GenreReadDto(7, "Programming")],
+            Authors = [new AuthorReadDTO(1, "Robert C Martin")]
+        };
+        _bookRepository.GetBookByIdAsync(1).Returns(bookMock);
+
+        // act
+        var result = await _controller.GetBookById(1);
+
+        // assert
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var book = Assert.IsType<BookReadDto>(okResult.Value);
+        Assert.Equal(bookMock.Id,book.Id);
+    }
+
+    [Fact]
+    public async Task GetBookById_ThrowsNotFoundException_WhenIdDoesNotExists()
+    {
+        // arrange,act,assert
+        await Assert.ThrowsAsync<NotFoundException>(()=>_controller.GetBookById(9999));
+    }
+
 }
