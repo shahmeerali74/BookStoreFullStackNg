@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BookStoreFullStackNg.Api.Exceptions;
+using BookStoreFullStackNg.Data.Constants;
 using BookStoreFullStackNg.Data.Domain;
 using BookStoreFullStackNg.Data.DTOs;
 using BookStoreFullStackNg.Data.DTOs.Author;
@@ -7,12 +8,14 @@ using BookStoreFullStackNg.Data.DTOs.Book;
 using BookStoreFullStackNg.Data.DTOs.Common;
 using BookStoreFullStackNg.Data.Reopositories.Interfaces;
 using BookStoreFullStackNg.Data.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookStoreFullStackNg.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(Roles =Roles.Admin)]
 public class BooksController : ControllerBase
 {
     private readonly IMapper _mapper;

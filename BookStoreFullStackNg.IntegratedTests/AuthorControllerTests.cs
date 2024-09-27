@@ -5,7 +5,6 @@ using BookStoreFullStackNg.Data.Constants;
 using BookStoreFullStackNg.Data.Domain;
 using BookStoreFullStackNg.Data.DTOs.Author;
 using BookStoreFullStackNg.Data.DTOs.Common;
-using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 
 namespace BookStoreFullStackNg.IntegratedTests;
 
@@ -59,7 +58,7 @@ public class AuthorControllerTests : IClassFixture<CustomWebApplicationFactory<P
         Assert.Equal(1, author.Id); // 1 is expected, author.Id is actual
     }
 
-
+    [Fact]
     public async Task GetAuthor_ReturnNotFound_WhenPersonDoesNotExist()
     {
         // arrange
