@@ -88,7 +88,7 @@ public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<Pr
         Price = 123,
         Description = "desc1",
         PublishedYear = 2008,
-        ImageUrl = "",
+        ImageUrl = "abc.jpg",
         BookAuthors = new List<BookAuthor>
         {
             new BookAuthor { Id = 1, BookId = 1, AuthorId = 1 }
@@ -105,7 +105,7 @@ public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<Pr
         Price = 120,
         Description = "desc2",
         PublishedYear = 2009,
-        ImageUrl = "",
+        ImageUrl = "def.jpg",
         BookAuthors = new List<BookAuthor>
         {
             new BookAuthor { Id = 2, BookId = 2, AuthorId = 2 }

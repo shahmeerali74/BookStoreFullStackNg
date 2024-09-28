@@ -31,6 +31,9 @@ public class BooksController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> AddBook(BookCreateDto bookCreateDto)
     {
+        Console.WriteLine(bookCreateDto.Title);
+        Console.WriteLine(bookCreateDto.Description);
+        Console.WriteLine(bookCreateDto.Price);
         if (bookCreateDto.ImageFile?.Length > 1 * 1024 * 1024)
         {
             throw new BadRequestException("File size should not exceed 1 MB");

@@ -73,22 +73,21 @@ public class BooksControllerTests: IClassFixture<CustomWebApplicationFactory<Pro
     {
         // arrange
         _client.DefaultRequestHeaders.Add(TestAuthHandler.TestUserRolesHeader, Roles.Admin);
-        var book = new BookCreateDto
-        {
-            Title = "book3",
-            Description = "description3",
-            Price = 124,
-            ImageFile = null,
-            PublishedYear = 2008,
-            GenreIds = { 7 },
-            AuthorIds = { 1 }
-        };
-        var jsonData = JsonSerializer.Serialize(book);
-        var content = new StringContent(jsonData,Encoding.UTF8, "application/json");
+        var content = new MultipartFormDataContent
+            {
+                { new StringContent("Test Book"), "Title" },
+                { new StringContent("This is a test description."), "Description" },
+                { new StringContent("29.99"), "Price" },
+                { new StringContent("2022"), "PublishedYear" },
+                { new StreamContent(new MemoryStream(new byte[0])), "ImageFile", "book.jpg" }
+            };
+        content.Add(new StringContent("1"), "GenreId");
+        content.Add(new StringContent("2"), "GenreId");
+        content.Add(new StringContent("1"), "AuthorId");
 
         // act
-        var response = await _client.PostAsync(baseUrl, content);
-       // response.EnsureSuccessStatusCode();
+        using var response = await _client.PostAsync(baseUrl, content);
+        response.EnsureSuccessStatusCode();
         var jsonResponse = await response.Content.ReadAsStringAsync();
         var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         var createdBook = JsonSerializer.Deserialize<BookReadDto>(jsonResponse, options);
@@ -103,29 +102,25 @@ public class BooksControllerTests: IClassFixture<CustomWebApplicationFactory<Pro
     {
         // arrange
         _client.DefaultRequestHeaders.Add(TestAuthHandler.TestUserRolesHeader, Roles.Admin);
-        var book=new BookUpdateDto
-        {
-            Id=1,
-            Title = "book1",
-            Description = "ddd",
-            Price = 123,
-            ImageFile = null,
-            ImageUrl=null,
-            PublishedYear = 2008,
-            GenreIds = { 1 },
-            AuthorIds = { 1 }
-        };
-        var options = new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        };
-        var jsonData = JsonSerializer.Serialize(book,options);
-        var content = new StringContent(jsonData,Encoding.UTF8, "application/json");
+        var content = new MultipartFormDataContent
+            {
+                { new StringContent("1"), "Id" },
+                { new StringContent("Test Book"), "Title" },
+                { new StringContent("This is a test description."), "Description" },
+                { new StringContent("29.99"), "Price" },
+                { new StringContent("2022"), "PublishedYear" },
+                { new StreamContent(new MemoryStream(new byte[0])), "ImageFile", "book.jpg" },
+                { new StringContent("abc-def.jpg"), "ImageUrl" },
+
+            };
+        content.Add(new StringContent("1"), "GenreId");
+        content.Add(new StringContent("2"), "GenreId");
+        content.Add(new StringContent("1"), "AuthorId");
 
         // act
         var response = await _client.PutAsync(baseUrl + "/1", content);
         var jsonResponse = await response.Content.ReadAsStringAsync();
-        //response.EnsureSuccessStatusCode();
+        response.EnsureSuccessStatusCode();
 
         // assert
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
