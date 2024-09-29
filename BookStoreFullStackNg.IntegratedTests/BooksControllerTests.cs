@@ -109,9 +109,7 @@ public class BooksControllerTests: IClassFixture<CustomWebApplicationFactory<Pro
                 { new StringContent("This is a test description."), "Description" },
                 { new StringContent("29.99"), "Price" },
                 { new StringContent("2022"), "PublishedYear" },
-                { new StreamContent(new MemoryStream(new byte[0])), "ImageFile", "book.jpg" },
-                { new StringContent("abc-def.jpg"), "ImageUrl" },
-
+                { new StringContent(""), "ImageUrl" },
             };
         content.Add(new StringContent("1"), "GenreId");
         content.Add(new StringContent("2"), "GenreId");
@@ -131,19 +129,18 @@ public class BooksControllerTests: IClassFixture<CustomWebApplicationFactory<Pro
     {
         // arrange
         _client.DefaultRequestHeaders.Add(TestAuthHandler.TestUserRolesHeader, Roles.Admin);
-        var book = new BookUpdateDto
-        {
-            Id = 1,
-            Title = "book1",
-            Description = "ddd",
-            Price = 123,
-            ImageFile = null,
-            PublishedYear = 2008,
-            GenreIds = { 1 },
-            AuthorIds = { 1 }
-        };
-        var jsonData= JsonSerializer.Serialize(book);
-        var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+        var content = new MultipartFormDataContent
+            {
+                { new StringContent("1"), "Id" },
+                { new StringContent("Test Book"), "Title" },
+                { new StringContent("This is a test description."), "Description" },
+                { new StringContent("29.99"), "Price" },
+                { new StringContent("2022"), "PublishedYear" },
+                { new StringContent(""), "ImageUrl" },
+            };
+        content.Add(new StringContent("1"), "GenreId");
+        content.Add(new StringContent("2"), "GenreId");
+        content.Add(new StringContent("1"), "AuthorId");
 
         // act
         var response = await _client.PutAsync(baseUrl + "/2", content);
@@ -157,19 +154,18 @@ public class BooksControllerTests: IClassFixture<CustomWebApplicationFactory<Pro
     {
         // arrange
         _client.DefaultRequestHeaders.Add(TestAuthHandler.TestUserRolesHeader, Roles.Admin);
-        var book = new BookUpdateDto
-        {
-            Id = 999,
-            Title = "book1",
-            Description = "ddd",
-            Price = 123,
-            ImageFile = null,
-            PublishedYear = 2008,
-            GenreIds = [ 1 ],
-            AuthorIds = [ 1 ]
-        };
-        var jsonData = JsonSerializer.Serialize(book);
-        var content = new StringContent(jsonData,Encoding.UTF8, "application/json");
+        var content = new MultipartFormDataContent
+            {
+                { new StringContent("999"), "Id" },
+                { new StringContent("Test Book"), "Title" },
+                { new StringContent("This is a test description."), "Description" },
+                { new StringContent("29.99"), "Price" },
+                { new StringContent("2022"), "PublishedYear" },
+                { new StringContent(""), "ImageUrl" },
+            };
+        content.Add(new StringContent("1"), "GenreId");
+        content.Add(new StringContent("2"), "GenreId");
+        content.Add(new StringContent("1"), "AuthorId");
 
         // act
         var response = await _client.PutAsync(baseUrl + "/999", content);
