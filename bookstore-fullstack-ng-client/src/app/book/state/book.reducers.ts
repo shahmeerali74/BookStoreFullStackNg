@@ -68,14 +68,57 @@ export const bookReducer = createReducer(
     ...state,
     loading: false,
   })),
-  on(BookActions.addBookSucces, (state, { book }) => ({
+  on(BookActions.updateBookSuccess, (state, { book }) => ({
     ...state,
-    books: state.books.filter((b) => (b.id == book.id ? book : b)),
+    books: state.books.map((b) => (b.id == book.id ? book : b)),
     loading: false,
   })),
-  on(BookActions.addBookFailure, (state, { error }) => ({
+  on(BookActions.updateBookFailure, (state, { error }) => ({
     ...state,
     error,
     loading: false,
+  })),
+  on(BookActions.deleteBook, (state, { id }) => ({
+    ...state,
+    loading: true,
+  })),
+  on(BookActions.deleteBookSuccess, (state, { id }) => ({
+    ...state,
+    state: state.books.filter((a) => a.id != id),
+    loading: false,
+  })),
+  on(
+    BookActions.setPublishedFilter,
+    (state, { publishedFrom, publishedTo }) => ({
+      ...state,
+      publishedFrom,
+      publishedTo,
+    })
+  ),
+  on(BookActions.setCurrentPage, (state, { page }) => {
+    return {
+      ...state,
+      pageNumber: page,
+    };
+  }),
+  on(BookActions.setPageSize, (state, { pageSize }) => {
+    return {
+      ...state,
+      pageSize,
+    };
+  }),
+  on(BookActions.setTotalCount, (state, { totalCount }) => {
+    return {
+      ...state,
+      totalCount,
+    };
+  }),
+  on(BookActions.setSearchTerm, (state, { searchTerm }) => ({
+    ...state,
+    searchTerm,
+  })),
+  on(BookActions.setSortBy, (state, { sortBy }) => ({
+    ...state,
+    sortBy,
   }))
 );
