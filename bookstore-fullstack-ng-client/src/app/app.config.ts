@@ -19,14 +19,17 @@ import {
   authorReducers,
 } from "./authors/state/author.reducers";
 import { AuthorEffects } from "./authors/state/author.effects";
+import { bookFeatureKey, bookReducer } from "./book/state/book.reducers";
+import { BookEffects } from "./book/state/book.effects";
 
 const reducers = {
   [genreFeatureKey]: genreReducers,
   [accountFeatureKey]: accountReducers,
   [authorFeaturKey]: authorReducers,
+  [bookFeatureKey]: bookReducer,
 };
 
-const effects = [GenreEffects, AccountEffects, AuthorEffects];
+const effects = [GenreEffects, AccountEffects, AuthorEffects, BookEffects];
 
 export const appConfig: ApplicationConfig = {
   providers: [
