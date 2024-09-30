@@ -3,47 +3,47 @@ import { bookFeatureKey, BookState } from "./book.reducers";
 
 export const selectBookState = createFeatureSelector<BookState>(bookFeatureKey);
 
-export const selectAuthors = createSelector(
+export const selectBooks = createSelector(
   selectBookState,
   (state) => state.books
 );
 
-export const selectAuthorLoading = createSelector(
+export const selectBookLoading = createSelector(
   selectBookState,
   (state) => state.loading
 );
 
-export const selectAuthorError = createSelector(
+export const selectBookError = createSelector(
   selectBookState,
   (state) => state.error
 );
 
-export const selectAuthorTotalCount = createSelector(
+export const selectBookTotalCount = createSelector(
   selectBookState,
   (state) => state.totalCount
 );
 
-export const selectAuthorCurrentPage = createSelector(
+export const selectBookCurrentPage = createSelector(
   selectBookState,
   (state) => state.pageNumber
 );
 
-export const selectAuthorPageSize = createSelector(
+export const selectBookPageSize = createSelector(
   selectBookState,
   (state) => state.pageSize
 );
 
-export const selectAuthorTotalPages = createSelector(
+export const selectBookTotalPages = createSelector(
   selectBookState,
   (state) => state.totalPages
 );
 
-export const selectAuthorHasNext = createSelector(
+export const selectBookHasNext = createSelector(
   selectBookState,
   (state) => state.hasNext
 );
 
-export const selectAuthorHasPrevious = createSelector(
+export const selectBookHasPrevious = createSelector(
   selectBookState,
   (state) => state.hasPrevious
 );

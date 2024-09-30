@@ -36,11 +36,27 @@ export class BookService {
   }
 
   addBook(book: BookCreateModel): Observable<BookReadModel> {
-    return this.http.post<BookReadModel>(this.baseUrl, book);
+    const formData = new FormData();
+    if (book.imageFile) {
+      formData.append("imageFile", book.imageFile);
+      delete book.imageFile;
+    }
+    Object.entries(book).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+    return this.http.post<BookReadModel>(this.baseUrl, formData);
   }
 
   updateBook(book: BookCreateModel): Observable<any> {
-    return this.http.put<any>(this.baseUrl + "/" + book.id, book);
+    const formData = new FormData();
+    if (book.imageFile) {
+      formData.append("imageFile", book.imageFile);
+      delete book.imageFile;
+    }
+    Object.entries(book).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+    return this.http.put<any>(this.baseUrl + "/" + book.id, formData);
   }
 
   deleteBook(id: number) {

@@ -6,6 +6,6 @@ export interface BookCreateModel {
   publishedYear: number;
   authorIds: number[];
   genreIds: number[];
-  ImageFile: File | null;
-  ImageUrl: string | null;
+  imageFile?: File | null;
+  imageUrl?: string | null;
 }
