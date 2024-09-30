@@ -6,6 +6,7 @@ import { selectBooks } from "./state/book.selectors";
 import { AsyncPipe, NgIf } from "@angular/common";
 import { BookReadModel } from "./Data/book-read.model";
 import { Observable } from "rxjs";
+import { SortModel } from "../common/sort.model";
 
 @Component({
   selector: "app-book",
@@ -13,7 +14,7 @@ import { Observable } from "rxjs";
   imports: [BookListComponent, NgIf, AsyncPipe],
   template: `
     <ng-container *ngIf="books$ | async as books">
-      <app-book-list [books]="books"></app-book-list>
+      <app-book-list [books]="books" (sort)="onSort($event)"></app-book-list>
     </ng-container>
   `,
 
@@ -25,7 +26,20 @@ export class BookComponent implements OnInit {
   books$: Observable<ReadonlyArray<BookReadModel>> =
     this.store.select(selectBooks);
 
-  ngOnInit(): void {
+  loadBooks() {
     this.store.dispatch(BookActions.loadBooks());
+  }
+
+  ngOnInit(): void {
+    this.loadBooks();
+  }
+
+  onSort(sort: SortModel) {
+    this.store.dispatch(
+      BookActions.setSortBy({
+        sortBy: `${sort.sortColumn} ${sort.sortDirection}`,
+      })
+    );
+    this.loadBooks();
   }
 }
