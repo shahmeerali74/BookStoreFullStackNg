@@ -14,7 +14,12 @@ import { SortModel } from "../common/sort.model";
   imports: [BookListComponent, NgIf, AsyncPipe],
   template: `
     <ng-container *ngIf="books$ | async as books">
-      <app-book-list [books]="books" (sort)="onSort($event)"></app-book-list>
+      <app-book-list
+        [books]="books"
+        (sort)="onSort($event)"
+        (delete)="onDelete($event)"
+        (edit)="onAddUpdate('Update', $event)"
+      ></app-book-list>
     </ng-container>
   `,
 
@@ -41,5 +46,16 @@ export class BookComponent implements OnInit {
       })
     );
     this.loadBooks();
+  }
+
+  onAddUpdate(action: string, book: BookReadModel | null = null) {}
+
+  onDelete(book: BookReadModel) {
+    if (
+      window.confirm(`Are you sure to delete the record (book: ${book.title})?`)
+    ) {
+      this.store.dispatch(BookActions.deleteBook({ id: book.id }));
+      this.loadBooks();
+    }
   }
 }
