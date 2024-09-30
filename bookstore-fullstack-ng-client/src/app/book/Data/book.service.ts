@@ -1,5 +1,5 @@
 import { inject, Injectable } from "@angular/core";
-import { Observable } from "rxjs";
+import { map, Observable } from "rxjs";
 import { PagedList } from "../../common/paged-list.model";
 import { BookCreateModel } from "./book-create.model";
 import { HttpClient, HttpParams } from "@angular/common/http";
@@ -28,7 +28,24 @@ export class BookService {
       params = params.set("publishedFrom", publishedFrom);
       params = params.set("publishedTo", publishedTo);
     }
-    return this.http.get<PagedList<BookReadModel>>(this.baseUrl, { params });
+    return this.http
+      .get<PagedList<BookReadModel>>(this.baseUrl, { params })
+      .pipe(
+        map((response) => ({
+          ...response,
+          items: response.items.map((book) => ({
+            ...book,
+            authorNames: book.authors
+              .map((author) => author.authorName)
+              .join(", ")
+              .split(","),
+            genreNames: book.genres
+              .map((genre) => genre.genreName)
+              .join(", ")
+              .split(","),
+          })),
+        }))
+      );
   }
 
   getBookById(id: number): Observable<BookReadModel> {

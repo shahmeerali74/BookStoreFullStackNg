@@ -10,4 +10,6 @@ export interface BookReadModel {
   publishedYear: number;
   authors: Author[];
   genres: GenreModel[];
+  authorNames: Array<string>;
+  genreNames: Array<string>;
 }

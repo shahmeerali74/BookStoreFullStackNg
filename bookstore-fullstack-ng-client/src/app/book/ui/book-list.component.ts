@@ -60,12 +60,12 @@ import { MatTableModule } from "@angular/material/table";
 
       <ng-container matColumnDef="genres">
         <th mat-header-cell *matHeaderCellDef>Genres</th>
-        <td mat-cell *matCellDef="let element">{{ element.genres }}</td>
+        <td mat-cell *matCellDef="let element">{{ element.genreNames }}</td>
       </ng-container>
 
       <ng-container matColumnDef="authors">
         <th mat-header-cell *matHeaderCellDef>Authors</th>
-        <td mat-cell *matCellDef="let element">{{ element.authors }}</td>
+        <td mat-cell *matCellDef="let element">{{ element.authorNames }}</td>
       </ng-container>
 
       <ng-container matColumnDef="actions">

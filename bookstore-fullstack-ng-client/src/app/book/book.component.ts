@@ -4,6 +4,8 @@ import { Store } from "@ngrx/store";
 import { BookActions } from "./state/book.actions";
 import { selectBooks } from "./state/book.selectors";
 import { AsyncPipe, NgIf } from "@angular/common";
+import { BookReadModel } from "./Data/book-read.model";
+import { Observable } from "rxjs";
 
 @Component({
   selector: "app-book",
@@ -20,7 +22,8 @@ import { AsyncPipe, NgIf } from "@angular/common";
 export class BookComponent implements OnInit {
   store = inject(Store);
 
-  books$ = this.store.select(selectBooks);
+  books$: Observable<ReadonlyArray<BookReadModel>> =
+    this.store.select(selectBooks);
 
   ngOnInit(): void {
     this.store.dispatch(BookActions.loadBooks());
