@@ -93,24 +93,13 @@ export class BookComponent implements OnInit, OnDestroy {
   }
 
   onAddUpdate(action: string, book: BookReadModel | null = null) {
-    const genres: Array<GenreModel> = [];
-    const authors: Array<Author> = [];
-
-    this.genres$.subscribe({
-      next: (genres) => {
-        genres = genres;
-      },
-      error: (error) => console.log,
-    });
-    this.authors$.subscribe({
-      next: (authors) => {
-        authors = authors;
-      },
-      error: (error) => console.log,
-    });
-
     const dialogRef = this.dialog.open(BookDialogComponent, {
-      data: { book, title: action + " Book", genres, authors },
+      data: {
+        book,
+        title: action + " Book",
+        genres$: this.genres$,
+        authors$: this.authors$,
+      },
     });
     dialogRef.componentInstance.submit
       .pipe(takeUntil(this.destroyed$))

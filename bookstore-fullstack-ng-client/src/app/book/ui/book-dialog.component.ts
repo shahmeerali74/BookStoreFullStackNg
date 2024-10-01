@@ -22,6 +22,9 @@ import { MatInputModule } from "@angular/material/input";
 import { BookCreateModel } from "../Data/book-create.model";
 import { Author } from "../../authors/data/author.model";
 import { GenreModel } from "../../genre/data/genre.model";
+import { NgSelectModule } from "@ng-select/ng-select";
+import { Observable } from "rxjs";
+import { AsyncPipe } from "@angular/common";
 
 @Component({
   selector: "app-book-dialog",
@@ -32,6 +35,8 @@ import { GenreModel } from "../../genre/data/genre.model";
     MatInputModule,
     MatButtonModule,
     MatDialogModule,
+    NgSelectModule,
+    AsyncPipe,
   ],
   template: `
     <h1 mat-dialog-title>
@@ -39,8 +44,9 @@ import { GenreModel } from "../../genre/data/genre.model";
     </h1>
 
     <div mat-dialog-content>
-      <form [formGroup]="bookForm" class="author-form">
+      <form [formGroup]="bookForm" class="book-form">
         <input type="hidden" formControlName="id" />
+        <input type="hidden" formControlName="imageUrl" />
         <mat-form-field appearance="fill">
           <mat-label>Title</mat-label>
           <input type="text" matInput formControlName="title" />
@@ -58,8 +64,34 @@ import { GenreModel } from "../../genre/data/genre.model";
 
         <mat-form-field appearance="fill">
           <mat-label>Published Year</mat-label>
-          <input type="text" matInput formControlName="publishedYear" />
+          <input type="number" matInput formControlName="publishedYear" />
         </mat-form-field>
+
+        <input type="file" (change)="onChange($event)" />
+
+        <ng-select
+          [items]="data.authors$ | async"
+          [multiple]="true"
+          [closeOnSelect]="false"
+          [hideSelected]="true"
+          bindLabel="authorName"
+          bindValue="id"
+          placeholder="Select Authors"
+          formControlName="authorIds"
+        >
+        </ng-select>
+
+        <ng-select
+          [items]="data.genres$ | async"
+          [multiple]="true"
+          [closeOnSelect]="false"
+          [hideSelected]="true"
+          bindLabel="genreName"
+          bindValue="id"
+          placeholder="Select Genres"
+          formControlName="genreIds"
+        >
+        </ng-select>
 
         <div mat-dialog-actions>
           <button
@@ -78,7 +110,20 @@ import { GenreModel } from "../../genre/data/genre.model";
       </form>
     </div>
   `,
-  styles: [``],
+  styles: [
+    `
+      mat-form-field,
+      ng-select {
+        width: 300px;
+      }
+
+      .book-form {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BookDialogComponent {
@@ -91,6 +136,8 @@ export class BookDialogComponent {
     publishedYear: new FormControl<number>(0),
     authorIds: new FormControl<number[]>([]),
     genreIds: new FormControl<number[]>([]),
+    imageUrl: new FormControl<string>(""),
+    imageFile: new FormControl<File | null>(null),
   });
 
   onCanceled() {
@@ -100,8 +147,13 @@ export class BookDialogComponent {
   onSubmit() {
     if (this.bookForm.valid) {
       const book: BookCreateModel = Object.assign(this.bookForm.value);
-      this.submit.emit(book);
+      console.log(book);
+      // this.submit.emit(book);
     }
+  }
+
+  onChange(event: any) {
+    this.bookForm.get("imageFile")?.setValue(event.target.files[0]);
   }
 
   constructor(
@@ -110,8 +162,8 @@ export class BookDialogComponent {
     public data: {
       book: BookCreateModel | null;
       title: string;
-      authors: Array<Author>;
-      genres: Array<GenreModel>;
+      authors$: Observable<Array<Author>>;
+      genres$: Observable<Array<GenreModel>>;
     }
   ) {
     if (data.book != null) {
