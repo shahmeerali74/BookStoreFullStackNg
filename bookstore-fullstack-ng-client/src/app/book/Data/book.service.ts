@@ -56,23 +56,42 @@ export class BookService {
     const formData = new FormData();
     if (book.imageFile) {
       formData.append("imageFile", book.imageFile);
-      delete book.imageFile;
     }
-    Object.entries(book).forEach(([key, value]) => {
-      formData.append(key, value);
-    });
-    return this.http.post<BookReadModel>(this.baseUrl, formData);
+    formData.append("title", book.title);
+    formData.append("description", book.description);
+    formData.append("price", book.price.toString());
+    formData.append("publishedYear", book.publishedYear.toString());
+    book.authorIds.forEach((id) => formData.append("authorIds", id.toString()));
+    book.genreIds.forEach((id) => formData.append("genreIds", id.toString()));
+    return this.http.post<BookReadModel>(this.baseUrl, formData).pipe(
+      map((book) => ({
+        ...book,
+        authorNames: book.authors
+          .map((author) => author.authorName)
+          .join(", ")
+          .split(","),
+        genreNames: book.genres
+          .map((genre) => genre.genreName)
+          .join(", ")
+          .split(","),
+      }))
+    );
   }
 
   updateBook(book: BookCreateModel): Observable<any> {
     const formData = new FormData();
     if (book.imageFile) {
       formData.append("imageFile", book.imageFile);
-      delete book.imageFile;
     }
-    Object.entries(book).forEach(([key, value]) => {
-      formData.append(key, value);
-    });
+    formData.append("title", book.title);
+    formData.append("description", book.description);
+    formData.append("price", book.price.toString());
+    if (book.imageUrl) {
+      formData.append("imageUrl", book.imageUrl);
+    }
+    formData.append("publishedYear", book.publishedYear.toString());
+    book.authorIds.forEach((id) => formData.append("authorIds", id.toString()));
+    book.genreIds.forEach((id) => formData.append("genreIds", id.toString()));
     return this.http.put<any>(this.baseUrl + "/" + book.id, formData);
   }
 

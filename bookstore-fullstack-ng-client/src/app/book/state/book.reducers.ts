@@ -54,11 +54,15 @@ export const bookReducer = createReducer(
     ...state,
     loading: false,
   })),
-  on(BookActions.addBookSucces, (state, { book }) => ({
-    ...state,
-    books: { ...state.books, book },
-    loading: false,
-  })),
+  on(BookActions.addBookSucces, (state, { book }) => {
+    console.log(book);
+    const newState = {
+      ...state,
+      books: [...state.books, book],
+      loading: false,
+    };
+    return newState;
+  }),
   on(BookActions.addBookFailure, (state, { error }) => ({
     ...state,
     error,

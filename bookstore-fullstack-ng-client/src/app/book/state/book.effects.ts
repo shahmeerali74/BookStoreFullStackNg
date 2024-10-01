@@ -45,7 +45,9 @@ export class BookEffects {
       ofType(BookActions.addBook),
       switchMap((action) =>
         this.bookService.addBook(action.book).pipe(
-          map((book) => BookActions.addBookSucces({ book })),
+          map((book) => {
+            return BookActions.addBookSucces({ book });
+          }),
           catchError((error) => of(BookActions.addBookFailure({ error })))
         )
       )

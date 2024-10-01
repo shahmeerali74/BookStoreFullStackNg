@@ -147,8 +147,7 @@ export class BookDialogComponent {
   onSubmit() {
     if (this.bookForm.valid) {
       const book: BookCreateModel = Object.assign(this.bookForm.value);
-      console.log(book);
-      // this.submit.emit(book);
+      this.submit.emit(book);
     }
   }
 
