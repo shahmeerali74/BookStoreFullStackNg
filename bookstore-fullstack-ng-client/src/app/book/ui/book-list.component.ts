@@ -11,11 +11,19 @@ import { MatSortModule, Sort } from "@angular/material/sort";
 import { MatIconModule } from "@angular/material/icon";
 import { MatButtonModule } from "@angular/material/button";
 import { MatTableModule } from "@angular/material/table";
+import { environment } from "../../../environments/environment.development";
+import { NgIf } from "@angular/common";
 
 @Component({
   selector: "app-book-list",
   standalone: true,
-  imports: [MatTableModule, MatButtonModule, MatIconModule, MatSortModule],
+  imports: [
+    MatTableModule,
+    MatButtonModule,
+    MatIconModule,
+    MatSortModule,
+    NgIf,
+  ],
   template: `
     <table
       mat-table
@@ -34,6 +42,17 @@ import { MatTableModule } from "@angular/material/table";
           Title
         </th>
         <td mat-cell *matCellDef="let element">{{ element.title }}</td>
+      </ng-container>
+      <ng-container matColumnDef="imageUrl">
+        <th mat-header-cell *matHeaderCellDef>Image</th>
+        <td mat-cell *matCellDef="let element">
+          <img
+            style="height: 80px;width:100px;"
+            *ngIf="element.imageUrl"
+            [src]="this.imageBaseUrl + element.imageUrl"
+            alt="image"
+          />
+        </td>
       </ng-container>
 
       <ng-container matColumnDef="description">
@@ -105,9 +124,11 @@ export class BookListComponent {
   @Output() edit = new EventEmitter<BookReadModel>();
   @Output() delete = new EventEmitter<BookReadModel>();
   @Output() sort = new EventEmitter<SortModel>();
+  imageBaseUrl = environment.baseUrl + "/resources/";
 
   displayedCoulumns = [
     "title",
+    "imageUrl",
     "description",
     "price",
     "publishedYear",
