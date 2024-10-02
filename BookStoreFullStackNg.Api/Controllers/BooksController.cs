@@ -31,9 +31,6 @@ public class BooksController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> AddBook(BookCreateDto bookCreateDto)
     {
-        Console.WriteLine(bookCreateDto.Title);
-        Console.WriteLine(bookCreateDto.Description);
-        Console.WriteLine(bookCreateDto.Price);
         if (bookCreateDto.ImageFile?.Length > 1 * 1024 * 1024)
         {
             throw new BadRequestException("File size should not exceed 1 MB");
@@ -101,14 +98,16 @@ public class BooksController : ControllerBase
             _fileService.DeleteFile(oldImage);
         }
 
-        return NoContent();
+        // return the update entries
+        BookReadDto? bookToReturn = await _bookRepo.GetBookByIdAsync(bookToUpdate.Id);
+
+        return Ok(bookToReturn);
     }
 
 
     [HttpGet]
     public async Task<IActionResult> GetBooks([FromQuery] BookQueryParameter queryParameter)
     {
-        Console.WriteLine(queryParameter.ToString());
         var pagedBooks = await _bookRepo.GetBooksAsync(queryParameter); // have related data
         var books = pagedBooks.Items.Select(b =>
             new BookReadDto

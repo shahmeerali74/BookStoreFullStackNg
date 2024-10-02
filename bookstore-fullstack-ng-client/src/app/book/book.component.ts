@@ -5,7 +5,7 @@ import { BookActions } from "./state/book.actions";
 import { selectBooks, selectBookTotalCount } from "./state/book.selectors";
 import { AsyncPipe, NgIf } from "@angular/common";
 import { BookReadModel } from "./Data/book-read.model";
-import { BehaviorSubject, map, Observable, Subject, takeUntil } from "rxjs";
+import { map, Observable, Subject, takeUntil } from "rxjs";
 import { SortModel } from "../common/sort.model";
 import { MatDialog } from "@angular/material/dialog";
 import {

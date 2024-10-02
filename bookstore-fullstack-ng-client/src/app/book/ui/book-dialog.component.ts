@@ -26,6 +26,7 @@ import { NgSelectModule } from "@ng-select/ng-select";
 import { Observable } from "rxjs";
 import { AsyncPipe, NgIf } from "@angular/common";
 import { environment } from "../../../environments/environment.development";
+import { BookReadModel } from "../Data/book-read.model";
 
 @Component({
   selector: "app-book-dialog",
@@ -138,6 +139,7 @@ import { environment } from "../../../environments/environment.development";
 })
 export class BookDialogComponent {
   @Output() submit = new EventEmitter<BookCreateModel>();
+  selectedAuthors: Author[] = [];
   bookForm: FormGroup = new FormGroup({
     id: new FormControl<number>(0),
     title: new FormControl<string>("", Validators.required),
@@ -171,14 +173,34 @@ export class BookDialogComponent {
     public dialogRef: MatDialogRef<BookDialogComponent>,
     @Inject(MAT_DIALOG_DATA)
     public data: {
-      book: BookCreateModel | null;
+      book: BookReadModel | null;
       title: string;
       authors$: Observable<Array<Author>>;
       genres$: Observable<Array<GenreModel>>;
     }
   ) {
     if (data.book != null) {
-      this.bookForm.patchValue(data.book);
+      var newBookData: BookCreateModel = {
+        ...data.book,
+        authorIds: [],
+        genreIds: [],
+      };
+
+      // Populating newBookData.authorIds from data.book.authors
+      if (data.book.authors.length > 0) {
+        data.book.authors.forEach((author) => {
+          newBookData.authorIds.push(author.id);
+        });
+      }
+
+      // populating newBookData.genreIds from data.book.genres
+      if (data.book.genres.length > 0) {
+        data.book.genres.forEach((genre) => {
+          newBookData.genreIds.push(genre.id);
+        });
+      }
+
+      this.bookForm.patchValue(newBookData);
     }
   }
 }

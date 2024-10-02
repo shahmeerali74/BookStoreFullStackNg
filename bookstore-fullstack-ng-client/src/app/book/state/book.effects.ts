@@ -57,12 +57,12 @@ export class BookEffects {
   updateBook = createEffect(() =>
     this.actions$.pipe(
       ofType(BookActions.updateBook),
-      switchMap((action) =>
-        this.bookService.updateBook(action.book).pipe(
-          map(() => BookActions.updateBook({ book: action.book })),
+      switchMap((action) => {
+        return this.bookService.updateBook(action.book).pipe(
+          map((book) => BookActions.updateBookSuccess({ book })),
           catchError((error) => of(BookActions.updateBookFailure({ error })))
-        )
-      )
+        );
+      })
     )
   );
 

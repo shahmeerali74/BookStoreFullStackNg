@@ -26,7 +26,6 @@ export class BookService {
     params = params.set("searchTerm", parameters.searchTerm);
     params = params.set("sortBy", parameters.sortBy);
     if (parameters.publishedFrom && parameters.publishedTo) {
-      console.log(parameters.publishedFrom, parameters.publishedTo);
       params = params.set("publishedFrom", parameters.publishedFrom);
       params = params.set("publishedTo", parameters.publishedTo);
     }
@@ -80,7 +79,7 @@ export class BookService {
     );
   }
 
-  updateBook(book: BookCreateModel): Observable<any> {
+  updateBook(book: BookCreateModel): Observable<BookReadModel> {
     const formData = new FormData();
     if (book.imageFile) {
       formData.append("imageFile", book.imageFile);
@@ -94,7 +93,7 @@ export class BookService {
     formData.append("publishedYear", book.publishedYear.toString());
     book.authorIds.forEach((id) => formData.append("authorIds", id.toString()));
     book.genreIds.forEach((id) => formData.append("genreIds", id.toString()));
-    return this.http.put<any>(this.baseUrl + "/" + book.id, formData);
+    return this.http.put<BookReadModel>(this.baseUrl + "/" + book.id, formData);
   }
 
   deleteBook(id: number) {
