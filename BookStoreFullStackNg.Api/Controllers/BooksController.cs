@@ -40,7 +40,7 @@ public class BooksController : ControllerBase
         }
         if (bookCreateDto.ImageFile != null)
         {
-            string[] allowedFileExtentions = [".jpg", ".jpeg", ".png"];
+            string[] allowedFileExtentions = [".jpg", ".jpeg", ".png",".jfif"];
             string createdImageName = await _fileService.SaveFileAsync(bookCreateDto.ImageFile, allowedFileExtentions);
             bookCreateDto.ImageUrl = createdImageName;
         }
@@ -83,7 +83,7 @@ public class BooksController : ControllerBase
             {
                 throw new BadRequestException("File size should not exceed 1 MB");
             }
-            string[] allowedFileExtentions = [".jpg", ".jpeg", ".png"];
+            string[] allowedFileExtentions = [".jpg", ".jpeg", ".png",".jfif"];
             string createdImageName = await _fileService.SaveFileAsync(bookToUpdate.ImageFile!, allowedFileExtentions);
             bookToUpdate.ImageUrl = createdImageName;
         }
