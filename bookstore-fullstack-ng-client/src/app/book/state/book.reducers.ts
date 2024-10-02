@@ -15,8 +15,8 @@ export interface BookState {
   hasNext: boolean;
   searchTerm: string | null;
   sortBy: string;
-  publishedFrom: number;
-  publishedTo: number;
+  publishedFrom: number | null;
+  publishedTo: number | null;
   loading: boolean;
   error: HttpErrorResponse | null;
 }
@@ -31,8 +31,8 @@ export const initialState: BookState = {
   hasNext: false,
   searchTerm: "",
   sortBy: "",
-  publishedFrom: 0,
-  publishedTo: 0,
+  publishedFrom: null,
+  publishedTo: null,
   loading: false,
   error: null,
 };
@@ -90,14 +90,14 @@ export const bookReducer = createReducer(
     state: state.books.filter((a) => a.id != id),
     loading: false,
   })),
-  on(
-    BookActions.setPublishedFilter,
-    (state, { publishedFrom, publishedTo }) => ({
-      ...state,
-      publishedFrom,
-      publishedTo,
-    })
-  ),
+  on(BookActions.setPublishedFrom, (state, { publishedFrom }) => ({
+    ...state,
+    publishedFrom,
+  })),
+  on(BookActions.setPublishedTo, (state, { publishedTo }) => ({
+    ...state,
+    publishedTo,
+  })),
   on(BookActions.setCurrentPage, (state, { page }) => {
     return {
       ...state,

@@ -23,6 +23,7 @@ export const BookActions = createActionGroup({
     "set total count": props<{ totalCount: number }>(),
     "set search term": props<{ searchTerm: string | null }>(),
     "set sort by": props<{ sortBy: string }>(),
-    setPublishedFilter: props<{ publishedFrom: number; publishedTo: number }>(),
+    setPublishedFrom: props<{ publishedFrom: number | null }>(),
+    setPublishedTo: props<{ publishedTo: number | null }>(),
   },
 });

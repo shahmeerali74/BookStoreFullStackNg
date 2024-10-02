@@ -5,28 +5,30 @@ import { BookCreateModel } from "./book-create.model";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { environment } from "../../../environments/environment.development";
 import { BookReadModel } from "./book-read.model";
+interface GetBooksParams {
+  pageSize: number;
+  pageNumber: number;
+  searchTerm: string;
+  sortBy: string;
+  publishedFrom: number | null;
+  publishedTo: number | null;
+}
 
 @Injectable({ providedIn: "root" })
 export class BookService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = environment.baseUrl + "/api/books";
 
-  getBooks({
-    pageSize = 10,
-    pageNumber = 1,
-    searchTerm = "",
-    sortBy = "",
-    publishedFrom = 0,
-    publishedTo = 0,
-  }): Observable<PagedList<BookReadModel>> {
+  getBooks(parameters: GetBooksParams): Observable<PagedList<BookReadModel>> {
     let params = new HttpParams();
-    params = params.set("pageSize", pageSize.toString());
-    params = params.set("pageNumber", pageNumber.toString());
-    params = params.set("searchTerm", searchTerm);
-    params = params.set("sortBy", sortBy);
-    if (publishedFrom > 0 && publishedTo > 0) {
-      params = params.set("publishedFrom", publishedFrom);
-      params = params.set("publishedTo", publishedTo);
+    params = params.set("pageSize", parameters.pageSize.toString());
+    params = params.set("pageNumber", parameters.pageNumber.toString());
+    params = params.set("searchTerm", parameters.searchTerm);
+    params = params.set("sortBy", parameters.sortBy);
+    if (parameters.publishedFrom && parameters.publishedTo) {
+      console.log(parameters.publishedFrom, parameters.publishedTo);
+      params = params.set("publishedFrom", parameters.publishedFrom);
+      params = params.set("publishedTo", parameters.publishedTo);
     }
     return this.http
       .get<PagedList<BookReadModel>>(this.baseUrl, { params })

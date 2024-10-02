@@ -5,7 +5,7 @@ import { BookActions } from "./state/book.actions";
 import { selectBooks, selectBookTotalCount } from "./state/book.selectors";
 import { AsyncPipe, NgIf } from "@angular/common";
 import { BookReadModel } from "./Data/book-read.model";
-import { map, Observable, Subject, takeUntil } from "rxjs";
+import { BehaviorSubject, map, Observable, Subject, takeUntil } from "rxjs";
 import { SortModel } from "../common/sort.model";
 import { MatDialog } from "@angular/material/dialog";
 import {
@@ -21,6 +21,7 @@ import { GenreModel } from "../genre/data/genre.model";
 import { Author } from "../authors/data/author.model";
 import { PageSelectorModel } from "../common/page-selector.model";
 import { BookPaginatorComponent } from "./ui/book-paginator.component";
+import { BookFilterComponent } from "./ui/book-filter.component";
 
 @Component({
   selector: "app-book",
@@ -32,6 +33,7 @@ import { BookPaginatorComponent } from "./ui/book-paginator.component";
     MatProgressSpinnerModule,
     MatButtonModule,
     BookPaginatorComponent,
+    BookFilterComponent,
   ],
   template: `
     <h1>Books</h1>
@@ -47,6 +49,12 @@ import { BookPaginatorComponent } from "./ui/book-paginator.component";
         +
       </button>
     </p>
+    <app-book-filter
+      (filter)="onFilter($event)"
+      (publishFromEvent)="onPublishFrom($event)"
+      (publishToEvent)="onPublishTo($event)"
+    />
+
     <ng-container *ngIf="books$ | async as books">
       <app-book-list
         [books]="books"
@@ -148,6 +156,19 @@ export class BookComponent implements OnInit, OnDestroy {
   onPageSelect(page: PageSelectorModel) {
     this.store.dispatch(BookActions.setCurrentPage({ page: page.page }));
     this.store.dispatch(BookActions.setPageSize({ pageSize: page.limit }));
+    this.loadBooks();
+  }
+
+  onPublishFrom(publishedFrom: number | null) {
+    this.store.dispatch(BookActions.setPublishedFrom({ publishedFrom }));
+    this.loadBooks();
+  }
+  onPublishTo(publishedTo: number | null) {
+    this.store.dispatch(BookActions.setPublishedTo({ publishedTo }));
+    this.loadBooks();
+  }
+  onFilter(searchTerm: string | null) {
+    this.store.dispatch(BookActions.setSearchTerm({ searchTerm }));
     this.loadBooks();
   }
 }

@@ -171,7 +171,7 @@ public class BookRepository : IBookRepository
         // filter by publish year
         if (queryParameters.PublishedFrom != null && queryParameters.PublishedTo != null)
         {
-            booksQuery.Where(a => a.PublishedYear >= queryParameters.PublishedFrom && a.PublishedYear <= queryParameters.PublishedTo);
+            booksQuery = booksQuery.Where(a => a.PublishedYear >= queryParameters.PublishedFrom && a.PublishedYear <= queryParameters.PublishedTo);
         }
 
         if (!string.IsNullOrEmpty(queryParameters.SortBy))
