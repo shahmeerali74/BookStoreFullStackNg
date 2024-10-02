@@ -24,7 +24,8 @@ import { Author } from "../../authors/data/author.model";
 import { GenreModel } from "../../genre/data/genre.model";
 import { NgSelectModule } from "@ng-select/ng-select";
 import { Observable } from "rxjs";
-import { AsyncPipe } from "@angular/common";
+import { AsyncPipe, NgIf } from "@angular/common";
+import { environment } from "../../../environments/environment.development";
 
 @Component({
   selector: "app-book-dialog",
@@ -37,6 +38,7 @@ import { AsyncPipe } from "@angular/common";
     MatDialogModule,
     NgSelectModule,
     AsyncPipe,
+    NgIf,
   ],
   template: `
     <h1 mat-dialog-title>
@@ -47,6 +49,7 @@ import { AsyncPipe } from "@angular/common";
       <form [formGroup]="bookForm" class="book-form">
         <input type="hidden" formControlName="id" />
         <input type="hidden" formControlName="imageUrl" />
+
         <mat-form-field appearance="fill">
           <mat-label>Title</mat-label>
           <input type="text" matInput formControlName="title" />
@@ -66,8 +69,15 @@ import { AsyncPipe } from "@angular/common";
           <mat-label>Published Year</mat-label>
           <input type="number" matInput formControlName="publishedYear" />
         </mat-form-field>
-
-        <input type="file" (change)="onChange($event)" />
+        <div>
+          <img
+            style="height: 80px;width:100px;"
+            *ngIf="data.book?.imageUrl"
+            [src]="this.imageBaseUrl + data.book?.imageUrl"
+            alt="image"
+          />
+          <input type="file" (change)="onChange($event)" />
+        </div>
 
         <ng-select
           [items]="data.authors$ | async"
@@ -139,6 +149,8 @@ export class BookDialogComponent {
     imageUrl: new FormControl<string>(""),
     imageFile: new FormControl<File | null>(null),
   });
+
+  imageBaseUrl = environment.baseUrl + "/resources/";
 
   onCanceled() {
     this.dialogRef.close();

@@ -2,7 +2,7 @@ import { Component, inject, OnDestroy, OnInit } from "@angular/core";
 import { BookListComponent } from "./ui/book-list.component";
 import { Store } from "@ngrx/store";
 import { BookActions } from "./state/book.actions";
-import { selectBooks } from "./state/book.selectors";
+import { selectBooks, selectBookTotalCount } from "./state/book.selectors";
 import { AsyncPipe, NgIf } from "@angular/common";
 import { BookReadModel } from "./Data/book-read.model";
 import { map, Observable, Subject, takeUntil } from "rxjs";
@@ -19,6 +19,8 @@ import { AuthorService } from "../authors/data/author.service";
 import { GenreService } from "../genre/data/genre.service";
 import { GenreModel } from "../genre/data/genre.model";
 import { Author } from "../authors/data/author.model";
+import { PageSelectorModel } from "../common/page-selector.model";
+import { BookPaginatorComponent } from "./ui/book-paginator.component";
 
 @Component({
   selector: "app-book",
@@ -29,6 +31,7 @@ import { Author } from "../authors/data/author.model";
     AsyncPipe,
     MatProgressSpinnerModule,
     MatButtonModule,
+    BookPaginatorComponent,
   ],
   template: `
     <h1>Books</h1>
@@ -52,6 +55,13 @@ import { Author } from "../authors/data/author.model";
         (edit)="onAddUpdate('Update', $event)"
       ></app-book-list>
     </ng-container>
+
+    <ng-container *ngIf="totalCount$ | async as totalCount">
+      <app-book-paginator
+        (pageSelect)="onPageSelect($event)"
+        [totalRecords]="totalCount"
+      />
+    </ng-container>
   `,
 
   styles: [``],
@@ -64,6 +74,7 @@ export class BookComponent implements OnInit, OnDestroy {
   store = inject(Store);
   loading$ = this.store.select(selectAuthorLoading);
   error$ = this.store.select(selectAuthorError);
+  totalCount$ = this.store.select(selectBookTotalCount);
 
   authors$: Observable<Author[]> = this.authorService
     .getAuthors({ pageSize: 1000 })
@@ -132,5 +143,11 @@ export class BookComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroyed$.next(true);
     this.destroyed$.unsubscribe();
+  }
+
+  onPageSelect(page: PageSelectorModel) {
+    this.store.dispatch(BookActions.setCurrentPage({ page: page.page }));
+    this.store.dispatch(BookActions.setPageSize({ pageSize: page.limit }));
+    this.loadBooks();
   }
 }

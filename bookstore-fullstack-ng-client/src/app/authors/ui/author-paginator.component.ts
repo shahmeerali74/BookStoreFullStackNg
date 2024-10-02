@@ -31,7 +31,7 @@ import { PageSelectorModel } from "../../common/page-selector.model";
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BookPaginatorComponent {
+export class AuthorPaginatorComponent {
   @Output() pageSelect = new EventEmitter<PageSelectorModel>();
   @Input({ required: true }) totalRecords!: number;
 

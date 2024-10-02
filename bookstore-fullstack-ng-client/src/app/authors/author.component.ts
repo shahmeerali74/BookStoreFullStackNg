@@ -16,7 +16,7 @@ import {
 } from "./state/author.selectors";
 import { Observable, Subject, takeUntil } from "rxjs";
 import { authorActions } from "./state/author.actions";
-import { BookPaginatorComponent } from "./ui/author-paginator.component";
+import { AuthorPaginatorComponent } from "./ui/author-paginator.component";
 import { PageSelectorModel } from "../common/page-selector.model";
 import { SortModel } from "../common/sort.model";
 import { AuthorFilter } from "./ui/author.filter";
@@ -31,7 +31,7 @@ import { MatButtonModule } from "@angular/material/button";
     NgIf,
     AsyncPipe,
     AuthorListComponent,
-    BookPaginatorComponent,
+    AuthorPaginatorComponent,
     AuthorFilter,
     MatButtonModule,
   ],

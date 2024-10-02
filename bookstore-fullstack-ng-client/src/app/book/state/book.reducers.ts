@@ -55,7 +55,6 @@ export const bookReducer = createReducer(
     loading: false,
   })),
   on(BookActions.addBookSucces, (state, { book }) => {
-    console.log(book);
     const newState = {
       ...state,
       books: [...state.books, book],
