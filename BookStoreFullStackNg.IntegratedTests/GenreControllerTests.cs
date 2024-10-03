@@ -6,14 +6,14 @@ using BookStoreFullStackNg.Data.DTOs;
 
 namespace BookStoreFullStackNg.IntegratedTests;
 
-public class GenreControllerTests : IClassFixture<CustomWebApplicationFactory<Program>>
+public class GenreControllerTests : IClassFixture<CustomWebApplicationFactory>
 {
 
-    private readonly CustomWebApplicationFactory<Program> _factory;
+    private readonly CustomWebApplicationFactory _factory;
     private readonly HttpClient _client;
-    private string baseUrl;
+    private readonly string baseUrl;
 
-    public GenreControllerTests(CustomWebApplicationFactory<Program> factory)
+    public GenreControllerTests(CustomWebApplicationFactory factory)
     {
         _factory = factory;
         _client = _factory.CreateClient();

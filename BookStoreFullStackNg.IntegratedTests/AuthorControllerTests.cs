@@ -8,13 +8,13 @@ using BookStoreFullStackNg.Data.DTOs.Common;
 
 namespace BookStoreFullStackNg.IntegratedTests;
 
-public class AuthorControllerTests : IClassFixture<CustomWebApplicationFactory<Program>>
+public class AuthorControllerTests : IClassFixture<CustomWebApplicationFactory>
 {
-    private readonly CustomWebApplicationFactory<Program> _webApplicationFactory;
+    private readonly CustomWebApplicationFactory _webApplicationFactory;
     private readonly HttpClient _client;
     private string baseUrl = "api/authors";
 
-    public AuthorControllerTests(CustomWebApplicationFactory<Program> webApplicationFactory)
+    public AuthorControllerTests(CustomWebApplicationFactory webApplicationFactory)
     {
         _webApplicationFactory = webApplicationFactory;
         _client = webApplicationFactory.CreateClient();

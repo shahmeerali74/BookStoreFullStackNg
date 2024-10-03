@@ -1,4 +1,3 @@
-using System;
 using BookStoreFullStackNg.Data.Data;
 using BookStoreFullStackNg.Data.Domain;
 using Microsoft.AspNetCore.Authentication;
@@ -10,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace BookStoreFullStackNg.IntegratedTests;
 
-public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<Program> where TEntryPoint : Program
+public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 {
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -57,6 +56,15 @@ public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<Pr
         });
     }
 
+    //private static void DisposeExisitingData(BookStoreContext context)
+    //{
+    //    context.Genres.RemoveRange(context.Genres);
+    //    context.Authors.RemoveRange(context.Authors);
+    //    context.Books.RemoveRange(context.Books);
+    //    context.BookAuthors.RemoveRange(context.BookAuthors);
+    //    context.BookGenres.RemoveRange(context.BookGenres);
+    //    context.SaveChanges();
+    //}
     private static void SeedData(BookStoreContext context)
     {
         if (!context.Genres.Any())

@@ -7,13 +7,13 @@ using System.Text.Json;
 
 namespace BookStoreFullStackNg.IntegratedTests;
 
-public class BooksControllerTests: IClassFixture<CustomWebApplicationFactory<Program>>
+public class BooksControllerTests: IClassFixture<CustomWebApplicationFactory>
 {
-    private readonly CustomWebApplicationFactory<Program> _webApplicationFactory;
+    private readonly CustomWebApplicationFactory _webApplicationFactory;
     private readonly HttpClient _client;
     private string baseUrl = "api/books";
 
-    public BooksControllerTests(CustomWebApplicationFactory<Program> webApplicationFactory)
+    public BooksControllerTests(CustomWebApplicationFactory webApplicationFactory)
     {
         _webApplicationFactory = webApplicationFactory;
         _client = webApplicationFactory.CreateClient();
@@ -98,7 +98,7 @@ public class BooksControllerTests: IClassFixture<CustomWebApplicationFactory<Pro
     }
 
     [Fact]
-    public async Task UpdateBook_ReturnsNoContent()
+    public async Task UpdateBook_ReturnsOk_With_BookReadDto()
     {
         // arrange
         _client.DefaultRequestHeaders.Add(TestAuthHandler.TestUserRolesHeader, Roles.Admin);
@@ -117,11 +117,13 @@ public class BooksControllerTests: IClassFixture<CustomWebApplicationFactory<Pro
 
         // act
         var response = await _client.PutAsync(baseUrl + "/1", content);
-        var jsonResponse = await response.Content.ReadAsStringAsync();
         response.EnsureSuccessStatusCode();
+        var jsonResponse = await response.Content.ReadAsStringAsync();
+        var updatedBook = JsonSerializer.Deserialize<BookReadDto>(jsonResponse);
 
         // assert
-        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.NotNull(updatedBook);
     }
 
     [Fact]

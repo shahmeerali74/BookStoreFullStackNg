@@ -98,7 +98,7 @@ public class BooksControllerTests
     }
 
     [Fact]
-    public async Task UpdateBook_Returns_NoContent()
+    public async Task UpdateBook_Returns_Ok_With_BookReadModel()
     {
         //arrange
         var bookToUpdate = new BookUpdateDto
@@ -128,9 +128,13 @@ public class BooksControllerTests
 
         // act
         var result = await _controller.UpdateBook(bookToUpdate.Id, bookToUpdate);
-
+        //_bookRepository.GetBookByIdAsync(1).Returns(existingBookMock);
+        
         // assert
-        Assert.IsType<NoContentResult>(result);
+        var okResult=Assert.IsType<OkObjectResult>(result);
+        var bookToReturn = Assert.IsType<BookReadDto>(okResult.Value);
+        Assert.Equal(bookToReturn.Id, existingBookMock.Id);
+        
     }
 
     [Fact]
