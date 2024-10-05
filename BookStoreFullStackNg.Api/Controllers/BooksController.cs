@@ -105,6 +105,7 @@ public class BooksController : ControllerBase
     }
 
 
+    [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> GetBooks([FromQuery] BookQueryParameter queryParameter)
     {

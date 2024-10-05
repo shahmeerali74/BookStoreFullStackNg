@@ -174,6 +174,12 @@ public class BookRepository : IBookRepository
             booksQuery = booksQuery.Where(a => a.PublishedYear >= queryParameters.PublishedFrom && a.PublishedYear <= queryParameters.PublishedTo);
         }
 
+        // filter by genreIds
+        if(queryParameters.GenreIds.Count>0)
+        {
+            booksQuery = booksQuery.Where(b => b.BookGenres.Any(bg=> queryParameters.GenreIds.Contains(bg.GenreId)));
+        }
+
         if (!string.IsNullOrEmpty(queryParameters.SortBy))
         {
             booksQuery = _sortHelper.ApplySort(booksQuery, queryParameters.SortBy);
