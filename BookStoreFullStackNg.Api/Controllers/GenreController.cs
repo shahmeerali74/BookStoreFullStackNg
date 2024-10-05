@@ -31,6 +31,7 @@ namespace BookStoreFullStackNg.Api.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetGenres()
         {
             var genres = await _genreRepository.GetGenres();

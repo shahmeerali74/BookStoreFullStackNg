@@ -15,7 +15,6 @@ Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(configuration)
    .CreateLogger();
 
-Log.Logger.Information("Logging is working fine");
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -68,6 +67,14 @@ builder.Services.AddCors(options =>
     });
 });
 builder.Services.AddTransient<ExceptionMiddleware>();
+builder.Services.AddOutputCache(options =>
+{
+    options.AddBasePolicy(builder => builder
+    .With(r => r.HttpContext.Request.Path.StartsWithSegments("/api/books"))
+      .Tag("tag-book")
+    .Expire(TimeSpan.FromMinutes(10)));
+
+});
 
 builder.Host.UseSerilog();
 
@@ -91,6 +98,8 @@ app.UseStaticFiles(new StaticFileOptions
 });
 
 app.UseCors(allowedOrigins);
+
+app.UseOutputCache();
 
 app.UseAuthentication();
 

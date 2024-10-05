@@ -10,6 +10,7 @@ using BookStoreFullStackNg.Data.Reopositories.Interfaces;
 using BookStoreFullStackNg.Data.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace BookStoreFullStackNg.Api.Controllers;
 
@@ -29,7 +30,7 @@ public class BooksController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddBook(BookCreateDto bookCreateDto)
+    public async Task<IActionResult> AddBook(BookCreateDto bookCreateDto,IOutputCacheStore cache)
     {
         if (bookCreateDto.ImageFile?.Length > 1 * 1024 * 1024)
         {
@@ -43,11 +44,13 @@ public class BooksController : ControllerBase
         }
 
         BookReadDto createdBook = await _bookRepo.AddBookAsync(bookCreateDto);
+        // evicting the cache
+        await cache.EvictByTagAsync("tag-book", default);
         return CreatedAtRoute(nameof(GetBookById), new { id = createdBook.Id }, createdBook);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateBook(int id, BookUpdateDto bookToUpdate)
+    public async Task<IActionResult> UpdateBook(int id, BookUpdateDto bookToUpdate,IOutputCacheStore cache)
     {
         if (id != bookToUpdate.Id)
         {
@@ -98,6 +101,10 @@ public class BooksController : ControllerBase
             _fileService.DeleteFile(oldImage);
         }
 
+        // evicting cache
+        await cache.EvictByTagAsync("tag-book", default);
+
+
         // return the update entries
         BookReadDto? bookToReturn = await _bookRepo.GetBookByIdAsync(bookToUpdate.Id);
 
@@ -106,6 +113,8 @@ public class BooksController : ControllerBase
 
 
     [AllowAnonymous]
+    //[OutputCache(VaryByQueryKeys = ["PageSize", "PageNumber", "SortBy","SearchTerm", "PublishedFrom", "PublishedTo", "GenreIds"])]
+    [OutputCache]
     [HttpGet]
     public async Task<IActionResult> GetBooks([FromQuery] BookQueryParameter queryParameter)
     {
@@ -138,7 +147,7 @@ public class BooksController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteBook(int id)
+    public async Task<IActionResult> DeleteBook(int id,IOutputCacheStore cache)
     {
         BookReadDto? existingBook = await _bookRepo.GetBookByIdAsync(id);
         if (existingBook == null)
@@ -152,6 +161,8 @@ public class BooksController : ControllerBase
         {
             _fileService.DeleteFile(existingBook.ImageUrl);
         }
+        await cache.EvictByTagAsync("tag-book", default);
+
         return NoContent();
     }
 }
