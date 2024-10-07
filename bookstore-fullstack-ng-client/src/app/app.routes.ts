@@ -48,6 +48,13 @@ export const routes: Routes = [
       import("./dashboard.component").then((c) => c.DashboardComponent),
   },
   {
+    path: "books",
+    loadChildren: () =>
+      import("./book-public/book-public.routes").then(
+        (m) => m.BOOK_PUBLIC_ROUTES
+      ),
+  },
+  {
     path: "unauthorized",
     loadComponent: () =>
       import("./unauthorized.component").then((c) => c.UnauthorizedComponent),
