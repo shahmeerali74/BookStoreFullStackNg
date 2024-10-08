@@ -16,12 +16,20 @@ import {
 import { Subject } from "rxjs";
 import { BookListPublicComponent } from "./ui/book-list-public.component";
 import { BookActions } from "../book/state/book.actions";
+import { BookPublicFilterComponent } from "./ui/book-public-filter.component";
 
 @Component({
   selector: "app-book-public",
   standalone: true,
-  imports: [NgIf, NgFor, AsyncPipe, BookListPublicComponent],
+  imports: [
+    NgIf,
+    NgFor,
+    AsyncPipe,
+    BookListPublicComponent,
+    BookPublicFilterComponent,
+  ],
   template: `
+    <app-book-public-filter (onSearch)="handleSearch($event)" />
     <ng-container *ngIf="books$ | async as books">
       <app-book-list-public
         [books]="books"
@@ -47,6 +55,11 @@ export class BookPublicComponent implements OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
+  }
+
+  handleSearch(searchTerm: string | null) {
+    this.store.dispatch(BookActions.setSearchTerm({ searchTerm }));
+    this.store.dispatch(BookActions.loadBooks());
   }
 
   constructor() {
