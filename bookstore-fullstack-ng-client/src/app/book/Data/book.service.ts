@@ -50,7 +50,19 @@ export class BookService {
   }
 
   getBookById(id: number): Observable<BookReadModel> {
-    return this.http.get<BookReadModel>(this.baseUrl);
+    return this.http.get<BookReadModel>(this.baseUrl + "/" + id).pipe(
+      map((book) => ({
+        ...book,
+        authorNames: book.authors
+          .map((author) => author.authorName)
+          .join(", ")
+          .split(","),
+        genreNames: book.genres
+          .map((genre) => genre.genreName)
+          .join(", ")
+          .split(","),
+      }))
+    );
   }
 
   addBook(book: BookCreateModel): Observable<BookReadModel> {

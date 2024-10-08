@@ -41,9 +41,9 @@ import { BookReadModel } from "../../book/Data/book-read.model";
       >
         <div style="font-weight: bold;margin:2px 0px">{{ book.title }}</div>
 
-        <div class="">author</div>
+        <div class="">By {{ book.authorNames }}</div>
 
-        <div class="">genres</div>
+        <div class="">{{ book.genreNames }}</div>
         <div class="">₹{{ book.price }}</div>
       </mat-card-content>
       <mat-card-actions>
