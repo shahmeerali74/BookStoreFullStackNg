@@ -117,7 +117,6 @@ public class BooksController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetBooks([FromQuery] BookQueryParameter queryParameter)
     {
-        Console.WriteLine(queryParameter.GenreIds.Count);
         var pagedBooks = await _bookRepo.GetBooksAsync(queryParameter); // have related data
         var books = pagedBooks.Items.Select(b =>
             new BookReadDto
