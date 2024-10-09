@@ -1,5 +1,5 @@
 import { inject, Injectable } from "@angular/core";
-import { map, Observable } from "rxjs";
+import { EMPTY, map, Observable, of } from "rxjs";
 import { PagedList } from "../../common/paged-list.model";
 import { BookCreateModel } from "./book-create.model";
 import { HttpClient, HttpParams } from "@angular/common/http";
@@ -12,6 +12,7 @@ interface GetBooksParams {
   sortBy: string;
   publishedFrom: number | null;
   publishedTo: number | null;
+  genreIds: Array<number>;
 }
 
 @Injectable({ providedIn: "root" })
@@ -25,10 +26,18 @@ export class BookService {
     params = params.set("pageNumber", parameters.pageNumber.toString());
     params = params.set("searchTerm", parameters.searchTerm);
     params = params.set("sortBy", parameters.sortBy);
+
+    parameters.genreIds.forEach((val, index) => {
+      if (val) {
+        params = params.append("genreIds", val);
+      }
+    });
+
     if (parameters.publishedFrom && parameters.publishedTo) {
       params = params.set("publishedFrom", parameters.publishedFrom);
       params = params.set("publishedTo", parameters.publishedTo);
     }
+
     return this.http
       .get<PagedList<BookReadModel>>(this.baseUrl, { params })
       .pipe(

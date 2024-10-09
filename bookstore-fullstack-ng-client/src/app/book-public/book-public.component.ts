@@ -17,6 +17,8 @@ import { Subject } from "rxjs";
 import { BookListPublicComponent } from "./ui/book-list-public.component";
 import { BookActions } from "../book/state/book.actions";
 import { BookPublicFilterComponent } from "./ui/book-public-filter.component";
+import { GenreActions } from "../genre/state/genre.actions";
+import { selectGenres } from "../genre/state/genre.selectors";
 
 @Component({
   selector: "app-book-public",
@@ -29,7 +31,19 @@ import { BookPublicFilterComponent } from "./ui/book-public-filter.component";
     BookPublicFilterComponent,
   ],
   template: `
-    <app-book-public-filter (onSearch)="handleSearch($event)" />
+    <ng-container *ngIf="loading$ | async as loading">
+      loading...
+    </ng-container>
+    <ng-container *ngIf="error$ | async as error"> error.. </ng-container>
+
+    <ng-container *ngIf="genres$ | async as genres">
+      <app-book-public-filter
+        [genres]="genres"
+        (onSearch)="handleSearch($event)"
+        (onGenreSelect)="handleOnGenreSelect($event)"
+      />
+    </ng-container>
+
     <ng-container *ngIf="books$ | async as books">
       <app-book-list-public
         [books]="books"
@@ -47,6 +61,7 @@ export class BookPublicComponent implements OnDestroy {
   loading$ = this.store.select(selectBookLoading);
   error$ = this.store.select(selectBookError);
   destroy$ = new Subject<boolean>();
+  genres$ = this.store.select(selectGenres);
 
   addToCart(book: BookReadModel) {
     throw new Error("Method not implemented.");
@@ -62,8 +77,18 @@ export class BookPublicComponent implements OnDestroy {
     this.store.dispatch(BookActions.loadBooks());
   }
 
+  handleOnGenreSelect(genreIds: Array<number>) {
+    this.store.dispatch(BookActions.setGenreIds({ genreIds }));
+    this.loadBooks();
+  }
+
+  loadBooks() {
+    this.store.dispatch(BookActions.loadBooks());
+  }
+
   constructor() {
     this.store.dispatch(BookActions.setPageSize({ pageSize: 1000 }));
-    this.store.dispatch(BookActions.loadBooks());
+    this.store.dispatch(GenreActions.loadGenre());
+    this.loadBooks();
   }
 }

@@ -15,6 +15,7 @@ export interface BookState {
   hasNext: boolean;
   searchTerm: string | null;
   sortBy: string;
+  genreIds: Array<number>;
   publishedFrom: number | null;
   publishedTo: number | null;
   loading: boolean;
@@ -30,6 +31,7 @@ export const initialState: BookState = {
   hasPrevious: false,
   hasNext: false,
   searchTerm: "",
+  genreIds: [],
   sortBy: "",
   publishedFrom: null,
   publishedTo: null,
@@ -119,6 +121,10 @@ export const bookReducer = createReducer(
   on(BookActions.setSearchTerm, (state, { searchTerm }) => ({
     ...state,
     searchTerm,
+  })),
+  on(BookActions.setGenreIds, (state, { genreIds }) => ({
+    ...state,
+    genreIds,
   })),
   on(BookActions.setSortBy, (state, { sortBy }) => ({
     ...state,

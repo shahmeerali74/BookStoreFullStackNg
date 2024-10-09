@@ -24,6 +24,7 @@ export class BookEffects {
             pageNumber: state.pageNumber,
             searchTerm: state.searchTerm ?? "",
             sortBy: state.sortBy,
+            genreIds: state.genreIds,
             publishedFrom: state.publishedFrom,
             publishedTo: state.publishedTo,
           })

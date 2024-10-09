@@ -113,11 +113,11 @@ public class BooksController : ControllerBase
 
 
     [AllowAnonymous]
-    //[OutputCache(VaryByQueryKeys = ["PageSize", "PageNumber", "SortBy","SearchTerm", "PublishedFrom", "PublishedTo", "GenreIds"])]
-    [OutputCache]
+    [OutputCache(VaryByQueryKeys = ["PageSize", "PageNumber", "SortBy", "SearchTerm", "PublishedFrom", "PublishedTo", "GenreIds"])]
     [HttpGet]
     public async Task<IActionResult> GetBooks([FromQuery] BookQueryParameter queryParameter)
     {
+        Console.WriteLine(queryParameter.GenreIds.Count);
         var pagedBooks = await _bookRepo.GetBooksAsync(queryParameter); // have related data
         var books = pagedBooks.Items.Select(b =>
             new BookReadDto
