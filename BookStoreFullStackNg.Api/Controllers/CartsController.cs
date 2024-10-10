@@ -118,6 +118,7 @@ public class CartsController : ControllerBase
     //[Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> GetAllCarts()
     {
-        return Ok();
+        var carts = await _cartRepo.GetCartsAsync();
+        return Ok(carts);
     }
 }
