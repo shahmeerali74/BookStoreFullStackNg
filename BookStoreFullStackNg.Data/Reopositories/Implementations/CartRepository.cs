@@ -72,20 +72,21 @@ public class CartRepository : ICartRepository
 
     public async Task<Cart?> GetCartByIdAsync(int cartId)
     {
-        return await _context.Carts.Include(c=>c.CartItems).AsNoTracking().FirstOrDefaultAsync(c => c.Id == cartId);
+        return await _context.Carts.Include(c=>c.CartItems).ThenInclude(ci=>ci.Book).AsNoTracking().FirstOrDefaultAsync(c => c.Id == cartId);
     }
 
     public async Task<Cart?> GetCartByUserIdAsync(int userId)
     {
-        return await _context.Carts.Include(c => c.CartItems).AsNoTracking().FirstOrDefaultAsync(c => c.UserId == userId);
+        return await _context.Carts.Include(c => c.CartItems).ThenInclude(ci => ci.Book).AsNoTracking().FirstOrDefaultAsync(c => c.UserId == userId);
+    }
+
+    public async Task<CartItem?> GetCartItemByCartItemIdAsync(int cartItemId)
+    {
+        return await _context.CartItems.Include(ci => ci.Book).AsNoTracking().FirstOrDefaultAsync(ci=>ci.Id==cartItemId);
     }
 
     public async Task RemoveCartItemAsync(int userId,int cartItemId)
     {
-        // get cart of user
-        // get cart item by cartItemId
-        // check if userCart.Id==cartItem.CartId, else throw error
-        // remove cartItem
         var cart = await GetCartByUserIdAsync(userId);
         if (cart == null)
         {

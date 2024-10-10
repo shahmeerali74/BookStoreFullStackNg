@@ -1,4 +1,3 @@
-
 namespace BookStoreFullStackNg.Data.Domain;
 
 public class Cart
