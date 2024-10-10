@@ -13,7 +13,7 @@ public class CartRepository : ICartRepository
     {
         _context = context;
     }
-    public async Task AddCartItemAsync(int userId,CartItem cartItem)
+    public async Task<CartItem> AddCartItemAsync(int userId,CartItem cartItem)
     {
         using var tran= await _context.Database.BeginTransactionAsync();
         try
@@ -42,6 +42,8 @@ public class CartRepository : ICartRepository
             }
             await _context.SaveChangesAsync();
             await tran.CommitAsync();
+            var createdCartItem = await GetCartItemByCartItemIdAsync(cartItem.Id);
+            return createdCartItem;
         }
         catch(Exception)
         {
@@ -50,24 +52,24 @@ public class CartRepository : ICartRepository
         }
     }
 
-    public async Task UpdateCartItemAsync(int userId,CartItem cartItem)
+    public async Task<CartItem> UpdateCartItemAsync(int userId,CartItem cartItem)
     {
         var cart = await GetCartByUserIdAsync(userId);
         if (cart == null)
         {
             throw new InvalidOperationException("This user does not have any items in cart");
         }
-        //var existingCartItem = await _context.CartItems.AsNoTracking().FirstOrDefaultAsync(ci => ci.Id == cartItem.Id);
-        //if (existingCartItem == null)
-        //{
-        //    throw new InvalidOperationException("Cart item is null");
-        //}
+        
         if (cartItem.CartId != cart.Id)
         {
             throw new InvalidOperationException("You are updating the wrong cart");
         }
+
         _context.CartItems.Update(cartItem);
         await _context.SaveChangesAsync();
+
+        var createdCartItem = await GetCartItemByCartItemIdAsync(cartItem.Id);
+        return createdCartItem;
     }
 
     public async Task<Cart?> GetCartByIdAsync(int cartId)
@@ -103,5 +105,15 @@ public class CartRepository : ICartRepository
         }
         _context.CartItems.Remove(cartItem);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<IEnumerable<Cart>> GetCartsAsync()
+    {
+        return await _context.Carts
+                             .Include(c => c.CartItems)
+                             .ThenInclude(ci => ci.Book)
+                             .Include(c => c.User)
+                             .AsNoTracking()
+                             .ToListAsync();
     }
 }
