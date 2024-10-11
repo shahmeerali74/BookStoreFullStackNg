@@ -14,4 +14,19 @@ public class BookReadDto
 
     public List<AuthorReadDTO> Authors { get; set; } = [];
     public List<GenreReadDto> Genres { get; set; } = [];
+
+    public string AuthorNames {
+        get
+        {
+            return string.Join(',', Authors.Select(a => a.AuthorName));
+        }
+    }
+
+    public string GenreNames
+    {
+        get
+        {
+            return string.Join(',', Genres.Select(g => g.GenreName));
+        }
+    }
 }

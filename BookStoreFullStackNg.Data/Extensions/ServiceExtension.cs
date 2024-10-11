@@ -18,5 +18,7 @@ public static class ServiceExtension
         services.AddTransient<ISortHelper<Author>, SortHelper<Author>>();
         services.AddTransient<ISortHelper<Book>, SortHelper<Book>>();
         services.AddTransient<IFileService, FileService>();
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<ICartRepository, CartRepository>();
     }
 }

@@ -1,8 +1,11 @@
-﻿namespace BookStoreFullStackNg.Data.DTOs.Cart;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace BookStoreFullStackNg.Data.DTOs.Cart;
 
 public class CartItemCreateDto
 {
-    public int CartId { get; set; }
-    public int Quantity { get; set; }
+    [Required]
     public int BookId { get; set; }
+    [Required]
+    public int Quantity { get; set; }
 }

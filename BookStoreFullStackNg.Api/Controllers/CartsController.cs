@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BookStoreFullStackNg.Api.Exceptions;
+using BookStoreFullStackNg.Api.Helpers;
 using BookStoreFullStackNg.Data.Constants;
 using BookStoreFullStackNg.Data.Domain;
 using BookStoreFullStackNg.Data.DTOs.Cart;
@@ -10,8 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace BookStoreFullStackNg.Api.Controllers;
 
 [Route("api/[controller]")]
+[Authorize]
 [ApiController]
-//[Authorize]
 public class CartsController : ControllerBase
 {
     private readonly ICartRepository _cartRepo;
@@ -28,24 +29,26 @@ public class CartsController : ControllerBase
     public async Task<IActionResult> AddCartItem(CartItemCreateDto cartItemToCreate)
     {
         var userName = User.Identity.Name;
-        if(userName==null)
+        if (userName == null)
         {
             throw new BadRequestException("User is not logged in");
         }
         var user = await _userRepo.GetUserByUserNameAsync(userName);
 
         // since username is not being passed by user, so this condition will likely occur
-        if(user==null)
+        if (user == null)
         {
             throw new BadRequestException("Invalid username");
         }
         var cartItem = _mapper.Map<CartItem>(cartItemToCreate);
-        var createdCartItem=await _cartRepo.AddCartItemAsync(user.Id,cartItem);
-        return CreatedAtAction(nameof(AddCartItem),createdCartItem);
+        CartItem createdCartItem = await _cartRepo.AddCartItemAsync(user.Id, cartItem);
+        var cartItemToReturn = createdCartItem.MapCartItemToCartItemDto();
+
+        return CreatedAtAction(nameof(AddCartItem), cartItemToReturn);
     }
 
-    [HttpPut]
-    public async Task<IActionResult> UpdateCartItem(int cartItemId,CartItemUpdateDto cartItemToUpdate)
+    [HttpPut("{cartItemId}")]
+    public async Task<IActionResult> UpdateCartItem(int cartItemId, CartItemUpdateDto cartItemToUpdate)
     {
         var userName = User.Identity.Name;
         if (userName == null)
@@ -60,7 +63,7 @@ public class CartsController : ControllerBase
             throw new BadRequestException("Invalid username");
         }
 
-        if(cartItemId!=cartItemToUpdate.Id)
+        if (cartItemId != cartItemToUpdate.Id)
         {
             throw new BadHttpRequestException("Ids mismatch");
         }
@@ -73,10 +76,12 @@ public class CartsController : ControllerBase
 
         var cartItem = _mapper.Map<CartItem>(cartItemToUpdate);
         var updatedCartItem = await _cartRepo.UpdateCartItemAsync(user.Id, cartItem);
-        return Ok(updatedCartItem);
+        var cartItemToReturn = updatedCartItem.MapCartItemToCartItemDto();
+
+        return Ok(cartItemToReturn);
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{cartItemId}")]
     public async Task<IActionResult> DeleteCartItem(int cartItemId)
     {
         var userName = User.Identity.Name;
@@ -91,7 +96,7 @@ public class CartsController : ControllerBase
         {
             throw new BadRequestException("Invalid username");
         }
-        await _cartRepo.RemoveCartItemAsync(user.Id,cartItemId);
+        await _cartRepo.RemoveCartItemAsync(user.Id, cartItemId);
         return NoContent();
     }
 
@@ -103,22 +108,34 @@ public class CartsController : ControllerBase
         {
             throw new BadRequestException("User is not logged in");
         }
-        var user = await _userRepo.GetUserByUserNameAsync(userName);
 
+        var user = await _userRepo.GetUserByUserNameAsync(userName);
         // since username is not being passed by user, so this condition will likely occur
         if (user == null)
         {
             throw new BadRequestException("Invalid username");
         }
-        var cart=await _cartRepo.GetCartByUserIdAsync(user.Id);
-        return Ok(cart);
+
+        Cart? cart = await _cartRepo.GetCartByUserIdAsync(user.Id);
+
+        if(cart==null)
+        {
+            throw new BadRequestException("Item does not found");
+        }
+
+        CartReadDto cartToReturn = cart.MapCartToCartReadDto();
+
+        return Ok(cartToReturn);
     }
 
     [HttpGet]
-    //[Authorize(Roles = Roles.Admin)]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> GetAllCarts()
     {
-        var carts = await _cartRepo.GetCartsAsync();
-        return Ok(carts);
+        IEnumerable<Cart> carts = await _cartRepo.GetCartsAsync();
+        var cartToReturn = carts.MapCartsToCartReadDtos();
+        return Ok(cartToReturn);
     }
+
+    
 }

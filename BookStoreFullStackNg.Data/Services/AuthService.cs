@@ -27,34 +27,44 @@ public class AuthService : IAuthService
     public async Task Registeration(RegistrationModel model, string role)
     {
         // TODO: Make sure the atomicity of whole. Since I am using two db context here, it might be tricky
-
-        // saving to user table of book store context
-        var userInBookStore = new User
+        using var transaction = await _bookContext.Database.BeginTransactionAsync();
+        try
         {
-            Name = model.Name,
-            Username = model.Email
-        };
-        await _bookContext.SaveChangesAsync();
+            // saving to user table of book store context
+            var userInBookStore = new User
+            {
+                Name = model.Name,
+                Username = model.Email
+            };
+            _bookContext.Users.Add(userInBookStore);
+            await _bookContext.SaveChangesAsync();
 
-        // identity section
-        var userExists = await userManager.FindByNameAsync(model.Email);
-        if (userExists != null)
-            throw new InvalidOperationException("User already exists");
+            // identity section
+            var userExists = await userManager.FindByNameAsync(model.Email);
+            if (userExists != null)
+                throw new InvalidOperationException("User already exists");
 
-        IdentityUser user = new()
+            IdentityUser user = new()
+            {
+                Email = model.Email,
+                SecurityStamp = Guid.NewGuid().ToString(),
+                UserName = model.Email,
+            };
+            var createUserResult = await userManager.CreateAsync(user, model.Password);
+            if (!createUserResult.Succeeded)
+                throw new Exception("User creation failed! Please check user details and try again.");
+
+            if (!await roleManager.RoleExistsAsync(role))
+                await roleManager.CreateAsync(new IdentityRole(role));
+
+            await userManager.AddToRoleAsync(user, role);
+            await transaction.CommitAsync();
+        }
+        catch(Exception ex)
         {
-            Email = model.Email,
-            SecurityStamp = Guid.NewGuid().ToString(),
-            UserName = model.Email,
-        };
-        var createUserResult = await userManager.CreateAsync(user, model.Password);
-        if (!createUserResult.Succeeded)
-            throw new Exception("User creation failed! Please check user details and try again.");
-
-        if (!await roleManager.RoleExistsAsync(role))
-            await roleManager.CreateAsync(new IdentityRole(role));
-
-        await userManager.AddToRoleAsync(user, role);
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 
     public async Task<string> Login(LoginModel model)

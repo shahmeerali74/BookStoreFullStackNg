@@ -23,5 +23,6 @@ public class MappingProfile : Profile
         CreateMap<Book, BookUpdateDto>().ReverseMap();
         CreateMap<CartItem,CartItemCreateDto>().ReverseMap();
         CreateMap<CartItem,CartItemUpdateDto>().ReverseMap();
+        CreateMap<CartItem,CartItemDto>().ReverseMap();
     }
 }

@@ -39,6 +39,7 @@ public class CartRepository : ICartRepository
             else
             {
                 existingItem.Quantity += cartItem.Quantity;
+                cartItem = existingItem;
             }
             await _context.SaveChangesAsync();
             await tran.CommitAsync();
@@ -72,19 +73,40 @@ public class CartRepository : ICartRepository
         return createdCartItem;
     }
 
-    public async Task<Cart?> GetCartByIdAsync(int cartId)
-    {
-        return await _context.Carts.Include(c=>c.CartItems).ThenInclude(ci=>ci.Book).AsNoTracking().FirstOrDefaultAsync(c => c.Id == cartId);
-    }
+    //public async Task<Cart?> GetCartByIdAsync(int cartId)
+    //{
+    //    return await _context.Carts.Include(c=>c.CartItems).ThenInclude(ci=>ci.Book).AsNoTracking().FirstOrDefaultAsync(c => c.Id == cartId);
+    //}
 
     public async Task<Cart?> GetCartByUserIdAsync(int userId)
     {
-        return await _context.Carts.Include(c => c.CartItems).ThenInclude(ci => ci.Book).AsNoTracking().FirstOrDefaultAsync(c => c.UserId == userId);
+        return await _context.Carts
+            .AsNoTracking()
+            .Include(c=>c.User)
+            .Include(c => c.User)  // Include User related to Cart
+            .Include(c => c.CartItems)  // Include CartItems in Cart
+                .ThenInclude(ci => ci.Book)  // Include Book in CartItem
+                    .ThenInclude(b => b.BookAuthors)  // Include BookAuthors in Book
+                        .ThenInclude(ba => ba.Author)  // Include Author in BookAuthor
+            .Include(c => c.CartItems)  // Re-include CartItems to continue chain
+                .ThenInclude(ci => ci.Book)  // Include Book in CartItem
+                    .ThenInclude(b => b.BookGenres)  // Include BookGenres in Book
+                        .ThenInclude(bg => bg.Genre)  // Include Genre in BookGenre
+            .FirstOrDefaultAsync(c => c.UserId == userId);  // Filter by UserId
     }
+
 
     public async Task<CartItem?> GetCartItemByCartItemIdAsync(int cartItemId)
     {
-        return await _context.CartItems.Include(ci => ci.Book).AsNoTracking().FirstOrDefaultAsync(ci=>ci.Id==cartItemId);
+        return await _context.CartItems
+            .Include(ci => ci.Book)
+            .ThenInclude(b=>b.BookGenres)
+            .ThenInclude(bg=>bg.Genre)
+            .Include(ci=>ci.Book)
+            .ThenInclude(b=>b.BookAuthors)
+            .ThenInclude(ba=>ba.Author)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(ci=>ci.Id==cartItemId);
     }
 
     public async Task RemoveCartItemAsync(int userId,int cartItemId)
@@ -110,6 +132,7 @@ public class CartRepository : ICartRepository
     public async Task<IEnumerable<Cart>> GetCartsAsync()
     {
         return await _context.Carts
+                             .Include(c=>c.User)
                              .Include(c => c.CartItems)
                              .ThenInclude(ci => ci.Book)
                              .Include(c => c.User)

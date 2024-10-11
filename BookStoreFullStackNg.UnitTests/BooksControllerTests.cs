@@ -9,6 +9,7 @@ using BookStoreFullStackNg.Data.DTOs.Common;
 using BookStoreFullStackNg.Data.Reopositories.Interfaces;
 using BookStoreFullStackNg.Data.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using NSubstitute;
 
 namespace BookStoreFullStackNg.UnitTests;
@@ -19,6 +20,7 @@ public class BooksControllerTests
     private readonly IMapper _mapper;
     private readonly BooksController _controller;
     private readonly IFileService _fileService;
+    private readonly IOutputCacheStore _cache;
 
     private static List<Book> books = new List<Book>
         {
@@ -32,6 +34,7 @@ public class BooksControllerTests
         _mapper = Substitute.For<IMapper>();
         _fileService = Substitute.For<IFileService>();
         _controller = new BooksController(_mapper, _bookRepository, _fileService);
+        _cache= Substitute.For<IOutputCacheStore>();
     }
 
     [Fact]
@@ -86,7 +89,7 @@ public class BooksControllerTests
         _bookRepository.AddBookAsync(bookToCreate).Returns(createdBookMock);
 
         // act
-        var result = await _controller.AddBook(bookToCreate);
+        var result = await _controller.AddBook(bookToCreate,_cache);
 
         // Assert
         var createdResult = Assert.IsType<CreatedAtRouteResult>(result);
@@ -127,14 +130,14 @@ public class BooksControllerTests
         _bookRepository.GetBookByIdAsync(bookToUpdate.Id).Returns(existingBookMock);
 
         // act
-        var result = await _controller.UpdateBook(bookToUpdate.Id, bookToUpdate);
+        var result = await _controller.UpdateBook(bookToUpdate.Id, bookToUpdate, _cache);
         //_bookRepository.GetBookByIdAsync(1).Returns(existingBookMock);
-        
+
         // assert
-        var okResult=Assert.IsType<OkObjectResult>(result);
+        var okResult = Assert.IsType<OkObjectResult>(result);
         var bookToReturn = Assert.IsType<BookReadDto>(okResult.Value);
         Assert.Equal(bookToReturn.Id, existingBookMock.Id);
-        
+
     }
 
     [Fact]
@@ -155,7 +158,7 @@ public class BooksControllerTests
         };
 
         // act and assert
-        await Assert.ThrowsAsync<NotFoundException>(() => _controller.UpdateBook(bookToUpdate.Id, bookToUpdate));
+        await Assert.ThrowsAsync<NotFoundException>(() => _controller.UpdateBook(bookToUpdate.Id, bookToUpdate, _cache));
     }
 
     [Fact]
@@ -176,14 +179,14 @@ public class BooksControllerTests
         };
 
         // act & assert
-        await Assert.ThrowsAsync<BadRequestException>(() => _controller.UpdateBook(2, bookToUpdate));
+        await Assert.ThrowsAsync<BadRequestException>(() => _controller.UpdateBook(2, bookToUpdate, _cache));
     }
 
     [Fact]
     public async Task DeleteBook_ReturnsNoContent()
     {
         // arrrange
-        var id= 1;
+        var id = 1;
         var existingBookMock = new BookReadDto
         {
             Id = 1,
@@ -198,7 +201,7 @@ public class BooksControllerTests
         _bookRepository.GetBookByIdAsync(id).Returns(existingBookMock);
 
         // act 
-        var result = await _controller.DeleteBook(id);
+        var result = await _controller.DeleteBook(id, _cache);
 
         // assert
         Assert.IsType<NoContentResult>(result);
@@ -211,7 +214,7 @@ public class BooksControllerTests
         int id = 999;
 
         // act & assert
-        await Assert.ThrowsAsync<NotFoundException>(()=>_controller.DeleteBook(id));
+        await Assert.ThrowsAsync<NotFoundException>(() => _controller.DeleteBook(id, _cache));
     }
 
     [Fact]
@@ -237,14 +240,14 @@ public class BooksControllerTests
         // assert
         var okResult = Assert.IsType<OkObjectResult>(result);
         var book = Assert.IsType<BookReadDto>(okResult.Value);
-        Assert.Equal(bookMock.Id,book.Id);
+        Assert.Equal(bookMock.Id, book.Id);
     }
 
     [Fact]
     public async Task GetBookById_ThrowsNotFoundException_WhenIdDoesNotExists()
     {
         // arrange,act,assert
-        await Assert.ThrowsAsync<NotFoundException>(()=>_controller.GetBookById(9999));
+        await Assert.ThrowsAsync<NotFoundException>(() => _controller.GetBookById(9999));
     }
 
 }
