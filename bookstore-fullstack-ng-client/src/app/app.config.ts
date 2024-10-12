@@ -21,15 +21,24 @@ import {
 import { AuthorEffects } from "./authors/state/author.effects";
 import { bookFeatureKey, bookReducer } from "./book/state/book.reducers";
 import { BookEffects } from "./book/state/book.effects";
+import { cartFeatureKey, cartReducers } from "./cart/state/cart.reducers";
+import { CartEffects } from "./cart/state/cart.effects";
 
 const reducers = {
   [genreFeatureKey]: genreReducers,
   [accountFeatureKey]: accountReducers,
   [authorFeaturKey]: authorReducers,
   [bookFeatureKey]: bookReducer,
+  [cartFeatureKey]: cartReducers,
 };
 
-const effects = [GenreEffects, AccountEffects, AuthorEffects, BookEffects];
+const effects = [
+  GenreEffects,
+  AccountEffects,
+  AuthorEffects,
+  BookEffects,
+  CartEffects,
+];
 
 export const appConfig: ApplicationConfig = {
   providers: [

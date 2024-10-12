@@ -3,7 +3,7 @@ import { CartItem } from "../data/cart-read.model";
 import { createReducer, on } from "@ngrx/store";
 import { CartActions } from "./cart.actions";
 
-export const CartFeatureKey = "cart";
+export const cartFeatureKey = "cart";
 
 export interface CartState {
   cartItems: ReadonlyArray<CartItem>;
