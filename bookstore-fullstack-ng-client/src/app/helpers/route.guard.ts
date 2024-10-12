@@ -5,7 +5,6 @@ import { selectLoginState } from "../account/state/account.selectors";
 import { tap } from "rxjs";
 
 export const routeGuard: CanActivateFn = (route, state) => {
-  console.log("route guard");
   const store = inject(Store);
   const router = inject(Router);
   const isLoggedIn$ = store.select(selectLoginState);

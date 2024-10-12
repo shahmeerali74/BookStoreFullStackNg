@@ -48,6 +48,12 @@ export const routes: Routes = [
       import("./dashboard.component").then((c) => c.DashboardComponent),
   },
   {
+    path: "cart",
+    canActivate: [routeGuard],
+    loadComponent: () =>
+      import("./cart/cart.component").then((c) => c.CartComponent),
+  },
+  {
     path: "books",
     loadChildren: () =>
       import("./book-public/book-public.routes").then(

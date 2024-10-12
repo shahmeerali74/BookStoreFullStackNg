@@ -19,6 +19,8 @@ import { BookActions } from "../book/state/book.actions";
 import { BookPublicFilterComponent } from "./ui/book-public-filter.component";
 import { GenreActions } from "../genre/state/genre.actions";
 import { selectGenres } from "../genre/state/genre.selectors";
+import { CartCreateModel } from "../cart/data/cart-create.model";
+import { CartActions } from "../cart/state/cart.actions";
 
 @Component({
   selector: "app-book-public",
@@ -64,7 +66,11 @@ export class BookPublicComponent implements OnDestroy {
   genres$ = this.store.select(selectGenres);
 
   addToCart(book: BookReadModel) {
-    throw new Error("Method not implemented.");
+    const cartItem: CartCreateModel = {
+      bookId: book.id,
+      quantity: 1,
+    };
+    this.store.dispatch(CartActions.addCartItem({ cartItem }));
   }
 
   ngOnDestroy(): void {

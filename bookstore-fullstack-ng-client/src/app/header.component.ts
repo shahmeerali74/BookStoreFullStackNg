@@ -65,6 +65,7 @@ import { User } from "./account/data/user.model";
               [matBadge]="cartCount"
               matBadgePosition="above after"
               matBadgeColor="accent"
+              routerLink="/cart"
             >
               shopping_cart
             </mat-icon>

@@ -8,7 +8,7 @@ import { CartUpdateModel } from "./cart-update.model";
 
 @Injectable({ providedIn: "root" })
 export class CartService {
-  private baseUrl = environment.baseUrl + "/api/cart";
+  private baseUrl = environment.baseUrl + "/api/carts";
   private http = inject(HttpClient);
 
   addCartItem(cartItem: CartCreateModel): Observable<CartItem> {
@@ -24,7 +24,7 @@ export class CartService {
   }
 
   getUserCart(): Observable<CartReadModel> {
-    return this.http.get<CartReadModel>(this.baseUrl);
+    return this.http.get<CartReadModel>(`${this.baseUrl}/userCart`);
   }
 
   getAllCarts(): Observable<Array<CartReadModel>> {
