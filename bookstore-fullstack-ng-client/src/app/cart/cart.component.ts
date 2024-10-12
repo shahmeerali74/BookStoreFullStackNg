@@ -11,11 +11,12 @@ import {
 } from "./state/cart.selectors";
 import { HttpErrorResponse } from "@angular/common/http";
 import { CartItemComponent } from "./ui/cart-item.component";
+import { ClassSummaryComponent } from "./ui/cart-summary.component";
 
 @Component({
   selector: "app-cart",
   standalone: true,
-  imports: [NgIf, NgFor, AsyncPipe, CartItemComponent],
+  imports: [NgIf, NgFor, AsyncPipe, CartItemComponent, ClassSummaryComponent],
   template: `
     <div class="cart-container">
       <ng-container *ngIf="loading$ | async"> loading... </ng-container>
@@ -39,6 +40,7 @@ import { CartItemComponent } from "./ui/cart-item.component";
               [tax]="(tax$ | async) ?? 0"
               [total]="(total$ | async) ?? 0"
             /> -->
+            <app-cart-summary [subTotal]="200" [tax]="10" [total]="210" />
           </ng-container>
 
           <ng-template #noitems>
