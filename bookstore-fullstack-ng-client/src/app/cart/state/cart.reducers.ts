@@ -76,5 +76,9 @@ export const cartReducers = createReducer(
     ...state,
     error,
     loading: false,
+  })),
+  on(CartActions.emptyCartItemState, (state) => ({
+    ...state,
+    cartItems: [],
   }))
 );

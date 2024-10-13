@@ -13,6 +13,8 @@ import {
 import accountActions from "./account/state/account.actions";
 import { tokenUtils } from "./utils/token.utils";
 import { AsyncPipe, NgIf } from "@angular/common";
+import { CartActions } from "./cart/state/cart.actions";
+import { selectCartCount } from "./cart/state/cart.selectors";
 
 @Component({
   selector: "app-root",
@@ -21,7 +23,7 @@ import { AsyncPipe, NgIf } from "@angular/common";
   template: `
     <app-header
       (logout)="logout()"
-      [cartCount]="0"
+      [cartCount]="(cartItemCount$ | async) ?? 0"
       [isLoggedIn]="(isLoggedIn$ | async) ?? false"
       [user]="userInfo$ | async"
     />
@@ -49,17 +51,16 @@ export class AppComponent implements OnInit, OnDestroy {
   snackBar = inject(MatSnackBar);
   destroyed$ = new Subject<boolean>();
   router = inject(Router);
-  cartLoaded = false;
 
   token$ = this.store.select(selectTokenState);
   isLoggedIn$ = this.store.select(selectLoginState);
   userInfo$ = this.store.select(selectUserInfo);
 
+  cartItemCount$ = this.store.select(selectCartCount);
   logout() {
     this.store.dispatch(accountActions.logout());
-    // empty cart state
-
-    // empty cart Item state
+    // clear cart Item state
+    this.store.dispatch(CartActions.emptyCartItemState());
 
     this.snackBar.open("Successfully logged out", "Dismis", {
       duration: 1000,
@@ -67,39 +68,20 @@ export class AppComponent implements OnInit, OnDestroy {
     this.router.navigate(["/login"]);
   }
 
-  loadAuthInfo() {
-    this.token$
+  loadCartItems() {
+    this.isLoggedIn$
       .pipe(
-        tap((token) => {
-          if (!token) {
-            //retrieve token
-            const accessToken = tokenUtils.getToken();
-            if (accessToken) {
-              // set loginResponse state here on application start
-              this.store.dispatch(
-                accountActions.loadAccountInfo({ accessToken })
-              );
-              const user = tokenUtils.getUserFromToken(accessToken);
-              if (user?.username) {
-                //   this.store.dispatch(
-                //     CartActions.loadCart({ username: user.username })
-                //   );
-              }
-            }
+        tap((isLoggedIn) => {
+          if (isLoggedIn) {
+            this.store.dispatch(CartActions.loadCartItems());
           }
-        }),
-        catchError((error) => {
-          console.log(error);
-          return of(error);
         }),
         takeUntil(this.destroyed$)
       )
       .subscribe();
   }
-
   ngOnInit(): void {
-    this.loadAuthInfo();
-    //this.loadCart();
+    this.loadCartItems();
   }
 
   ngOnDestroy(): void {
