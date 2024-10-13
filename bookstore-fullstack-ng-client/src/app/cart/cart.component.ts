@@ -2,7 +2,7 @@ import { AsyncPipe, JsonPipe, NgFor, NgIf } from "@angular/common";
 import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { Store } from "@ngrx/store";
 import { CartActions } from "./state/cart.actions";
-import { Observable } from "rxjs";
+import { combineLatest, map, Observable } from "rxjs";
 import { CartItem } from "./data/cart-read.model";
 import {
   selectCartError,
@@ -12,6 +12,7 @@ import {
 import { HttpErrorResponse } from "@angular/common/http";
 import { CartItemComponent } from "./ui/cart-item.component";
 import { ClassSummaryComponent } from "./ui/cart-summary.component";
+import { CartUpdateModel } from "./data/cart-update.model";
 
 @Component({
   selector: "app-cart",
@@ -35,12 +36,11 @@ import { ClassSummaryComponent } from "./ui/cart-summary.component";
                 (deleteItem)="onDeleteItem($event)"
               />
             </div>
-            <!-- <app-cart-summary
+            <app-cart-summary
               [subTotal]="(subTotal$ | async) ?? 0"
               [tax]="(tax$ | async) ?? 0"
               [total]="(total$ | async) ?? 0"
-            /> -->
-            <app-cart-summary [subTotal]="200" [tax]="10" [total]="210" />
+            />
           </ng-container>
 
           <ng-template #noitems>
@@ -73,6 +73,24 @@ export class CartComponent {
   error$: Observable<HttpErrorResponse | null> =
     this.store.select(selectCartError);
 
+  subTotal$: Observable<number> = this.cartItems$.pipe(
+    map((cartItems) => {
+      return cartItems.reduce(
+        (acc, curr) => (acc + curr.book.price) * curr.quantity,
+        0
+      );
+    })
+  );
+  taxInPercent = 18;
+
+  tax$: Observable<number> = this.subTotal$.pipe(
+    map((subTotal) => (subTotal * this.taxInPercent) / 100)
+  );
+
+  total$ = combineLatest([this.subTotal$, this.tax$]).pipe(
+    map(([subTotal, tax]) => subTotal + tax)
+  );
+
   trackById(index: number, cartItem: CartItem) {
     return cartItem.id;
   }
@@ -82,11 +100,21 @@ export class CartComponent {
   }
 
   onSelectQuantity(data: { cartItem: CartItem; newQuantity: number }) {
-    console.log({ cartItem: data.cartItem, newQuantity: data.newQuantity });
+    const cartItemToUpdate: CartUpdateModel = {
+      id: data.cartItem.id,
+      cartId: data.cartItem.cartId,
+      bookId: data.cartItem.bookId,
+      quantity: data.newQuantity,
+    };
+    this.store.dispatch(
+      CartActions.updateCartItem({ cartItem: cartItemToUpdate })
+    );
   }
 
   onDeleteItem(id: number) {
-    console.log(id);
+    if (window.confirm("Are you sure to delete?")) {
+      this.store.dispatch(CartActions.deleteCartItem({ id }));
+    }
   }
 
   constructor() {
