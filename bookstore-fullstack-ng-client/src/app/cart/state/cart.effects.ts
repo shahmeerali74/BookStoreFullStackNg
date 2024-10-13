@@ -54,7 +54,7 @@ export class CartEffects {
       ofType(CartActions.deleteCartItem),
       switchMap(({ id }) =>
         this.cartService.deleteCart(id).pipe(
-          map((cartItem) => CartActions.deleteCartItem({ id })),
+          map((cartItem) => CartActions.deleteCartItemSuccess({ id })),
           catchError((error) =>
             of(CartActions.updateCartItemFailure({ error }))
           )

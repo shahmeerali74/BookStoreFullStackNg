@@ -36,7 +36,7 @@ import { NgFor } from "@angular/common";
     <div class="item">{{ cartItem.book.authorNames }}</div>
     <div class="item">{{ cartItem.book.genreNames }}</div>
     <div class="item">{{ cartItem.book.publishedYear }}</div>
-    <div class="item">{{ cartItem.book.price }}</div>
+    <div class="item">₹{{ cartItem.book.price }}</div>
     <div class="item">
       <mat-form-field [subscriptSizing]="'dynamic'">
         <mat-label>Qty</mat-label>

@@ -71,6 +71,9 @@ export class BookPublicComponent implements OnDestroy {
       quantity: 1,
     };
     this.store.dispatch(CartActions.addCartItem({ cartItem }));
+    this.snackBar.open(`${book.title} added to cart`, "", {
+      duration: 3000,
+    });
   }
 
   ngOnDestroy(): void {

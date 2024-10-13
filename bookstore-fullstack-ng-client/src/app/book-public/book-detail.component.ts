@@ -5,11 +5,15 @@ import { catchError, map, of, switchMap } from "rxjs";
 import { BookService } from "../book/Data/book.service";
 import { AsyncPipe, NgIf } from "@angular/common";
 import { environment } from "../../environments/environment.development";
+import { BookReadModel } from "../book/Data/book-read.model";
+import { CartCreateModel } from "../cart/data/cart-create.model";
+import { CartActions } from "../cart/state/cart.actions";
+import { MatSnackBar, MatSnackBarModule } from "@angular/material/snack-bar";
 
 @Component({
   selector: "app-book-detail",
   standalone: true,
-  imports: [NgIf, AsyncPipe, RouterModule],
+  imports: [NgIf, AsyncPipe, RouterModule, MatSnackBarModule],
   template: `
     <ng-container *ngIf="book$ | async as book">
       <div class="book-card">
@@ -23,8 +27,9 @@ import { environment } from "../../environments/environment.development";
           <p class="book-author">By {{ book.authorNames }}</p>
           <p class="book-genres">Genres: {{ book.genreNames }}</p>
           <p class="book-price">At ₹{{ book.price }}</p>
-          <a [href]="book.Link" class="book-link" target="_blank">Learn More</a>
-          <a routerLink="/books" class="back-button">Back</a>
+          <!-- <a [href]="book.Link" class="book-link" target="_blank">Learn More</a> -->
+          <a (click)="addToCart(book)" class="button book-link">Add to cart</a>
+          <a routerLink="/books" class="button back-button">Back</a>
         </div>
       </div>
     </ng-container>
@@ -64,6 +69,9 @@ import { environment } from "../../environments/environment.development";
       .book-price {
         font-size: 30px;
         margin: 25px 0;
+      }
+      .button {
+        cursor: pointer;
       }
 
       .book-link {
@@ -108,6 +116,19 @@ export class BookDetailComponent {
   store = inject(Store);
   id$ = this.route.paramMap.pipe(map((a) => a.get("id")));
   bookService = inject(BookService);
+  snackBar = inject(MatSnackBar);
+
+  addToCart(book: BookReadModel) {
+    const cartItem: CartCreateModel = {
+      bookId: book.id,
+      quantity: 1,
+    };
+    this.store.dispatch(CartActions.addCartItem({ cartItem }));
+    this.snackBar.open(`${book.title} added to cart`, "", {
+      duration: 3000,
+    });
+  }
+
   book$ = this.id$.pipe(
     switchMap((id) => {
       if (!id) return of(null);

@@ -136,6 +136,7 @@ public class BooksController : ControllerBase
     }
 
     [HttpGet("{id}", Name = nameof(GetBookById))]
+    [AllowAnonymous]
     public async Task<IActionResult> GetBookById(int id)
     {
         BookReadDto? book = await _bookRepo.GetBookByIdAsync(id);
