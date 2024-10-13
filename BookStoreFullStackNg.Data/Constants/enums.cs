@@ -3,7 +3,7 @@ namespace BookStoreFullStackNg.Data.Constants;
 
 public enum PaymentMethod
 {
-    CreditCard,
+    CreditCard=1,
     DebitCard,
     PayPal,
     UPI,
@@ -12,7 +12,7 @@ public enum PaymentMethod
 
 public enum PaymentStatus
 {
-    Pending,
+    Pending=1,
     Completed,
     Failed,
     Refunded
@@ -20,7 +20,7 @@ public enum PaymentStatus
 
 public enum OrderStatus
 {
-    Pending,
+    Pending=1,
     Confirmed,
     Shipped,
     Delivered,

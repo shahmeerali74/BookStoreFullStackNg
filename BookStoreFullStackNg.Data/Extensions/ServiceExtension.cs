@@ -20,5 +20,6 @@ public static class ServiceExtension
         services.AddTransient<IFileService, FileService>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ICartRepository, CartRepository>();
+        services.AddScoped<IOrderRepository, OrderRepository>();
     }
 }
