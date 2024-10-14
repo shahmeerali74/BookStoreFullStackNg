@@ -1,9 +1,11 @@
 import { ChangeDetectionStrategy, Component, Input } from "@angular/core";
+import { MatButtonModule } from "@angular/material/button";
+import { RouterModule } from "@angular/router";
 
 @Component({
   selector: "app-cart-summary",
   standalone: true,
-  imports: [],
+  imports: [MatButtonModule, RouterModule],
   template: `
     <div class="summary-item">
       <div class="summary-key">SubTotal</div>
@@ -18,6 +20,12 @@ import { ChangeDetectionStrategy, Component, Input } from "@angular/core";
     <div class="summary-item">
       <div class="summary-key bolder">Total</div>
       <div class="summary-value bolder">₹{{ total }}</div>
+    </div>
+
+    <div class="summary-item">
+      <button mat-raised-button routerLink="/create-order" color="primary">
+        Checkout
+      </button>
     </div>
   `,
   styles: [

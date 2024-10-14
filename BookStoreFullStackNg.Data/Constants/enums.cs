@@ -7,7 +7,8 @@ public enum PaymentMethod
     DebitCard,
     PayPal,
     UPI,
-    NetBanking
+    NetBanking,
+    COD
 }
 
 public enum PaymentStatus

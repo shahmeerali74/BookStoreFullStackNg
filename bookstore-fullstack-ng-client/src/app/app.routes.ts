@@ -54,6 +54,30 @@ export const routes: Routes = [
       import("./cart/cart.component").then((c) => c.CartComponent),
   },
   {
+    path: "create-order",
+    canActivate: [routeGuard],
+    loadComponent: () =>
+      import("./order/create-order.component").then(
+        (c) => c.CreateOrderComponent
+      ),
+  },
+  {
+    path: "order-success",
+    canActivate: [routeGuard],
+    loadComponent: () =>
+      import("./order/order-success.component").then(
+        (o) => o.OrderSuccessComponent
+      ),
+  },
+  {
+    path: "order-failure",
+    canActivate: [routeGuard],
+    loadComponent: () =>
+      import("./order/order-failure.component").then(
+        (o) => o.OrderFailureComponent
+      ),
+  },
+  {
     path: "books",
     loadChildren: () =>
       import("./book-public/book-public.routes").then(

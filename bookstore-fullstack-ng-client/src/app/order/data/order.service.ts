@@ -8,10 +8,10 @@ import { OrderCreateModel } from "./order-create.model";
 @Injectable({ providedIn: "root" })
 export class OrderService {
   http = inject(HttpClient);
-  baseUrl = environment.baseUrl;
+  baseUrl = environment.baseUrl + "/api/orders";
 
-  getPaymentMethods = (): Observable<PaymentMethodModel> =>
-    this.http.get<PaymentMethodModel>(this.baseUrl + "/payment-methods");
+  getPaymentMethods = (): Observable<Array<PaymentMethodModel>> =>
+    this.http.get<Array<PaymentMethodModel>>(this.baseUrl + "/payment-methods");
 
   createOrder = (data: OrderCreateModel) =>
     this.http.post<any>(this.baseUrl, data);

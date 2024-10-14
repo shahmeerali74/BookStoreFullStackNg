@@ -17,7 +17,10 @@ export class CartEffects {
           map((cart) =>
             CartActions.loadCartItemsSuccess({ cartItems: cart.cartItems })
           ),
-          catchError((error) => of(CartActions.loadCartItemsFailure({ error })))
+          catchError((error) => {
+            console.log(error);
+            return of(CartActions.loadCartItemsFailure({ error }));
+          })
         )
       )
     )
