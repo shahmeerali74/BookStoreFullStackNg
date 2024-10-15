@@ -1,9 +1,11 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { PaymentMethodModel } from "./payment-method.model";
 import { environment } from "../../../environments/environment.development";
 import { OrderCreateModel } from "./order-create.model";
+import { UserOrderModel } from "./user-order.model";
+import { PagedList } from "../../common/paged-list.model";
 
 @Injectable({ providedIn: "root" })
 export class OrderService {
@@ -15,4 +17,24 @@ export class OrderService {
 
   createOrder = (data: OrderCreateModel) =>
     this.http.post<any>(this.baseUrl, data);
+
+  getUserOrders({
+    pageSize = 10,
+    pageNumber = 1,
+    searchTerm = "",
+    sortBy = "",
+    startDate = "",
+    endDate = "",
+  }): Observable<PagedList<UserOrderModel>> {
+    let params = new HttpParams();
+    params = params.set("pageSize", pageSize.toString());
+    params = params.set("pageNumber", pageNumber.toString());
+    params = params.set("searchTerm", searchTerm);
+    params = params.set("sortBy", sortBy);
+    if (startDate && endDate) {
+      params = params.set("startDate", startDate);
+      params = params.set("endDate", endDate);
+    }
+    return this.http.get<PagedList<UserOrderModel>>(this.baseUrl, { params });
+  }
 }
