@@ -1,7 +1,9 @@
 ﻿using BookStoreFullStackNg.Data.Constants;
 using BookStoreFullStackNg.Data.Data;
 using BookStoreFullStackNg.Data.Domain;
+using BookStoreFullStackNg.Data.DTOs.Common;
 using BookStoreFullStackNg.Data.DTOs.Order;
+using BookStoreFullStackNg.Data.Helpers;
 using BookStoreFullStackNg.Data.Reopositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,9 +12,12 @@ namespace BookStoreFullStackNg.Data.Reopositories.Implementations;
 public class OrderRepository : IOrderRepository
 {
     private readonly BookStoreContext _context;
-    public OrderRepository(BookStoreContext context)
+    private readonly ISortHelper<Order> _sortHelper;
+
+    public OrderRepository(BookStoreContext context, ISortHelper<Order> sortHelper)
     {
         _context = context;
+        _sortHelper = sortHelper;
     }
     public async Task CreateOrder(int userId,OrderCreateDto orderToCreate)
     {
@@ -97,4 +102,41 @@ public class OrderRepository : IOrderRepository
             throw;
         }
     }
+
+    public async Task<PagedList<Order>> UserOrder(int userId,UserOrdersQueryParameters queryParameters)
+    {
+        var userOrderQuery = _context.Orders
+                                .Include(c=>c.OrderItems)
+                                .ThenInclude(c=>c.Book)
+                                .ThenInclude(b=>b.BookGenres)
+                                .ThenInclude(bg=>bg.Genre)
+                                .Include(c=>c.OrderItems)
+                                .ThenInclude(c=>c.Book)
+                                .ThenInclude(b=>b.BookAuthors)
+                                .ThenInclude(ba=>ba.Author)
+                                .Where(o=>o.UserId == userId)
+                                .AsQueryable();
+        // filter by search term
+        //if (!string.IsNullOrEmpty(queryParameters.SearchTerm))
+        //{
+        //    userOrderQuery = userOrderQuery.Where(a =>
+        //    a.OrderItems..ToLower().Contains(queryParameters.SearchTerm)
+        //    );
+        //}
+
+        // filter by order date
+        if (queryParameters.StartDate != null && queryParameters.EndDate != null)
+        {
+            userOrderQuery = userOrderQuery.Where(o => o.OrderDate == queryParameters.StartDate && o.OrderDate <= queryParameters.EndDate);
+        }
+
+        if (!string.IsNullOrEmpty(queryParameters.SortBy))
+        {
+            userOrderQuery= _sortHelper.ApplySort(userOrderQuery, queryParameters.SortBy);
+        }
+
+        return await PagedList<Order>.ToPagedListAsync(userOrderQuery, queryParameters.PageNumber, queryParameters.PageSize);
+
+    }
+
 }
