@@ -306,6 +306,7 @@ function _isTestEnvironment() {
 }
 
 // node_modules/@angular/cdk/fesm2022/keycodes.mjs
+var BACKSPACE = 8;
 var TAB = 9;
 var ENTER = 13;
 var SHIFT = 16;
@@ -366,6 +367,19 @@ function coerceCssPixelValue(value) {
 }
 function coerceElement(elementOrRef) {
   return elementOrRef instanceof ElementRef ? elementOrRef.nativeElement : elementOrRef;
+}
+function coerceStringArray(value, separator = /\s+/) {
+  const result = [];
+  if (value != null) {
+    const sourceValues = Array.isArray(value) ? value : `${value}`.split(separator);
+    for (const sourceValue of sourceValues) {
+      const trimmedString = `${sourceValue}`.trim();
+      if (trimmedString) {
+        result.push(trimmedString);
+      }
+    }
+  }
+  return result;
 }
 
 // node_modules/@angular/cdk/fesm2022/observers.mjs
@@ -5528,9 +5542,14 @@ export {
   _getFocusedElementPierceShadowDom,
   _getEventTarget,
   _isTestEnvironment,
+  BACKSPACE,
   ENTER,
   ESCAPE,
   SPACE,
+  PAGE_UP,
+  PAGE_DOWN,
+  END,
+  HOME,
   LEFT_ARROW,
   UP_ARROW,
   RIGHT_ARROW,
@@ -5543,6 +5562,7 @@ export {
   coerceArray,
   coerceCssPixelValue,
   coerceElement,
+  coerceStringArray,
   ObserversModule,
   BreakpointObserver,
   Breakpoints,
@@ -5552,8 +5572,10 @@ export {
   ActiveDescendantKeyManager,
   InteractivityChecker,
   FocusTrapFactory,
+  CdkTrapFocus,
   LiveAnnouncer,
   FocusMonitor,
+  CdkMonitorFocus,
   A11yModule,
   Directionality,
   BidiModule,
@@ -5603,4 +5625,4 @@ export {
   MatRippleLoader,
   _MatInternalFormField
 };
-//# sourceMappingURL=chunk-RAK4RHOV.js.map
+//# sourceMappingURL=chunk-LXEJ77U5.js.map

@@ -125,9 +125,9 @@ public class OrderRepository : IOrderRepository
         //}
 
         // filter by order date
-        if (queryParameters.StartDate != null && queryParameters.EndDate != null)
+        if (queryParameters.StartDate.HasValue && queryParameters.EndDate.HasValue)
         {
-            userOrderQuery = userOrderQuery.Where(o => o.OrderDate == queryParameters.StartDate && o.OrderDate <= queryParameters.EndDate);
+            userOrderQuery = userOrderQuery.Where(o => o.OrderDate.Date >= queryParameters.StartDate.Value && o.OrderDate.Date <= queryParameters.EndDate.Value);
         }
 
         if (!string.IsNullOrEmpty(queryParameters.SortBy))

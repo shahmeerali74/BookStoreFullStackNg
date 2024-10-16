@@ -13,19 +13,30 @@ import { MyOrderModel } from "./data/my-order.model";
 import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { UserOrderListComponent } from "./ui/user-order-list.component";
 import { PageSelectorModel } from "../common/page-selector.model";
-import { AuthorPaginatorComponent } from "../authors/ui/author-paginator.component";
+import { UserOrderPaginatorComponent } from "./ui/user-order-paginator.component";
+import { UserOrderFilter } from "./ui/user-order-filter.component";
 
 @Component({
   selector: "app-user-order",
   standalone: true,
-  imports: [NgIf, AsyncPipe, UserOrderListComponent, AuthorPaginatorComponent],
+  imports: [
+    NgIf,
+    AsyncPipe,
+    UserOrderListComponent,
+    UserOrderPaginatorComponent,
+    UserOrderFilter,
+  ],
   template: `
+    <app-user-order-filter
+      (filterByPurchaseDate)="handleFilterByPurchaseDate($event)"
+      (clearFilter)="handleClearFilter()"
+    />
     <ng-container *ngIf="myOrders$ | async as orders">
       <app-user-order-list [userOrders]="orders" />
     </ng-container>
 
     <ng-container *ngIf="totalCount$ | async as totalCount">
-      <app-author-paginator
+      <app-user-order-paginator
         (pageSelect)="onPageSelect($event)"
         [totalRecords]="totalCount"
       />
@@ -67,9 +78,30 @@ export class UserOrderComponent {
   }
 
   onPageSelect(page: PageSelectorModel) {
-    // this.store.dispatch(authorActions.setCurrentPage({ page: page.page }));
-    // this.store.dispatch(authorActions.setPageSize({ pageSize: page.limit }));
+    this.store.dispatch(userOrderActions.setCurrentPage({ page: page.page }));
+    this.store.dispatch(userOrderActions.setPageSize({ pageSize: page.limit }));
     this.loadUserOrders();
+  }
+
+  handleClearFilter() {
+    this.store.dispatch(userOrderActions.setStartDate({ startDate: null }));
+    this.store.dispatch(userOrderActions.setEndDate({ endDate: null }));
+    this.loadUserOrders();
+  }
+  handleFilterByPurchaseDate(range: {
+    dateFrom: string | null;
+    dateTo: string | null;
+  }) {
+    const { dateFrom, dateTo } = range;
+
+    console.log(dateFrom, dateTo);
+    if (dateFrom && dateTo) {
+      this.store.dispatch(
+        userOrderActions.setStartDate({ startDate: dateFrom })
+      );
+      this.store.dispatch(userOrderActions.setEndDate({ endDate: dateTo }));
+      this.loadUserOrders();
+    }
   }
   constructor() {
     this.loadUserOrders();

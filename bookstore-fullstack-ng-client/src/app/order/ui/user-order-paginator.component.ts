@@ -9,7 +9,7 @@ import { MatPaginatorModule, PageEvent } from "@angular/material/paginator";
 import { PageSelectorModel } from "../../common/page-selector.model";
 
 @Component({
-  selector: "app-author-paginator",
+  selector: "app-user-order-paginator",
   standalone: true,
   imports: [MatPaginatorModule],
   template: `
@@ -31,7 +31,7 @@ import { PageSelectorModel } from "../../common/page-selector.model";
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OrderPaginatorComponent {
+export class UserOrderPaginatorComponent {
   @Output() pageSelect = new EventEmitter<PageSelectorModel>();
   @Input({ required: true }) totalRecords!: number;
 
