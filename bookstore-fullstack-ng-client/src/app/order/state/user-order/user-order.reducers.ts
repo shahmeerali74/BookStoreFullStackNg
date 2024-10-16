@@ -36,7 +36,7 @@ export const initialState: UserOrderState = {
   error: null,
 };
 
-export const authorReducers = createReducer(
+export const userOrderReducers = createReducer(
   initialState,
   on(userOrderActions.getUserOrder, (state) => ({
     ...state,

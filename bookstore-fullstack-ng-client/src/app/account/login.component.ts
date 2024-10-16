@@ -80,7 +80,6 @@ export class LoginComponent implements OnDestroy {
     tap((userInfo) => {
       if (userInfo) {
         const { username } = userInfo;
-        console.log("username", username);
         if (username) {
           this.matSnackBar.open("Login successful", "dismiss", {
             duration: 1000,

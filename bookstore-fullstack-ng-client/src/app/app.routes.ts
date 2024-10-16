@@ -78,6 +78,12 @@ export const routes: Routes = [
       ),
   },
   {
+    path: "my-orders",
+    canActivate: [routeGuard],
+    loadComponent: () =>
+      import("./order/user-order.component").then((o) => o.UserOrderComponent),
+  },
+  {
     path: "books",
     loadChildren: () =>
       import("./book-public/book-public.routes").then(

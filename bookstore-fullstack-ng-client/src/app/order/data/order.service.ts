@@ -35,6 +35,9 @@ export class OrderService {
       params = params.set("startDate", startDate);
       params = params.set("endDate", endDate);
     }
-    return this.http.get<PagedList<UserOrderModel>>(this.baseUrl, { params });
+    return this.http.get<PagedList<UserOrderModel>>(
+      this.baseUrl + "/user-orders",
+      { params }
+    );
   }
 }

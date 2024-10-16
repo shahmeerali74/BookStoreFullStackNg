@@ -39,7 +39,9 @@ import { User } from "./account/data/user.model";
           <button mat-button routerLink="/dashboard" routerLinkActive="active">
             Dashboard
           </button>
-
+          <button mat-button routerLink="/my-orders" routerLinkActive="active">
+            My Orders
+          </button>
           <!-- admin routes start -->
           <ng-container *ngIf="isInRole(['Admin'])">
             <button

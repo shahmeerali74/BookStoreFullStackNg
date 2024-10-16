@@ -9,42 +9,42 @@ export const selectUserOrders = createSelector(
   (state) => state.orders
 );
 
-export const selectAuthorLoading = createSelector(
+export const selectUserOrderLoading = createSelector(
   selectUserOrderState,
   (state) => state.loading
 );
 
-export const selectAuthorError = createSelector(
+export const selectUserOrderError = createSelector(
   selectUserOrderState,
   (state) => state.error
 );
 
-export const selectAuthorTotalCount = createSelector(
+export const selectUserOrderTotalCount = createSelector(
   selectUserOrderState,
   (state) => state.totalCount
 );
 
-export const selectAuthorCurrentPage = createSelector(
+export const selectUserOrderCurrentPage = createSelector(
   selectUserOrderState,
   (state) => state.pageNumber
 );
 
-export const selectAuthorPageSize = createSelector(
+export const selectUserOrderPageSize = createSelector(
   selectUserOrderState,
   (state) => state.pageSize
 );
 
-export const selectAuthorTotalPages = createSelector(
+export const selectUserOrderTotalPages = createSelector(
   selectUserOrderState,
   (state) => state.totalPages
 );
 
-export const selectAuthorHasNext = createSelector(
+export const selectUserOrderHasNext = createSelector(
   selectUserOrderState,
   (state) => state.hasNext
 );
 
-export const selectAuthorHasPrevious = createSelector(
+export const selectUserOrderHasPrevious = createSelector(
   selectUserOrderState,
   (state) => state.hasPrevious
 );

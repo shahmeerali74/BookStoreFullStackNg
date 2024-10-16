@@ -91,8 +91,8 @@ export class LoginFormComponet {
   fb = inject(FormBuilder);
 
   loginForm: FormGroup = this.fb.group({
-    username: ["", Validators.required],
-    password: ["", Validators.required],
+    username: ["john@gmail.com", Validators.required],
+    password: ["John@123", Validators.required],
   });
 
   get f() {

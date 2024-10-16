@@ -5,6 +5,7 @@ import { Store } from "@ngrx/store";
 import { catchError, of, switchMap } from "rxjs";
 import { selectUserOrderState } from "./user-order.selectors";
 import { userOrderActions } from "./user-order.actions";
+import { concatLatestFrom } from "@ngrx/operators";
 
 @Injectable()
 export class UserOrderEffects {
@@ -22,13 +23,12 @@ export class UserOrderEffects {
             pageSize: state.pageSize,
             pageNumber: state.pageNumber,
             searchTerm: state.searchTerm ?? "",
-            startDate: state.startDate,
-            endDate: state.endDate,
+            startDate: state.startDate ?? "",
+            endDate: state.endDate ?? "",
             sortBy: state.sortBy,
           })
           .pipe(
             switchMap((data) => {
-              // can I dispatch an action here?
               return [
                 userOrderActions.getUserOrderSuccess({ orders: data.items }),
                 userOrderActions.setTotalCount({ totalCount: data.totalCount }),
@@ -41,7 +41,4 @@ export class UserOrderEffects {
       )
     )
   );
-}
-function concatLatestFrom(arg0: () => import("rxjs").Observable<any>[]): any {
-  throw new Error("Function not implemented.");
 }
