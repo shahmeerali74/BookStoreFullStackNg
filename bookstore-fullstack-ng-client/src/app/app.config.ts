@@ -28,6 +28,11 @@ import {
   userOrderFeaturKey,
   userOrderReducers,
 } from "./order/state/user-order/user-order.reducers";
+import { CustomerOrderEffects } from "./customer-orders/state/customer-order.effects";
+import {
+  customerOrderFeaturKey,
+  customerOrderReducers,
+} from "./customer-orders/state/customer-order.reducer";
 
 const reducers = {
   [genreFeatureKey]: genreReducers,
@@ -36,6 +41,7 @@ const reducers = {
   [bookFeatureKey]: bookReducer,
   [cartFeatureKey]: cartReducers,
   [userOrderFeaturKey]: userOrderReducers,
+  [customerOrderFeaturKey]: customerOrderReducers,
 };
 
 const effects = [
@@ -45,6 +51,7 @@ const effects = [
   BookEffects,
   CartEffects,
   UserOrderEffects,
+  CustomerOrderEffects,
 ];
 
 export const appConfig: ApplicationConfig = {
