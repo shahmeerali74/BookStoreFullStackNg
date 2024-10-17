@@ -138,6 +138,55 @@ public class OrderRepository : IOrderRepository
 
         }
 
+        //// filter by order date
+        //if (queryParameters.StartDate.HasValue && queryParameters.EndDate.HasValue)
+        //{
+        //    userOrderQuery = userOrderQuery.Where(o => o.OrderDate.Date >= queryParameters.StartDate.Value && o.OrderDate.Date <= queryParameters.EndDate.Value);
+        //}
+
+        if (!string.IsNullOrEmpty(queryParameters.SortBy))
+        {
+            userOrderQuery = _sortHelper.ApplySort(userOrderQuery, queryParameters.SortBy);
+        }
+
+        return await PagedList<Order>.ToPagedListAsync(userOrderQuery, queryParameters.PageNumber, queryParameters.PageSize);
+
+    }
+
+    public async Task<PagedList<Order>> GetOrders(UserOrdersQueryParameters queryParameters)
+    {
+        var userOrderQuery = _context.Orders
+                                .Include(c => c.OrderItems)
+                                .ThenInclude(c => c.Book)
+                                .ThenInclude(b => b.BookGenres)
+                                .ThenInclude(bg => bg.Genre)
+                                .Include(c => c.OrderItems)
+                                .ThenInclude(c => c.Book)
+                                .ThenInclude(b => b.BookAuthors)
+                                .ThenInclude(ba => ba.Author)
+                                .AsQueryable();
+        // filter by search term
+        if (!string.IsNullOrEmpty(queryParameters.SearchTerm))
+        {
+            var searchTerm = queryParameters.SearchTerm.ToLower();
+            userOrderQuery = userOrderQuery.Where(o =>
+         o.OrderItems.Any(oi =>
+             oi.Book.Title.ToLower().Contains(searchTerm) ||
+             oi.Book.BookAuthors.Any(ba => ba.Author.AuthorName.ToLower().Contains(searchTerm))
+         )
+     );
+            // Filter irrelevant order items after the query
+            foreach (var order in userOrderQuery)
+            {
+                order.OrderItems = order.OrderItems
+                    .Where(oi =>
+                        oi.Book.Title.ToLower().Contains(queryParameters.SearchTerm.ToLower()) ||
+                        oi.Book.BookAuthors.Any(ba => ba.Author.AuthorName.ToLower().Contains(queryParameters.SearchTerm.ToLower()))
+                    ).ToList();
+            }
+
+        }
+
         // filter by order date
         if (queryParameters.StartDate.HasValue && queryParameters.EndDate.HasValue)
         {
@@ -151,6 +200,20 @@ public class OrderRepository : IOrderRepository
 
         return await PagedList<Order>.ToPagedListAsync(userOrderQuery, queryParameters.PageNumber, queryParameters.PageSize);
 
+    }
+
+    public async Task<IEnumerable<OrderItem>> GetOrderItemsByOrderId(int orderId)
+    {
+        var orderItems = await _context.OrderItems
+                                .Include(c => c.Book)
+                                .ThenInclude(b => b.BookGenres)
+                                .ThenInclude(bg => bg.Genre)
+                                .Include(c => c.Book)
+                                .ThenInclude(b => b.BookAuthors)
+                                .ThenInclude(ba => ba.Author)
+                                .Where(oi=>oi.OrderId==orderId)
+                                .ToListAsync();
+        return orderItems;
     }
 
 }

@@ -8,4 +8,6 @@ public interface IOrderRepository
 {
     Task CreateOrder(int userId,OrderCreateDto orderToCreate);
     Task<PagedList<Order>> UserOrder(int userId, UserOrdersQueryParameters queryParameters);
+    Task<PagedList<Order>> GetOrders(UserOrdersQueryParameters queryParameters);
+    Task<IEnumerable<OrderItem>> GetOrderItemsByOrderId(int orderId);
 }

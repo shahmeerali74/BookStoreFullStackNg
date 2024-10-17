@@ -2,7 +2,6 @@
 using BookStoreFullStackNg.Api.Helpers;
 using BookStoreFullStackNg.Api.Models;
 using BookStoreFullStackNg.Data.Constants;
-using BookStoreFullStackNg.Data.DTOs.Book;
 using BookStoreFullStackNg.Data.DTOs.Common;
 using BookStoreFullStackNg.Data.DTOs.Order;
 using BookStoreFullStackNg.Data.Reopositories.Interfaces;
@@ -76,6 +75,24 @@ public class OrdersController : ControllerBase
         var orders = pagedOrders.Items.ToUserOrderDtos();
         var newBookPagedList = new PagedList<UserOrderDto>(orders.ToList(), pagedOrders.TotalCount, pagedOrders.PageNumber, pagedOrders.PageSize);
         return Ok(newBookPagedList);
+    }
+
+    [Authorize(Roles = Roles.Admin)]
+    [HttpGet]
+    public async Task<IActionResult> Orders([FromQuery] UserOrdersQueryParameters queryParams)
+    {
+       var pagedOrders = await _orderRepository.GetOrders(queryParams);
+        var orders = pagedOrders.Items.ToUserOrderDtos();
+        var newBookPagedList = new PagedList<UserOrderDto>(orders.ToList(), pagedOrders.TotalCount, pagedOrders.PageNumber, pagedOrders.PageSize);
+        return Ok(newBookPagedList);
+    }
+
+    [Authorize(Roles =Roles.Admin)]
+    [HttpGet("OrderItems/{orderId}")]
+    public async Task<IActionResult> GetOrderItems(int orderId)
+    {
+        var orderItems = await _orderRepository.GetOrderItemsByOrderId(orderId);
+        return Ok(orderItems.ToOrderItemDtos());
     }
 
 }
