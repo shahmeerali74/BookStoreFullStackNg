@@ -8,7 +8,7 @@ import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { tap } from "rxjs";
+import { debounceTime, tap } from "rxjs";
 import { MatDatepickerModule } from "@angular/material/datepicker";
 import { provideNativeDateAdapter } from "@angular/material/core";
 import { getDateWithoutTimezone } from "../../utils/date.utils";
@@ -24,7 +24,10 @@ import { getDateWithoutTimezone } from "../../utils/date.utils";
   ],
   providers: [provideNativeDateAdapter()],
   template: `
-    <mat-form-field appearance="outline" style="width: 300px;">
+    <mat-form-field appearance="outline">
+      <input matInput [formControl]="search" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
       <mat-date-range-input disabled [formGroup]="range" [rangePicker]="picker">
         <input
           matStartDate
@@ -67,15 +70,18 @@ export class UserOrderFilter {
     dateFrom: string | null;
     dateTo: string | null;
   }>();
+  @Output() onSearch = new EventEmitter<string | null>();
   @Output() clearFilter = new EventEmitter<void>();
 
   range = new FormGroup({
     dateFrom: new FormControl<Date | null>(null),
     dateTo: new FormControl<Date | null>(null),
   });
+  search = new FormControl<string | null>(null);
 
   clearFilters() {
     this.range.patchValue({ dateFrom: null, dateTo: null });
+    this.search.patchValue(null);
     this.clearFilter.emit();
   }
   constructor() {
@@ -89,6 +95,14 @@ export class UserOrderFilter {
             });
           }
         }),
+        takeUntilDestroyed()
+      )
+      .subscribe();
+
+    this.search.valueChanges
+      .pipe(
+        debounceTime(300),
+        tap((v) => this.onSearch.emit(v)),
         takeUntilDestroyed()
       )
       .subscribe();

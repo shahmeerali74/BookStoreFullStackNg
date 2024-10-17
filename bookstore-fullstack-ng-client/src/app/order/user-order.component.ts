@@ -29,6 +29,7 @@ import { UserOrderFilter } from "./ui/user-order-filter.component";
   template: `
     <app-user-order-filter
       (filterByPurchaseDate)="handleFilterByPurchaseDate($event)"
+      (onSearch)="handleOnSearch($event)"
       (clearFilter)="handleClearFilter()"
     />
     <ng-container *ngIf="myOrders$ | async as orders">
@@ -86,6 +87,7 @@ export class UserOrderComponent {
   handleClearFilter() {
     this.store.dispatch(userOrderActions.setStartDate({ startDate: null }));
     this.store.dispatch(userOrderActions.setEndDate({ endDate: null }));
+    this.store.dispatch(userOrderActions.setSearchTerm({ searchTerm: null }));
     this.loadUserOrders();
   }
   handleFilterByPurchaseDate(range: {
@@ -94,7 +96,6 @@ export class UserOrderComponent {
   }) {
     const { dateFrom, dateTo } = range;
 
-    console.log(dateFrom, dateTo);
     if (dateFrom && dateTo) {
       this.store.dispatch(
         userOrderActions.setStartDate({ startDate: dateFrom })
@@ -103,6 +104,12 @@ export class UserOrderComponent {
       this.loadUserOrders();
     }
   }
+
+  handleOnSearch(searchTerm: string | null) {
+    this.store.dispatch(userOrderActions.setSearchTerm({ searchTerm }));
+    this.loadUserOrders();
+  }
+
   constructor() {
     this.loadUserOrders();
   }
