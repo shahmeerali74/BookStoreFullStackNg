@@ -19,7 +19,7 @@ public class OrderRepository : IOrderRepository
         _context = context;
         _sortHelper = sortHelper;
     }
-    public async Task CreateOrder(int userId,OrderCreateDto orderToCreate)
+    public async Task CreateOrder(int userId, OrderCreateDto orderToCreate)
     {
         using var transaction = await _context.Database.BeginTransactionAsync();
         try
@@ -30,24 +30,24 @@ public class OrderRepository : IOrderRepository
                 Email = orderToCreate.Email,
                 MobileNumber = orderToCreate.MobileNumber,
                 OrderDate = DateTime.UtcNow,
-                TaxInPercent=18,
-                OrderStatus= OrderStatus.Pending,
-                UserId=userId,
+                TaxInPercent = 18,
+                OrderStatus = OrderStatus.Pending,
+                UserId = userId,
             };
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 
             // find the cart items of the user
-            var cart = await _context.Carts.Include(c=>c.CartItems).FirstOrDefaultAsync(c=>c.UserId==userId);
+            var cart = await _context.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.UserId == userId);
 
-            if(cart==null)
+            if (cart == null)
             {
                 throw new InvalidOperationException("Cart is null");
             }
 
-            var cartItems= await _context.CartItems.Where(ci=>ci.CartId==cart.Id).ToListAsync();
+            var cartItems = await _context.CartItems.Where(ci => ci.CartId == cart.Id).ToListAsync();
 
-            if(cartItems.Count==0)
+            if (cartItems.Count == 0)
             {
                 throw new InvalidOperationException("No cart items in the cart");
             }
@@ -56,18 +56,18 @@ public class OrderRepository : IOrderRepository
             foreach (var cartItem in cart.CartItems)
             {
                 var book = await _context.Books.AsNoTracking().SingleAsync(b => b.Id == cartItem.BookId);
-          
-                if(book==null)
+
+                if (book == null)
                 {
                     throw new InvalidOperationException("Book is null");
                 }
-          
+
                 var orderItem = new OrderItem
                 {
-                   OrderId=order.Id,
-                   BookId=cartItem.BookId,
-                   Quantity=cartItem.Quantity,
-                   Price=book.Price   
+                    OrderId = order.Id,
+                    BookId = cartItem.BookId,
+                    Quantity = cartItem.Quantity,
+                    Price = book.Price
                 };
                 _context.OrderItems.Add(orderItem);
                 subTotal += orderItem.Price * orderItem.Quantity;
@@ -75,10 +75,10 @@ public class OrderRepository : IOrderRepository
             await _context.SaveChangesAsync();
 
             // payment
-            var total = subTotal* (order.TaxInPercent/ 100);
+            var total = subTotal * (order.TaxInPercent / 100);
             var payment = new Payment
             {
-                OrderId=order.Id,
+                OrderId = order.Id,
                 Amount = total,
                 Status = PaymentStatus.Pending,
                 Method = (PaymentMethod)orderToCreate.PaymentMethod
@@ -103,26 +103,40 @@ public class OrderRepository : IOrderRepository
         }
     }
 
-    public async Task<PagedList<Order>> UserOrder(int userId,UserOrdersQueryParameters queryParameters)
+    public async Task<PagedList<Order>> UserOrder(int userId, UserOrdersQueryParameters queryParameters)
     {
         var userOrderQuery = _context.Orders
-                                .Include(c=>c.OrderItems)
-                                .ThenInclude(c=>c.Book)
-                                .ThenInclude(b=>b.BookGenres)
-                                .ThenInclude(bg=>bg.Genre)
-                                .Include(c=>c.OrderItems)
-                                .ThenInclude(c=>c.Book)
-                                .ThenInclude(b=>b.BookAuthors)
-                                .ThenInclude(ba=>ba.Author)
-                                .Where(o=>o.UserId == userId)
+                                .Include(c => c.OrderItems)
+                                .ThenInclude(c => c.Book)
+                                .ThenInclude(b => b.BookGenres)
+                                .ThenInclude(bg => bg.Genre)
+                                .Include(c => c.OrderItems)
+                                .ThenInclude(c => c.Book)
+                                .ThenInclude(b => b.BookAuthors)
+                                .ThenInclude(ba => ba.Author)
+                                .Where(o => o.UserId == userId)
                                 .AsQueryable();
         // filter by search term
-        //if (!string.IsNullOrEmpty(queryParameters.SearchTerm))
-        //{
-        //    userOrderQuery = userOrderQuery.Where(a =>
-        //    a.OrderItems..ToLower().Contains(queryParameters.SearchTerm)
-        //    );
-        //}
+        if (!string.IsNullOrEmpty(queryParameters.SearchTerm))
+        {
+            var searchTerm = queryParameters.SearchTerm.ToLower();
+            userOrderQuery = userOrderQuery.Where(o =>
+         o.OrderItems.Any(oi =>
+             oi.Book.Title.ToLower().Contains(searchTerm) ||
+             oi.Book.BookAuthors.Any(ba => ba.Author.AuthorName.ToLower().Contains(searchTerm))
+         )
+     );
+            // Filter irrelevant order items after the query
+            foreach (var order in userOrderQuery)
+            {
+                order.OrderItems = order.OrderItems
+                    .Where(oi =>
+                        oi.Book.Title.ToLower().Contains(queryParameters.SearchTerm.ToLower()) ||
+                        oi.Book.BookAuthors.Any(ba => ba.Author.AuthorName.ToLower().Contains(queryParameters.SearchTerm.ToLower()))
+                    ).ToList();
+            }
+
+        }
 
         // filter by order date
         if (queryParameters.StartDate.HasValue && queryParameters.EndDate.HasValue)
@@ -132,7 +146,7 @@ public class OrderRepository : IOrderRepository
 
         if (!string.IsNullOrEmpty(queryParameters.SortBy))
         {
-            userOrderQuery= _sortHelper.ApplySort(userOrderQuery, queryParameters.SortBy);
+            userOrderQuery = _sortHelper.ApplySort(userOrderQuery, queryParameters.SortBy);
         }
 
         return await PagedList<Order>.ToPagedListAsync(userOrderQuery, queryParameters.PageNumber, queryParameters.PageSize);
