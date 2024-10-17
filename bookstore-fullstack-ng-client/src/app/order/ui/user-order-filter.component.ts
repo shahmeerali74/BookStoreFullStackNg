@@ -25,8 +25,10 @@ import { getDateWithoutTimezone } from "../../utils/date.utils";
   providers: [provideNativeDateAdapter()],
   template: `
     <mat-form-field appearance="outline">
+      <mat-label>Search by book title or author</mat-label>
       <input matInput [formControl]="search" />
     </mat-form-field>
+
     <mat-form-field appearance="outline">
       <mat-date-range-input disabled [formGroup]="range" [rangePicker]="picker">
         <input
