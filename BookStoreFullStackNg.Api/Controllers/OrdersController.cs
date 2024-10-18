@@ -77,7 +77,8 @@ public class OrdersController : ControllerBase
         return Ok(newBookPagedList);
     }
 
-    [Authorize(Roles = Roles.Admin)]
+    //[Authorize(Roles = Roles.Admin)]
+    [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> Orders([FromQuery] UserOrdersQueryParameters queryParams)
     {

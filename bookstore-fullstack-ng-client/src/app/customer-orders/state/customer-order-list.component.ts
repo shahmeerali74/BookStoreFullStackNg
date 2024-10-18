@@ -110,11 +110,12 @@ export class CustomerOrderListComponent {
 
   displayedColumns = [
     "orderDate",
-    "customerName",
-    "totalPrice",
-    "quantity",
-    "authorNames",
-    "genreNames",
+    "name",
+    "email",
+    "phoneNumber",
+    "subTotal",
+    "tax",
+    "total",
   ];
 
   sortData(sortData: Sort) {

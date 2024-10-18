@@ -12,5 +12,12 @@ public class UserOrderDto
     public DateTime OrderDate { get; set; }
     public OrderStatus OrderStatus { get; set; }
     public Payment Payment { get; set; } = null!;
+    public double SubTotal { get; set; }
+    public double Tax {
+        get => SubTotal * (Constants.Tax.TaxInPercent / 100);
+    }
+    public double Total { 
+        get=> SubTotal + Tax;
+    }
     public ICollection<OrderItemDto> OrderItems { get; set; } = [];
 }

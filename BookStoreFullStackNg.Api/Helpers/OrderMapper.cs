@@ -13,17 +13,18 @@ public static class OrderMapper
         return orders.Select(order => new UserOrderDto
         {
             Id = order.Id,
-            Name=order.Name,
-            Email=order.Email,
-            MobileNumber=order.MobileNumber,
-            OrderDate=order.OrderDate,
-            OrderStatus=order.OrderStatus,
+            Name = order.Name,
+            Email = order.Email,
+            MobileNumber = order.MobileNumber,
+            OrderDate = order.OrderDate,
+            OrderStatus = order.OrderStatus,
+            SubTotal = order.OrderItems.Sum(oi => (oi.Price * oi.Quantity)),
             OrderItems = order.OrderItems.Select(item => new OrderItemDto
             {
                 Id = item.Id,
                 OrderId = item.OrderId,
                 Quantity = item.Quantity,
-                Price=item.Price,
+                Price = item.Price,
                 Book = new BookReadDto
                 {
                     Id = item.Book.Id,

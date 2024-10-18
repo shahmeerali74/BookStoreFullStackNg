@@ -30,7 +30,7 @@ public class OrderRepository : IOrderRepository
                 Email = orderToCreate.Email,
                 MobileNumber = orderToCreate.MobileNumber,
                 OrderDate = DateTime.UtcNow,
-                TaxInPercent = 18,
+                TaxInPercent = Tax.TaxInPercent,
                 OrderStatus = OrderStatus.Pending,
                 UserId = userId,
             };
