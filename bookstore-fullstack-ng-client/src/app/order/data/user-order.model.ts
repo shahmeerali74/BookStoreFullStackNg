@@ -7,6 +7,9 @@ export interface UserOrderModel {
   mobileNumber: string;
   orderDate: string;
   orderStatus: number;
+  subTotal: number;
+  tax: number;
+  total: number;
   payment: null;
   orderItems: OrderItem[];
 }
