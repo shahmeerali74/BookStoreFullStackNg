@@ -59,6 +59,14 @@ import { User } from "./account/data/user.model";
             <button mat-button routerLink="/authors" routerLinkActive="active">
               Manage-Authors
             </button>
+
+            <button
+              mat-button
+              routerLink="/customer-order"
+              routerLinkActive="active"
+            >
+              Customer Order
+            </button>
           </ng-container>
           <!-- admin routes ends -->
 

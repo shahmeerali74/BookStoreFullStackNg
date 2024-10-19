@@ -30,6 +30,25 @@ export const routes: Routes = [
       import("./authors/author.component").then((c) => c.AuthorComponent),
   },
   {
+    path: "customer-order",
+    canActivate: [roleGuard],
+    data: { roles: ["Admin"] },
+    loadComponent: () =>
+      import("./customer-orders/customer-orders.component").then(
+        (c) => c.CustomerOrdersComponent
+      ),
+  },
+  {
+    path: "customer-orders/detail/:id",
+    canActivate: [roleGuard],
+    data: { roles: ["Admin"] },
+    loadComponent: () =>
+      import("./customer-orders/order-detail.component").then(
+        (c) => c.OrderDetailComponent
+      ),
+  },
+
+  {
     path: "signup",
     loadComponent: () =>
       import("./account/registration.component").then(

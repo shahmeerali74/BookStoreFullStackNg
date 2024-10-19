@@ -13,6 +13,7 @@ import { MatSortModule, Sort } from "@angular/material/sort";
 import { environment } from "../../../environments/environment.development";
 import { DatePipe } from "@angular/common";
 import { UserOrderModel } from "../../order/data/user-order.model";
+import { RouterModule } from "@angular/router";
 
 @Component({
   selector: "app-customer-order-list",
@@ -23,6 +24,8 @@ import { UserOrderModel } from "../../order/data/user-order.model";
     MatIconModule,
     MatSortModule,
     DatePipe,
+    RouterModule,
+    MatButtonModule,
   ],
   template: `
     <table
@@ -46,54 +49,70 @@ import { UserOrderModel } from "../../order/data/user-order.model";
         </td>
       </ng-container>
 
-      <ng-container matColumnDef="imageUrl">
-        <th mat-header-cell *matHeaderCellDef>Image</th>
+      <ng-container matColumnDef="name">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header
+          sortActionDescription="sort by name"
+        >
+          Name
+        </th>
         <td mat-cell *matCellDef="let element">
-          <img
-            [src]="baseUrl + element.imageUrl"
-            alt="image"
-            style="width: 100px; height: 90px;"
-          />
+          {{ element.name }}
         </td>
       </ng-container>
 
-      <ng-container matColumnDef="title">
+      <ng-container matColumnDef="email">
         <th
           mat-header-cell
           *matHeaderCellDef
           mat-sort-header
-          sortActionDescription="sort by title"
+          sortActionDescription="sort by email"
         >
-          Title
+          Email
         </th>
-        <td mat-cell *matCellDef="let element">{{ element.title }}</td>
+        <td mat-cell *matCellDef="let element">{{ element.email }}</td>
       </ng-container>
 
-      <ng-container matColumnDef="quantity">
-        <th mat-header-cell *matHeaderCellDef>Quantity</th>
-        <td mat-cell *matCellDef="let element">{{ element.quantity }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="price">
+      <ng-container matColumnDef="mobileNumber">
         <th
           mat-header-cell
           *matHeaderCellDef
           mat-sort-header
-          sortActionDescription="sort by price"
+          sortActionDescription="sort by MobileNumber"
         >
-          Price
+          Mobile No.
         </th>
-        <td mat-cell *matCellDef="let element">{{ element.price }}</td>
+        <td mat-cell *matCellDef="let element">{{ element.mobileNumber }}</td>
       </ng-container>
 
-      <ng-container matColumnDef="authorNames">
-        <th mat-header-cell *matHeaderCellDef>Authors</th>
-        <td mat-cell *matCellDef="let element">{{ element.authorNames }}</td>
+      <ng-container matColumnDef="subTotal">
+        <th mat-header-cell *matHeaderCellDef>SubTotal</th>
+        <td mat-cell *matCellDef="let element">₹{{ element.subTotal }}</td>
       </ng-container>
 
-      <ng-container matColumnDef="genreNames">
-        <th mat-header-cell *matHeaderCellDef>Genres</th>
-        <td mat-cell *matCellDef="let element">{{ element.genreNames }}</td>
+      <ng-container matColumnDef="tax">
+        <th mat-header-cell *matHeaderCellDef>Tax</th>
+        <td mat-cell *matCellDef="let element">₹{{ element.tax }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="total">
+        <th mat-header-cell *matHeaderCellDef>Total</th>
+        <td mat-cell *matCellDef="let element">₹{{ element.total }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let element">
+          <button
+            mat-raised-button
+            color="primary"
+            routerLink="/customer-orders/detail/{{ element.id }}"
+          >
+            Detail
+          </button>
+        </td>
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
@@ -112,10 +131,11 @@ export class CustomerOrderListComponent {
     "orderDate",
     "name",
     "email",
-    "phoneNumber",
+    "mobileNumber",
     "subTotal",
     "tax",
     "total",
+    "actions",
   ];
 
   sortData(sortData: Sort) {
