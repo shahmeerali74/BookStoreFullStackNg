@@ -1,4 +1,5 @@
 using System.Text;
+using BookStoreFullStackNg.Api.Helpers.Wrapper;
 using BookStoreFullStackNg.Api.Middlewares;
 using BookStoreFullStackNg.Data.Data;
 using BookStoreFullStackNg.Data.Extensions;
@@ -75,6 +76,8 @@ builder.Services.AddOutputCache(options =>
     .Expire(TimeSpan.FromMinutes(10)));
 
 });
+
+builder.Services.AddTransient<ICartItemMapper, CartItemMapper>();
 
 builder.Host.UseSerilog();
 

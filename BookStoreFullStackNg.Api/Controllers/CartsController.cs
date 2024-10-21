@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BookStoreFullStackNg.Api.Exceptions;
 using BookStoreFullStackNg.Api.Helpers;
+using BookStoreFullStackNg.Api.Helpers.Wrapper;
 using BookStoreFullStackNg.Data.Constants;
 using BookStoreFullStackNg.Data.Domain;
 using BookStoreFullStackNg.Data.DTOs.Cart;
@@ -18,11 +19,13 @@ public class CartsController : ControllerBase
     private readonly ICartRepository _cartRepo;
     private readonly IMapper _mapper;
     private readonly IUserRepository _userRepo;
-    public CartsController(ICartRepository cartRepo, IMapper mapper, IUserRepository userRepo)
+    private readonly ICartItemMapper _cartItemMapper;
+    public CartsController(ICartRepository cartRepo, IMapper mapper, IUserRepository userRepo, ICartItemMapper cartItemMapper)
     {
         _cartRepo = cartRepo;
         _mapper = mapper;
         _userRepo = userRepo;
+        _cartItemMapper = cartItemMapper;
     }
 
     [HttpPost]
@@ -42,8 +45,7 @@ public class CartsController : ControllerBase
         }
         var cartItem = _mapper.Map<CartItem>(cartItemToCreate);
         CartItem createdCartItem = await _cartRepo.AddCartItemAsync(user.Id, cartItem);
-        var cartItemToReturn = createdCartItem.MapCartItemToCartItemDto();
-
+       var cartItemToReturn = _cartItemMapper.MapCartItemToCartItemDto(createdCartItem);
         return CreatedAtAction(nameof(AddCartItem), cartItemToReturn);
     }
 
@@ -76,7 +78,7 @@ public class CartsController : ControllerBase
 
         var cartItem = _mapper.Map<CartItem>(cartItemToUpdate);
         var updatedCartItem = await _cartRepo.UpdateCartItemAsync(user.Id, cartItem);
-        var cartItemToReturn = updatedCartItem.MapCartItemToCartItemDto();
+        var cartItemToReturn = _cartItemMapper.MapCartItemToCartItemDto(updatedCartItem);
 
         return Ok(cartItemToReturn);
     }
