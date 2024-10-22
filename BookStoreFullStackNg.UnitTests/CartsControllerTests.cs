@@ -334,5 +334,26 @@ public class CartsControllerTests
         await Assert.ThrowsAsync<BadRequestException>(async () => await _controller.DeleteCartItem(cartItemId));
     }
 
+    [Fact]
+    public async Task DeleteCartItem_ThrowsException_WhenNotSuccessful()
+    {
+        // arrange 
+        string username = "testuser";
+        int cartItemId = 1;
+        _controller.ControllerContext.HttpContext = new DefaultHttpContext
+        {
+            User = new ClaimsPrincipal(new ClaimsIdentity([new Claim(ClaimTypes.Name,username)]))
+        };
 
+        var mockUser = new User { Id = 1, Name = "test", Username = username };
+        _userRepo.GetUserByUserNameAsync(username).Returns(mockUser);
+
+        // Simulate RemoveCartItemAsync throwing an exception
+        _cartRepo.When(x => x.RemoveCartItemAsync(mockUser.Id, cartItemId)).Do(x => throw new Exception("Error deleting cart item"));
+
+        // Act and Assert
+        await Assert.ThrowsAsync<Exception>(async () => await _controller.DeleteCartItem(cartItemId));
     }
+
+
+}
