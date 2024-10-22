@@ -138,6 +138,5 @@ public class CartsController : ControllerBase
         var cartToReturn = carts.MapCartsToCartReadDtos();
         return Ok(cartToReturn);
     }
-
-    
+  
 }

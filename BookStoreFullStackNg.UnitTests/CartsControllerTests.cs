@@ -299,5 +299,40 @@ public class CartsControllerTests
     }
 
 
+    [Fact]
+    public async Task DeleteCartItem_ReturnsNoContent_WhenSuccess()
+    {
+        // Arrange
+        string username = "testuser";
+        int cartItemId = 1;
+        _controller.ControllerContext.HttpContext = new DefaultHttpContext
+        {
+            User = new ClaimsPrincipal(new ClaimsIdentity([new Claim(ClaimTypes.Name, username)]))
+        };
 
-}
+        //mocking user
+        var mockUser = new User { Id = 1, Name = "test", Username = username };
+        _userRepo.GetUserByUserNameAsync(username).Returns(mockUser);
+
+        // Act
+        var result = await _controller.DeleteCartItem(cartItemId);
+
+        // Assert
+        var noContentResult = Assert.IsType<NoContentResult>(result);
+        await _cartRepo.Received(1).RemoveCartItemAsync(mockUser.Id, cartItemId);
+    }
+
+    [Fact]
+    public async Task DeleteCartItem_UserNotLoggedIn_ThrowsBadRequestException()
+    {
+        // arrange
+        int cartItemId = 1;
+
+        _controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+        // act and assert
+        await Assert.ThrowsAsync<BadRequestException>(async () => await _controller.DeleteCartItem(cartItemId));
+    }
+
+
+    }
