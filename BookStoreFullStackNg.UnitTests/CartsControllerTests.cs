@@ -8,10 +8,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using System.Security.Claims;
-using BookStoreFullStackNg.Api.Helpers;
 using BookStoreFullStackNg.Api.Helpers.Wrapper;
-using NSubstitute.ReceivedExtensions;
-using System.Net;
+using NSubstitute.ExceptionExtensions;
 
 
 namespace BookStoreFullStackNg.UnitTests;
@@ -179,8 +177,127 @@ public class CartsControllerTests
         Assert.Equal(cartItemDto.Id, returnedCartItem.Id);
         Assert.Equal(cartItemDto.BookId, returnedCartItem.BookId);
         Assert.Equal(cartItemDto.Quantity, returnedCartItem.Quantity);
+    }
+
+    [Fact]
+    public async Task UpdateCartItem_UserNotAuthenticated_ThrowsBadRequestException()
+    {
+        // arrange
+        var cartItemToUpdate = new CartItemUpdateDto { Id = 1, BookId = 123, Quantity = 2 };
+        _controller.ControllerContext.HttpContext = new DefaultHttpContext()
+        {
+            User = new ClaimsPrincipal(new ClaimsIdentity()) // No identity
+        };
+
+        // Act and assert
+        await Assert.ThrowsAsync<BadRequestException>(async () => await _controller.UpdateCartItem(cartItemToUpdate.Id, cartItemToUpdate));
 
     }
+
+    [Fact]
+    public async Task UpdateCartItem_UserNotFound_ThrowsBadRequestException()
+    {
+        // arrange
+        var username = "testUser";
+        var cartItemToUpdate = new CartItemUpdateDto { Id = 1, BookId = 2, Quantity = 3 };
+        _controller.ControllerContext.HttpContext = new DefaultHttpContext
+        {
+            User = new ClaimsPrincipal(new ClaimsIdentity(new[]
+         {
+             new Claim(ClaimTypes.Name,username)
+         }))
+        };
+
+        _userRepo.GetUserByUserNameAsync(username).Returns(Task.FromResult<User>(null));
+
+        // act and assert
+        await Assert.ThrowsAsync<BadRequestException>(async () => await _controller.UpdateCartItem(cartItemToUpdate.Id, cartItemToUpdate));
+    }
+
+    [Fact]
+    public async Task UpdateCartItem_IdsMismatch_ThrowsBadHttpRequestException()
+    {
+        // Arrange
+        var userName = "testuser";
+        var cartItemId = 1;
+        var cartItemToUpdate = new CartItemUpdateDto { Id = 2, BookId = 123, Quantity = 2 }; // Mismatched IDs
+
+        _controller.ControllerContext.HttpContext = new DefaultHttpContext
+        {
+            User = new ClaimsPrincipal(new ClaimsIdentity(new[]
+            {
+            new Claim(ClaimTypes.Name, userName)
+        }))
+        };
+
+        var user = new User { Id = 1, Username = userName };
+        _userRepo.GetUserByUserNameAsync(userName).Returns(user);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<BadHttpRequestException>(async () =>
+            await _controller.UpdateCartItem(cartItemId, cartItemToUpdate));
+    }
+
+    [Fact]
+    public async Task UpdateCartItem_CartItemNotFound_ThrowsBadRequestException()
+    {
+        // Arrange
+        var userName = "testuser";
+        var cartItemId = 1;
+        var cartItemToUpdate = new CartItemUpdateDto { Id = 1, BookId = 123, Quantity = 2 };
+
+        _controller.ControllerContext.HttpContext = new DefaultHttpContext
+        {
+            User = new ClaimsPrincipal(new ClaimsIdentity(new[]
+            {
+            new Claim(ClaimTypes.Name, userName)
+        }))
+        };
+
+        var user = new User { Id = 1, Username = userName };
+        _userRepo.GetUserByUserNameAsync(userName).Returns(user);
+
+        _cartRepo.GetCartItemByCartItemIdAsync(cartItemId).Returns(Task.FromResult<CartItem?>(null)); // Cart item not found
+
+        // Act & Assert
+        await Assert.ThrowsAsync<BadRequestException>(async () =>
+            await _controller.UpdateCartItem(cartItemId, cartItemToUpdate));
+    }
+
+    [Fact]
+    public async Task UpdateCartItem_UpdateFails_ReturnsServerError() 
+    {
+        // Arrange
+        string username = "testuser";
+        var cartItemId = 1;
+        var cartItemToUpdate = new CartItemUpdateDto { Id = cartItemId, BookId = 123, Quantity = 2 };
+
+        _controller.ControllerContext.HttpContext = new DefaultHttpContext {
+         User = new ClaimsPrincipal(new ClaimsIdentity(
+               [new Claim(ClaimTypes.Name,username)]
+             ))
+        };
+
+        // mocking user
+        var mockUser = new User { Id = 1, Name = "test", Username = username };
+        _userRepo.GetUserByUserNameAsync(username).Returns(mockUser);
+
+        // mocking get cart item
+        var existingCartItem = new CartItem { Id = cartItemToUpdate.Id, BookId=cartItemToUpdate.BookId, Quantity = cartItemToUpdate.Quantity };
+        _cartRepo.GetCartItemByCartItemIdAsync(cartItemId).Returns(existingCartItem);
+
+        //mocking mapper
+        _mapper.Map<CartItem>(Arg.Any<CartItemUpdateDto>()).Returns(existingCartItem);
+        //mocking updated cartItem
+
+        _cartRepo.UpdateCartItemAsync(cartItemId, existingCartItem).ThrowsAsync(new Exception("Failed to update the cart item"));
+
+        // Act and Assert
+        var exception=await Assert.ThrowsAsync<Exception>(async () => await _controller.UpdateCartItem(cartItemId, cartItemToUpdate));
+        Assert.Equal("Failed to update the cart item", exception.Message);
+
+    }
+
 
 
 }

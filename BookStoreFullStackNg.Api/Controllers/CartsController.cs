@@ -70,7 +70,7 @@ public class CartsController : ControllerBase
             throw new BadHttpRequestException("Ids mismatch");
         }
 
-        var existingCartItem = _cartRepo.GetCartItemByCartItemIdAsync(cartItemId);
+        var existingCartItem = await _cartRepo.GetCartItemByCartItemIdAsync(cartItemId);
         if (existingCartItem == null)
         {
             throw new BadRequestException($"Cart item {cartItemId} does not found");
