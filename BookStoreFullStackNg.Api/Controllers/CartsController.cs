@@ -125,7 +125,7 @@ public class CartsController : ControllerBase
             throw new BadRequestException("Item does not found");
         }
 
-        CartReadDto cartToReturn = cart.MapCartToCartReadDto();
+        CartReadDto cartToReturn = _cartItemMapper.MapCartToCartReadDto(cart);
 
         return Ok(cartToReturn);
     }
@@ -135,8 +135,9 @@ public class CartsController : ControllerBase
     public async Task<IActionResult> GetAllCarts()
     {
         IEnumerable<Cart> carts = await _cartRepo.GetCartsAsync();
-        var cartToReturn = carts.MapCartsToCartReadDtos();
+        IEnumerable<CartReadDto?> cartToReturn= _cartItemMapper.MapCartsToCartReadDtos(carts);
         return Ok(cartToReturn);
     }
-  
+
+
 }

@@ -6,6 +6,7 @@ public interface ICartItemMapper
 {
     CartItemDto MapCartItemToCartItemDto(CartItem cartItem);
     IEnumerable<CartReadDto> MapCartsToCartReadDtos(IEnumerable<Cart> carts);
+    CartReadDto MapCartToCartReadDto(Cart cart);
 }
 
 public class CartItemMapper : ICartItemMapper
@@ -18,5 +19,10 @@ public class CartItemMapper : ICartItemMapper
     public IEnumerable<CartReadDto> MapCartsToCartReadDtos(IEnumerable<Cart> carts)
     {
         return carts.MapCartsToCartReadDtos();
+    }
+
+    public CartReadDto MapCartToCartReadDto(Cart cart)
+    {
+        return cart.MapCartToCartReadDto();
     }
 }

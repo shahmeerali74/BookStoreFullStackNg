@@ -10,6 +10,7 @@ using NSubstitute;
 using System.Security.Claims;
 using BookStoreFullStackNg.Api.Helpers.Wrapper;
 using NSubstitute.ExceptionExtensions;
+using System;
 
 
 namespace BookStoreFullStackNg.UnitTests;
@@ -27,7 +28,7 @@ public class CartsControllerTests
         _mapper = Substitute.For<IMapper>();
         _userRepo = Substitute.For<IUserRepository>();
         _cartItemMapper = Substitute.For<ICartItemMapper>();
-        _controller = new CartsController(_cartRepo, _mapper, _userRepo,_cartItemMapper);
+        _controller = new CartsController(_cartRepo, _mapper, _userRepo, _cartItemMapper);
 
         var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
         {
@@ -135,16 +136,17 @@ public class CartsControllerTests
 
         var cartItemToUpdate = new CartItemUpdateDto
         {
-         Id=cartItemId,
-         BookId=123,
-         Quantity=3
-        };
-        var user = new User {Id=1,Username=username };
-        var existingCartItem = new CartItem { Id = cartItemId, BookId = 123, Quantity = 2 };
-        var updatedCartItem = new CartItem{
             Id = cartItemId,
-         BookId = 123,
-         Quantity = 3
+            BookId = 123,
+            Quantity = 3
+        };
+        var user = new User { Id = 1, Username = username };
+        var existingCartItem = new CartItem { Id = cartItemId, BookId = 123, Quantity = 2 };
+        var updatedCartItem = new CartItem
+        {
+            Id = cartItemId,
+            BookId = 123,
+            Quantity = 3
         };
         var cartItemDto = new CartItemDto { Id = cartItemId, BookId = 123, Quantity = 3 }; // Mock cart item DTO for return
 
@@ -265,16 +267,17 @@ public class CartsControllerTests
     }
 
     [Fact]
-    public async Task UpdateCartItem_UpdateFails_ReturnsServerError() 
+    public async Task UpdateCartItem_UpdateFails_ReturnsServerError()
     {
         // Arrange
         string username = "testuser";
         var cartItemId = 1;
         var cartItemToUpdate = new CartItemUpdateDto { Id = cartItemId, BookId = 123, Quantity = 2 };
 
-        _controller.ControllerContext.HttpContext = new DefaultHttpContext {
-         User = new ClaimsPrincipal(new ClaimsIdentity(
-               [new Claim(ClaimTypes.Name,username)]
+        _controller.ControllerContext.HttpContext = new DefaultHttpContext
+        {
+            User = new ClaimsPrincipal(new ClaimsIdentity(
+               [new Claim(ClaimTypes.Name, username)]
              ))
         };
 
@@ -283,7 +286,7 @@ public class CartsControllerTests
         _userRepo.GetUserByUserNameAsync(username).Returns(mockUser);
 
         // mocking get cart item
-        var existingCartItem = new CartItem { Id = cartItemToUpdate.Id, BookId=cartItemToUpdate.BookId, Quantity = cartItemToUpdate.Quantity };
+        var existingCartItem = new CartItem { Id = cartItemToUpdate.Id, BookId = cartItemToUpdate.BookId, Quantity = cartItemToUpdate.Quantity };
         _cartRepo.GetCartItemByCartItemIdAsync(cartItemId).Returns(existingCartItem);
 
         //mocking mapper
@@ -293,7 +296,7 @@ public class CartsControllerTests
         _cartRepo.UpdateCartItemAsync(cartItemId, existingCartItem).ThrowsAsync(new Exception("Failed to update the cart item"));
 
         // Act and Assert
-        var exception=await Assert.ThrowsAsync<Exception>(async () => await _controller.UpdateCartItem(cartItemId, cartItemToUpdate));
+        var exception = await Assert.ThrowsAsync<Exception>(async () => await _controller.UpdateCartItem(cartItemId, cartItemToUpdate));
         Assert.Equal("Failed to update the cart item", exception.Message);
 
     }
@@ -342,7 +345,7 @@ public class CartsControllerTests
         int cartItemId = 1;
         _controller.ControllerContext.HttpContext = new DefaultHttpContext
         {
-            User = new ClaimsPrincipal(new ClaimsIdentity([new Claim(ClaimTypes.Name,username)]))
+            User = new ClaimsPrincipal(new ClaimsIdentity([new Claim(ClaimTypes.Name, username)]))
         };
 
         var mockUser = new User { Id = 1, Name = "test", Username = username };
@@ -355,5 +358,108 @@ public class CartsControllerTests
         await Assert.ThrowsAsync<Exception>(async () => await _controller.DeleteCartItem(cartItemId));
     }
 
+    [Fact]
+    public async Task GetUserCartByUserId_Success_ReturnsOk()
+    {
+        // Arrange
+        string username = "testuser";
+        _controller.ControllerContext.HttpContext = new DefaultHttpContext
+        {
+            User = new ClaimsPrincipal(new ClaimsIdentity([new Claim(ClaimTypes.Name, username)]))
+        };
 
-}
+        var user = new User { Id = 1, Name = "test", Username = username };
+        _userRepo.GetUserByUserNameAsync(username).Returns(user);
+
+        var cart = new Cart { Id = 1, UserId = user.Id };
+        _cartRepo.GetCartByUserIdAsync(user.Id).Returns(cart);
+
+        var cartReadDto = new CartReadDto { Id = 1, UserId = user.Id };
+        _cartItemMapper.MapCartToCartReadDto(cart).Returns(cartReadDto);
+
+        // Act
+        var result = await _controller.GetUserCartByUserId();
+
+        // Assert
+        var okObjectResult = Assert.IsType<OkObjectResult>(result);
+        var cartObject = Assert.IsType<CartReadDto>(okObjectResult.Value);
+        Assert.Equal(cartReadDto.Id, cartObject.Id);
+    }
+
+    [Fact]
+    public async Task GetUserCartByUserId_UserNotLoggedIn_ThrowsBadRequestException()
+    {
+        // Arrange
+        _controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+        // Act and assert
+        await Assert.ThrowsAsync<BadRequestException>(async () => await _controller.GetUserCartByUserId());
+    }
+
+    [Fact]
+    public async Task GetUserCartByUserId_CartNotFound_ThrowsBadRequestException()
+    {
+        // Arrange
+        var userName = "testuser";
+        var userId = 1;
+
+        // Mock the user identity
+        _controller.ControllerContext.HttpContext = new DefaultHttpContext
+        {
+            User = new ClaimsPrincipal(new ClaimsIdentity(new[]
+            {
+            new Claim(ClaimTypes.Name, userName)
+        }))
+        };
+
+        var user = new User { Id = userId, Username = userName };
+        _userRepo.GetUserByUserNameAsync(userName).Returns(user);
+        _cartRepo.GetCartByUserIdAsync(userId).Returns(Task.FromResult<Cart>(null));
+
+        // Act and assert
+        await Assert.ThrowsAsync<BadRequestException>(async () => await _controller.GetUserCartByUserId());
+
+    }
+
+    [Fact]
+    public async Task GetAllCarts_Success_ReturnsOk()
+    {
+        // Arrange
+        var carts = new List<Cart>
+        {
+          new Cart { Id = 1, UserId = 1 },
+          new Cart { Id = 2, UserId = 2 }
+        };
+        _cartRepo.GetCartsAsync().Returns(carts);
+        var mockCartToReturn = new List<CartReadDto> {
+         new CartReadDto { Id = 1, UserId = 1 },
+          new CartReadDto { Id = 2, UserId = 2 }
+        };
+
+        _cartItemMapper.MapCartsToCartReadDtos(carts).Returns(mockCartToReturn);
+
+        // Act
+        var result = await _controller.GetAllCarts();
+
+        // Assert
+        var okObjectResult = Assert.IsType<OkObjectResult>(result);
+        var returnedCarts = Assert.IsType<List<CartReadDto>>(okObjectResult.Value);
+        Assert.Equal(2,returnedCarts.Count);
+        Assert.Equal(mockCartToReturn[0].Id, returnedCarts[0].Id);
+    }
+
+    // when GetAllCartsThrowsException
+    [Fact]
+    public async Task GetAllCarts_RepositoryThrowsException_ReturnsServerError()
+    { 
+      // Arrange
+      var exceptionMessage = "An error occurred while fetching carts.";
+
+      _cartRepo.GetCartsAsync().ThrowsAsync(new Exception(exceptionMessage));
+
+        // Act and Assert
+        var exception=await Assert.ThrowsAsync<Exception>(async()=>await _controller.GetAllCarts());
+        Assert.Equal(exceptionMessage, exception.Message);
+    }
+
+    }
