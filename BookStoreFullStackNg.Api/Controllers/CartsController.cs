@@ -66,18 +66,18 @@ public class CartsController : ControllerBase
 
         if (cartItemId != cartItemToUpdate.Id)
         {
-            throw new BadHttpRequestException("Ids mismatch");
+            throw new BadRequestException("Ids mismatch");
         }
 
         var existingCartItem = await _cartRepo.GetCartItemByCartItemIdAsync(cartItemId);
         if (existingCartItem == null)
         {
-            throw new BadRequestException($"Cart item {cartItemId} does not found");
+            throw new NotFoundException($"Cart item {cartItemId} does not found");
         }
 
         var cartItem = _mapper.Map<CartItem>(cartItemToUpdate);
         var updatedCartItem = await _cartRepo.UpdateCartItemAsync(user.Id, cartItem);
-        var cartItemToReturn = _cartItemMapper.MapCartItemToCartItemDto(updatedCartItem);
+        CartItemDto? cartItemToReturn = _cartItemMapper.MapCartItemToCartItemDto(updatedCartItem);
 
         return Ok(cartItemToReturn);
     }
@@ -121,7 +121,7 @@ public class CartsController : ControllerBase
 
         if(cart==null)
         {
-            throw new BadRequestException("Item does not found");
+            throw new NotFoundException("Item does not found");
         }
 
         CartReadDto cartToReturn = _cartItemMapper.MapCartToCartReadDto(cart);

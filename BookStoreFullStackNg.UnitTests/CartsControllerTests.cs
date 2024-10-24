@@ -236,12 +236,12 @@ public class CartsControllerTests
         _userRepo.GetUserByUserNameAsync(userName).Returns(user);
 
         // Act & Assert
-        await Assert.ThrowsAsync<BadHttpRequestException>(async () =>
+        await Assert.ThrowsAsync<BadRequestException>(async () =>
             await _controller.UpdateCartItem(cartItemId, cartItemToUpdate));
     }
 
     [Fact]
-    public async Task UpdateCartItem_CartItemNotFound_ThrowsBadRequestException()
+    public async Task UpdateCartItem_CartItemNotFound_ThrowsNotFoundException()
     {
         // Arrange
         var userName = "testuser";
@@ -262,7 +262,7 @@ public class CartsControllerTests
         _cartRepo.GetCartItemByCartItemIdAsync(cartItemId).Returns(Task.FromResult<CartItem?>(null)); // Cart item not found
 
         // Act & Assert
-        await Assert.ThrowsAsync<BadRequestException>(async () =>
+        await Assert.ThrowsAsync<NotFoundException>(async () =>
             await _controller.UpdateCartItem(cartItemId, cartItemToUpdate));
     }
 
@@ -387,7 +387,7 @@ public class CartsControllerTests
     }
 
     [Fact]
-    public async Task GetUserCartByUserId_UserNotLoggedIn_ThrowsBadRequestException()
+    public async Task GetUserCartByUserId_UserNotLoggedIn_ThrowsNotFoundException()
     {
         // Arrange
         _controller.ControllerContext.HttpContext = new DefaultHttpContext();
@@ -397,7 +397,7 @@ public class CartsControllerTests
     }
 
     [Fact]
-    public async Task GetUserCartByUserId_CartNotFound_ThrowsBadRequestException()
+    public async Task GetUserCartByUserId_CartNotFound_ThrowsNotFoundException()
     {
         // Arrange
         var userName = "testuser";
@@ -417,7 +417,7 @@ public class CartsControllerTests
         _cartRepo.GetCartByUserIdAsync(userId).Returns(Task.FromResult<Cart>(null));
 
         // Act and assert
-        await Assert.ThrowsAsync<BadRequestException>(async () => await _controller.GetUserCartByUserId());
+        await Assert.ThrowsAsync<NotFoundException>(async () => await _controller.GetUserCartByUserId());
 
     }
 

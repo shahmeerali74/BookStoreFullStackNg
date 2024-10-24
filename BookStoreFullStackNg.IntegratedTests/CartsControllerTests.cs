@@ -52,5 +52,75 @@ public class CartsControllerTests: IClassFixture<CustomWebApplicationFactory>
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
+    [Fact]
+    public async Task UpdateCart_Returns_UpdatedCartItem_OnSuccess()
+    {
+        // Arrange
+        int cartItemId = 1;
+        var cartItemToUpdate = new CartItemUpdateDto {Id=cartItemId,BookId=1,CartId=1 };
+        var jsonContent = JsonSerializer.Serialize(cartItemToUpdate);
+        var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+        // Act 
+        var result = await _client.PutAsync(_url + "/" + cartItemId, content);
+        result.EnsureSuccessStatusCode();
+        var jsonResult = await result.Content.ReadAsStringAsync();
+        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive=true };
+        var updatedCartItem = JsonSerializer.Deserialize<CartItemDto>(jsonResult,options);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+        Assert.NotNull(updatedCartItem);
+        Assert.Equal(updatedCartItem.Quantity, cartItemToUpdate.Quantity);
+        Assert.Equal(updatedCartItem.Id, cartItemToUpdate.Id);
+        Assert.Equal(updatedCartItem.BookId, cartItemToUpdate.BookId);
+        Assert.Equal(updatedCartItem.CartId, cartItemToUpdate.CartId);
+    }
+
+    [Fact]
+    public async Task UpdateCartItem_ThrowsBadRequest_WhenIdsMismatch()
+    {
+        // Arrange
+        int cartItemId = 1;
+        var cartItemToUpdate = new CartItemUpdateDto { Id = 2, BookId = 1, CartId = 1 }; // Ids mismatch
+        string JsonContent = JsonSerializer.Serialize(cartItemToUpdate);
+        StringContent content = new StringContent(JsonContent, Encoding.UTF8, "application/json");
+
+        // Act
+        var result = await _client.PutAsync(_url + "/" + cartItemId, content);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
+    }
+
+    [Fact]
+    public async Task UpdateCartItem_ThrowsNotFoundException_WhenCartItemNotFound()
+    {
+        // Arrange
+        int cartItemId = 9999;
+        var cartItemToUpdate = new CartItemUpdateDto { Id = cartItemId, BookId = 1, CartId = 1 }; // Ids mismatch
+        string JsonContent = JsonSerializer.Serialize(cartItemToUpdate);
+        StringContent content = new StringContent(JsonContent, Encoding.UTF8, "application/json");
+
+        // Act
+        var result = await _client.PutAsync(_url + "/" + cartItemId, content);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
+    }
+
+    [Fact]
+    public async Task DeleteCartItem_ReturnsNoContent_OnSuccess()
+    {
+        // Arrange
+        int cartItemId = 1;
+
+        // Act
+        var result = await _client.DeleteAsync(_url + "/" + cartItemId);
+        result.EnsureSuccessStatusCode();
+
+        // Assert
+        Assert.Equal(HttpStatusCode.NoContent, result.StatusCode);
+    }
 
 }
