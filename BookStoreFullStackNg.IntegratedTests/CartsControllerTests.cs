@@ -123,4 +123,37 @@ public class CartsControllerTests: IClassFixture<CustomWebApplicationFactory>
         Assert.Equal(HttpStatusCode.NoContent, result.StatusCode);
     }
 
+    [Fact]
+    public async Task GetUserCart_Returns_CartDataOnSuccess()
+    {
+        // Act
+        var result = await _client.GetAsync(_url + "/UserCart");
+        result.EnsureSuccessStatusCode();
+        var jsonResult = await result.Content.ReadAsStringAsync();
+        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        CartReadDto cart = JsonSerializer.Deserialize<CartReadDto>(jsonResult, options);
+
+        // Assert
+        Assert.NotNull(cart);
+    }
+
+    [Fact]
+    public async Task GetAllCart_Returns_CartsOnSuccess()
+    {
+        // Arrange
+        _client.DefaultRequestHeaders.Add(TestAuthHandler.TestUserRolesHeader, "Admin");
+
+        // act
+        var result = await _client.GetAsync(_url);
+        result.EnsureSuccessStatusCode();
+        var jsonResult = await result.Content.ReadAsStringAsync();
+        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        IEnumerable<CartReadDto> carts = JsonSerializer.Deserialize<IEnumerable<CartReadDto>>(jsonResult, options);
+
+        // assert
+        Assert.NotNull(carts);
+        Assert.NotEmpty(carts);
+
+    }
+
 }
