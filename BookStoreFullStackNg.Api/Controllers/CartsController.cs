@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using BookStoreFullStackNg.Api.Exceptions;
-using BookStoreFullStackNg.Api.Helpers;
 using BookStoreFullStackNg.Api.Helpers.Wrapper;
 using BookStoreFullStackNg.Data.Constants;
 using BookStoreFullStackNg.Data.Domain;
@@ -32,7 +31,7 @@ public class CartsController : ControllerBase
     public async Task<IActionResult> AddCartItem(CartItemCreateDto cartItemToCreate)
     {
         var userName = User.Identity.Name;
-        if (userName == null)
+        if (string.IsNullOrEmpty(userName))
         {
             throw new BadRequestException("User is not logged in");
         }

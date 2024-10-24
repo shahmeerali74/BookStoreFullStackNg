@@ -20,6 +20,11 @@ public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
+        // Check for a header to simulate unauthenticated user
+        if (Request.Headers.ContainsKey("X-ForceUnAuthenticated"))
+        {
+            return Task.FromResult(AuthenticateResult.Fail("Unauthenticated user"));
+        }
         var rolesHeader = Request.Headers[TestUserRolesHeader].FirstOrDefault() ?? "User";
         var roles = rolesHeader.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 

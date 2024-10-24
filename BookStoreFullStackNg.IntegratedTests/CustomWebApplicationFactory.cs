@@ -23,7 +23,8 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
                 services.Remove(descriptor);
             }
 
-            services.AddDbContext<BookStoreContext>(options => {
+            services.AddDbContext<BookStoreContext>(options =>
+            {
                 options.UseInMemoryDatabase("InMem");
                 options.ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning));
             }
@@ -67,17 +68,62 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
     //}
     private static void SeedData(BookStoreContext context)
     {
+        SeedUser(context);
+
+        SeedGenres(context);
+        
+        SeedAuthors(context);
+
+        SeedBooks(context);
+
+        SeedCart(context);
+
+        context.SaveChanges();
+    }
+
+    private static void SeedUser(BookStoreContext context)
+    {
+        if(!context.Users.Any())
+        {
+            var user = new User { Id = 1, Name = "TestUser", Username = "TestUser" };
+            context.Users.Add(user);
+        }
+    }
+
+    private static void SeedCart(BookStoreContext context)
+    {
+        if (!context.Carts.Any())
+        {
+            var cart = new Cart
+            {
+                Id = 1,
+                UserId = 1,
+                CartItems = new[] {
+                  new CartItem {Id=1,BookId=1,CartId=1,Quantity=1},
+                  new CartItem {Id=2,BookId=2,CartId=1,Quantity=2},
+              }
+            };
+            context.Carts.Add(cart);
+        }
+    }
+
+    private static void SeedGenres(BookStoreContext context)
+    {
         if (!context.Genres.Any())
         {
             var genres = new List<Genre>{
                 new Genre{GenreName="G1"},
                 new Genre{GenreName="G2"},
             };
-
             context.Genres.AddRange(genres);
         }
+    }
+
+    private static void SeedAuthors(BookStoreContext context)
+    {
         if (!context.Authors.Any())
         {
+
             var authors = new List<Author> {
               new Author {AuthorName="A1"},
               new Author {AuthorName="A2"},
@@ -85,6 +131,10 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
             };
             context.Authors.AddRange(authors);
         }
+    }
+
+    private static void SeedBooks(BookStoreContext context)
+    {
         if (!context.Books.Any())
         {
             var books = new List<Book>
@@ -126,8 +176,5 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 };
             context.Books.AddRange(books);
         }
-        context.SaveChanges();
-
-
     }
 }
