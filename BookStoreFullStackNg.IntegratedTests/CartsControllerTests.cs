@@ -138,6 +138,20 @@ public class CartsControllerTests: IClassFixture<CustomWebApplicationFactory>
     }
 
     [Fact]
+    public async Task GetUserTask_ReturnsNotFoundException_WhenCartItemIsNull()
+    {
+        // Arrange
+        _client.DefaultRequestHeaders.Add("X-UserName","test2"); //The user with name 'test2' does not have any cart entry
+
+        // Act
+        var result = await _client.GetAsync(_url +"/UserCart");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
+
+    }
+
+    [Fact]
     public async Task GetAllCart_Returns_CartsOnSuccess()
     {
         // Arrange

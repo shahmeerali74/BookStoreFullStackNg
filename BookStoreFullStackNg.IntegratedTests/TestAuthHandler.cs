@@ -28,7 +28,17 @@ public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions
         var rolesHeader = Request.Headers[TestUserRolesHeader].FirstOrDefault() ?? "User";
         var roles = rolesHeader.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-        var claims = new List<Claim> { new Claim(ClaimTypes.Name, "TestUser") };
+        string username = Request.Headers["X-UserName"].FirstOrDefault() ?? "";
+        var claims = new List<Claim>();
+
+        if (string.IsNullOrEmpty(username))
+        {
+            claims = [ new Claim(ClaimTypes.Name, "TestUser")];
+        }
+        else
+        {
+            claims = [new Claim(ClaimTypes.Name, username)];
+        }
 
         // Add role claims after trimming whitespace
         foreach (var role in roles)

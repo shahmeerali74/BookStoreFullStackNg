@@ -85,8 +85,11 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
     {
         if(!context.Users.Any())
         {
-            var user = new User { Id = 1, Name = "TestUser", Username = "TestUser" };
-            context.Users.Add(user);
+            List<User> users =[ 
+                new User { Id = 1, Name = "TestUser", Username = "TestUser" },
+                new User { Id = 2, Name = "TestUser2", Username = "test2" },
+                ];
+            context.Users.AddRange(users);
         }
     }
 
