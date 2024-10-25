@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace BookStoreFullStackNg.IntegratedTests;
 
-public class CustomWebApplicationFactory : WebApplicationFactory<Program>
+public class CustomWebApplicationFactory : WebApplicationFactory<Program>,IAsyncLifetime
 {
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -57,14 +57,17 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
         });
     }
 
-    //private static void DisposeExisitingData(BookStoreContext context)
+    //private static async Task DisposeExisitingData(BookStoreContext context)
     //{
     //    context.Genres.RemoveRange(context.Genres);
     //    context.Authors.RemoveRange(context.Authors);
-    //    context.Books.RemoveRange(context.Books);
     //    context.BookAuthors.RemoveRange(context.BookAuthors);
     //    context.BookGenres.RemoveRange(context.BookGenres);
-    //    context.SaveChanges();
+    //    context.Books.RemoveRange(context.Books);
+    //    context.CartItems.RemoveRange(context.CartItems);
+    //    context.Carts.RemoveRange(context.Carts);
+    //    context.Users.RemoveRange(context.Users);
+    //    await context.SaveChangesAsync();
     //}
     private static void SeedData(BookStoreContext context)
     {
@@ -179,5 +182,20 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 };
             context.Books.AddRange(books);
         }
+    }
+
+    public async Task InitializeAsync()
+    {
+        //using var scope = Services.CreateScope();
+        //var appContext = scope.ServiceProvider.GetService<BookStoreContext>();
+        await Task.FromResult(1);
+    }
+
+    async Task IAsyncLifetime.DisposeAsync()
+    {
+        //using var scope = Services.CreateScope();
+        //var context = scope.ServiceProvider.GetRequiredService<BookStoreContext>();
+        //context.Database.EnsureDeleted();
+        await Task.FromResult(1);
     }
 }
