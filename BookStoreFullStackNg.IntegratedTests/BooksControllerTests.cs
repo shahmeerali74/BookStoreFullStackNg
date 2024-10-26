@@ -7,7 +7,8 @@ using System.Text.Json;
 
 namespace BookStoreFullStackNg.IntegratedTests;
 
-public class BooksControllerTests: IClassFixture<CustomWebApplicationFactory>
+[Collection("Test Collection")]
+public class BooksControllerTests
 {
     private readonly CustomWebApplicationFactory _webApplicationFactory;
     private readonly HttpClient _client;
