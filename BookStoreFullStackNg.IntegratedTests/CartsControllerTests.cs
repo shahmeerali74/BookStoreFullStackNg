@@ -1,10 +1,13 @@
-﻿using BookStoreFullStackNg.Data.DTOs.Cart;
+﻿using BookStoreFullStackNg.Data.Data;
+using BookStoreFullStackNg.Data.DTOs.Cart;
+using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using System.Text;
 using System.Text.Json;
 
 namespace BookStoreFullStackNg.IntegratedTests;
 
+[Collection("Test Collection")]
 public class CartsControllerTests: IClassFixture<CustomWebApplicationFactory>
 {
     private readonly CustomWebApplicationFactory _factory;
@@ -113,7 +116,7 @@ public class CartsControllerTests: IClassFixture<CustomWebApplicationFactory>
     public async Task DeleteCartItem_ReturnsNoContent_OnSuccess()
     {
         // Arrange
-        int cartItemId = 1;
+        int cartItemId = 2;
 
         // Act
         var result = await _client.DeleteAsync(_url + "/" + cartItemId);

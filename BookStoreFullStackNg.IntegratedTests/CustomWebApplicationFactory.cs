@@ -3,9 +3,11 @@ using BookStoreFullStackNg.Data.Domain;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
+using System.Data.Common;
 
 namespace BookStoreFullStackNg.IntegratedTests;
 
@@ -23,13 +25,26 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>,IAsync
                 services.Remove(descriptor);
             }
 
-            services.AddDbContext<BookStoreContext>(options =>
-            {
-                options.UseInMemoryDatabase("InMem");
-                options.ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning));
-            }
-               );
+            //services.AddDbContext<BookStoreContext>(options =>
+            //{
+            //    options.UseInMemoryDatabase("InMem");
+            //    options.ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning));
+            //}
+            //   );
 
+            services.AddSingleton<DbConnection>(container =>
+            {
+                var connection = new SqliteConnection("DataSource=:memory:");
+                connection.Open();
+
+                return connection;
+            });
+
+            services.AddDbContext<BookStoreContext>((container, options) =>
+            {
+                var connection = container.GetRequiredService<DbConnection>();
+                options.UseSqlite(connection);
+            });
 
             // Add a test authentication scheme
             services.AddAuthentication(options =>
@@ -44,16 +59,16 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>,IAsync
             var sp = services.BuildServiceProvider();
             using var scope = sp.CreateScope();
             using var appContext = scope.ServiceProvider.GetRequiredService<BookStoreContext>();
-            try
-            {
-                appContext.Database.EnsureDeleted();
-                appContext.Database.EnsureCreated();
-                SeedData(appContext);
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
+            //try
+            //{
+            //    //appContext.Database.EnsureDeleted();
+            //    //appContext.Database.EnsureCreated();
+            //    //SeedData(appContext);
+            //}
+            //catch (Exception ex)
+            //{
+            //    throw;
+            //}
         });
     }
 
@@ -69,6 +84,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>,IAsync
     //    context.Users.RemoveRange(context.Users);
     //    await context.SaveChangesAsync();
     //}
+
     private static void SeedData(BookStoreContext context)
     {
         SeedUser(context);
@@ -186,16 +202,19 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>,IAsync
 
     public async Task InitializeAsync()
     {
-        //using var scope = Services.CreateScope();
-        //var appContext = scope.ServiceProvider.GetService<BookStoreContext>();
-        await Task.FromResult(1);
+        using var scope = Services.CreateScope();
+        var appContext = scope.ServiceProvider.GetService<BookStoreContext>();
+        await appContext.Database.EnsureCreatedAsync();
+        SeedData(appContext);
+        await Task.CompletedTask;
     }
 
     async Task IAsyncLifetime.DisposeAsync()
     {
-        //using var scope = Services.CreateScope();
-        //var context = scope.ServiceProvider.GetRequiredService<BookStoreContext>();
-        //context.Database.EnsureDeleted();
-        await Task.FromResult(1);
+        using var scope = Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<BookStoreContext>();
+        await context.Database.EnsureDeletedAsync();
+        // await context.Database.EnsureCreatedAsync();
+        //await Task.CompletedTask;
     }
 }

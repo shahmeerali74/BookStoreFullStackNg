@@ -9,7 +9,8 @@ using BookStoreFullStackNg.Data.DTOs.Common;
 
 namespace BookStoreFullStackNg.IntegratedTests;
 
-public class AuthorControllerTests : IClassFixture<CustomWebApplicationFactory>
+[Collection("Test Collection")]
+public class AuthorControllerTests
 {
     private readonly CustomWebApplicationFactory _webApplicationFactory;
     private readonly HttpClient _client;

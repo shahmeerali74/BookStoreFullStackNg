@@ -6,7 +6,8 @@ using BookStoreFullStackNg.Data.DTOs;
 
 namespace BookStoreFullStackNg.IntegratedTests;
 
-public class GenreControllerTests : IClassFixture<CustomWebApplicationFactory>
+[Collection("Test Collection")]
+public class GenreControllerTests
 {
 
     private readonly CustomWebApplicationFactory _factory;
