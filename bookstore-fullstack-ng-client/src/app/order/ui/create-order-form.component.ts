@@ -91,7 +91,7 @@ import { MatButtonModule } from "@angular/material/button";
 
         <div class="btn-container">
           <button [disabled]="form.invalid" mat-raised-button color="primary">
-            Signup
+            Checkout
           </button>
         </div>
       </form>

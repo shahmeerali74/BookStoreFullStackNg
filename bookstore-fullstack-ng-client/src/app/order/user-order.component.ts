@@ -27,6 +27,7 @@ import { UserOrderFilter } from "./ui/user-order-filter.component";
     UserOrderFilter,
   ],
   template: `
+    <h1>My Orders</h1>
     <app-user-order-filter
       (filterByPurchaseDate)="handleFilterByPurchaseDate($event)"
       (onSearch)="handleOnSearch($event)"

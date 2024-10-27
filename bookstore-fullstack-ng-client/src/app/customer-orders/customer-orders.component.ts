@@ -27,6 +27,7 @@ import { SortModel } from "../common/sort.model";
     CustomerOrderPaginationComponent,
   ],
   template: `
+    <h1>Customer Orders</h1>
     <ng-container *ngIf="loading$ | async">Loading...</ng-container>
     <ng-container *ngIf="error$ | async; else noerror">Error</ng-container>
 
