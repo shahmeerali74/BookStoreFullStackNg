@@ -21,7 +21,7 @@ public class AccountControllersTests
     public async Task Signup_ReturnsCreatedAtAction_OnSuccess()
     {
         // Arrange
-        var registrationModel = new RegistrationModel { Name = "John", Email = "john@gmail.com", Password = "John@123" };
+        var registrationModel = new RegistrationModel { Name = "Test", Email = "test@gmail.com", Password = "Test@123" };
 
         // Act
         var response = await _client.PostAsJsonAsync<RegistrationModel>(_url+"/signup",registrationModel);
@@ -32,4 +32,20 @@ public class AccountControllersTests
         Assert.Equal(createdItem!.Name, registrationModel.Name);
     }
 
+    [Fact]
+    public async Task Login_ReturnToken_OnSuccess()
+    {
+        // Arrange
+        var registrationModel = new RegistrationModel { Name = "John", Email = "jack@gmail.com", Password = "Jack@123" };
+        await _client.PostAsJsonAsync<RegistrationModel>(_url + "/signup", registrationModel);
+        var loginModel = new LoginModel { Username = "jack@gmail.com", Password="Jack@123" };
+
+        // Act
+        var response= await _client.PostAsJsonAsync($"{_url}/login", loginModel);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK,response.StatusCode);
+        var token = await response.Content.ReadAsStringAsync();
+        Assert.NotNull(token);
+    }
 }
