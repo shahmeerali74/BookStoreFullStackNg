@@ -21,7 +21,7 @@ public class AccountControllersTests
     public async Task Signup_ReturnsCreatedAtAction_OnSuccess()
     {
         // Arrange
-        var registrationModel = new RegistrationModel { Name = "Test", Email = "test@gmail.com", Password = "Test@123" };
+        var registrationModel = new RegistrationModel { Name = "Test112", Email = "test112@gmail.com", Password = "Test@123" };
 
         // Act
         var response = await _client.PostAsJsonAsync<RegistrationModel>(_url+"/signup",registrationModel);

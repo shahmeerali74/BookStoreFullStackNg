@@ -58,7 +58,7 @@ public class OrdersController : ControllerBase
     }
 
     [HttpGet("user-orders")]
-    public async Task<IActionResult> IActionResult([FromQuery]UserOrdersQueryParameters queryParams)
+    public async Task<IActionResult> GetUserOrders([FromQuery]UserOrdersQueryParameters queryParams)
     {
         string? username = User?.Identity?.Name;
         if (string.IsNullOrEmpty(username))
@@ -77,8 +77,7 @@ public class OrdersController : ControllerBase
         return Ok(newBookPagedList);
     }
 
-    //[Authorize(Roles = Roles.Admin)]
-    [AllowAnonymous]
+    [Authorize(Roles = Roles.Admin)]
     [HttpGet]
     public async Task<IActionResult> Orders([FromQuery] UserOrdersQueryParameters queryParams)
     {

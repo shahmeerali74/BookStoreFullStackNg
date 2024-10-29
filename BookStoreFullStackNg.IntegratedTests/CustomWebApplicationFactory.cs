@@ -1,3 +1,4 @@
+using BookStoreFullStackNg.Data.Constants;
 using BookStoreFullStackNg.Data.Data;
 using BookStoreFullStackNg.Data.Domain;
 using Microsoft.AspNetCore.Authentication;
@@ -41,6 +42,21 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>,IAsync
             });
 
             services.AddDbContext<BookStoreContext>((container, options) =>
+            {
+                var connection = container.GetRequiredService<DbConnection>();
+                options.UseSqlite(connection);
+            });
+
+            // DB for Identity mgt
+            //services.AddSingleton<DbConnection>(container =>
+            //{
+            //    var connection = new SqliteConnection("DataSource=:memory:");
+            //    connection.Open();
+
+            //    return connection;
+            //});
+
+            services.AddDbContext<AuthContext>((container, options) =>
             {
                 var connection = container.GetRequiredService<DbConnection>();
                 options.UseSqlite(connection);
@@ -97,7 +113,37 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>,IAsync
 
         SeedCart(context);
 
+        SeedOrders(context);
+
         context.SaveChanges();
+    }
+
+    private static void SeedOrders(BookStoreContext context)
+    {
+        if(!context.Users.Any())
+        {
+            var order = new Order
+            {
+                Name = "Xyz",
+                Email = "xyz@g.c",
+                MobileNumber = "1234",
+                OrderDate = DateTime.Now,
+                OrderStatus = Data.Constants.OrderStatus.Pending,
+                TaxInPercent = 18,
+                UserId = 1,
+                OrderItems = new List<OrderItem>
+                {
+                    new OrderItem
+                    {
+                        BookId=1,
+                        Quantity=1,
+                        OrderId=1,
+                        Price=123
+                    }
+                }
+            };
+            context.Orders.Add(order);
+        }
     }
 
     private static void SeedUser(BookStoreContext context)
