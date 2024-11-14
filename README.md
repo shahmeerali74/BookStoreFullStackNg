@@ -3,7 +3,7 @@
 ## Tech stack
 
 - .Net core 8
-- Angular 8
+- Angular 18
 - Sqlite
 - xUnit for unit and integration tests
 
