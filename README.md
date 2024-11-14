@@ -2,10 +2,11 @@
 
 ## Tech stack
 
-- .Net core 8
-- Angular 18
-- Sqlite
+- .Net core 8 (APIs)
+- Entity Framework Core (ORM)
+- Sqlite (Database)
 - xUnit for unit and integration tests
+- Angular 18 (client side)
 
 ## How to run the project
 
